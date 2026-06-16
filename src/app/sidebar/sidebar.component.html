@@ -1,0 +1,40 @@
+<aside class="sidebar">
+  <div class="user-profile">
+    <img src="assets/img/avatar.jpg" class="avatar" alt="User Avatar">
+    <h3>Janusz Pawlacz</h3>
+  </div>
+
+  <nav class="menu">
+    <ul>
+      <li><a href="#">Profile</a></li>
+
+      <li *ngFor="let year of universityYears">
+        <!-- Year -->
+        <span class="menu-title year"
+              [class.expanded]="year.expanded"
+              (click)="toggleYear(year)">
+          {{ year.name }} {{ year.expanded ? '▼' : '▶' }}
+        </span>
+
+        <ul class="submenu" *ngIf="year.expanded">
+          <li *ngFor="let subject of year.subjects">
+            <!-- Subject -->
+            <span class="menu-title subject"
+                  [class.expanded]="subject.expanded"
+                  (click)="toggleSubject(subject)">
+              {{ subject.name }} {{ subject.expanded ? '▼' : '▶' }}
+            </span>
+
+            <ul class="submenu" *ngIf="subject.expanded">
+              <li *ngFor="let test of subject.tests">
+                <a [routerLink]="['/tests', test.id]" class="tests">{{ test.name }}</a>
+              </li>
+            </ul>
+
+          </li>
+        </ul>
+
+      </li>
+    </ul>
+  </nav>
+</aside>
