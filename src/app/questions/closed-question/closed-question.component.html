@@ -1,0 +1,28 @@
+<div class="question-container">
+  <div class="answers"
+       [class.multi]="question?.multipleChoice"
+       [class.single]="!question?.multipleChoice">
+
+    <button
+      type="button"
+      class="answer-btn"
+      *ngFor="let a of question.answers; trackBy: trackByAnswerId"
+      (click)="onSelect(a.id)"
+      [class.selected]="selectedAnswerIds.includes(a.id)"
+      [class.correct]="state?.answered && isCorrect(a)"
+      [class.wrong]="state?.answered && isIncorrectSelected(a)"
+    >
+      <span
+        class="bullet"
+        [class.checkbox]="question?.multipleChoice"
+        [class.radio]="!question?.multipleChoice">
+      </span>
+
+      <span class="answer-text">{{ a.text }}</span>
+    </button>
+  </div>
+
+  <div class="hint" *ngIf="question?.multipleChoice">
+    You can select multiple answers.
+  </div>
+</div>

@@ -1,0 +1,241 @@
+/* =========================
+   Open Question (fixed)
+   ========================= */
+
+/* IMPORTANT: prevent width overflow from padding/border */
+:host,
+:host * ,
+:host *::before,
+:host *::after {
+  box-sizing: border-box;
+}
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* DO NOT hide overflow here, it can cause "cut" visuals */
+.open-q {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* default: one column */
+.open-grid {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+/* two columns when suggested is visible */
+.open-grid:has(.suggested-pane.visible) {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+@media (max-width: 1000px) {
+  .open-grid,
+  .open-grid:has(.suggested-pane.visible) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pane {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  text-align: left; /* overrides question-card text-align:center */
+}
+
+/* score bar */
+.grade-bar {
+  flex: 0 0 auto;
+
+  padding: 8px 14px;
+  background: #1a1a1a;
+  border: 1px solid #3a3a3a;
+  border-radius: 12px;
+
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 520px) {
+  .grade-bar {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+.grade-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #cfcfcf;
+  opacity: 0.9;
+}
+
+.grade-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.score-input {
+  width: 110px;
+  max-width: 100%;
+  padding: 10px 12px;
+
+  border-radius: 12px;
+  background: #2b2b2b;
+  color: #e0e0e0;
+
+  border: 1px solid #3a3a3a;
+  outline: none;
+  transition: 0.25s;
+}
+
+.score-input:focus {
+  border-color: #7b6df5;
+  box-shadow:
+    0 0 0 3px rgba(123, 109, 245, 0.18),
+    0 0 12px rgba(123, 109, 245, 0.25);
+}
+
+/* remove number arrows */
+.score-input::-webkit-inner-spin-button,
+.score-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.score-input { -moz-appearance: textfield; }
+
+.grade-max {
+  opacity: 0.75;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.lock-btn {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #3a3a3a;
+  background: #2b2b2b;
+  color: #e0e0e0;
+
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.25s;
+  white-space: nowrap;
+}
+
+.lock-btn:hover {
+  border-color: #7b6df5;
+  box-shadow: 0 0 15px rgba(123, 109, 245, 0.25);
+}
+
+/* textarea: fills remaining pane height, no cut */
+.user-text {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  flex: 1 1 auto;     /* fill remaining space */
+  min-height: 160px;  /* baseline so it's not tiny */
+  height: auto;       /* let flex decide */
+
+  padding: 14px 16px;
+  border-radius: 12px;
+
+  background: #2b2b2b;
+  color: #e0e0e0;
+  border: 1px solid #3a3a3a;
+  outline: none;
+
+  overflow: auto;
+  overflow-wrap: anywhere;
+
+  resize: none; /* avoids user resizing causing layout issues */
+  transition: 0.25s;
+}
+
+.user-text:focus {
+  border-color: #7b6df5;
+  box-shadow:
+    0 0 0 3px rgba(123, 109, 245, 0.22),
+    0 0 12px rgba(123, 109, 245, 0.25);
+}
+
+.user-text:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* suggested panel */
+.suggested-pane {
+  opacity: 0;
+  transform: translateX(12px);
+  pointer-events: none;
+  transition: 0.25s ease;
+
+  min-width: 0;
+  min-height: 0;
+}
+
+.suggested-pane.visible {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.suggested-box {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  flex: 1 1 auto;
+  min-height: 240px;
+
+  background: #2b2b2b;
+  border: 1px solid #3a3a3a;
+  border-radius: 12px;
+  padding: 14px 16px;
+
+  overflow: auto;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
+/* scrollbars like your site */
+.user-text::-webkit-scrollbar,
+.suggested-box::-webkit-scrollbar { width: 8px; }
+.user-text::-webkit-scrollbar-track,
+.suggested-box::-webkit-scrollbar-track { background: #1e1e1e; }
+.user-text::-webkit-scrollbar-thumb,
+.suggested-box::-webkit-scrollbar-thumb {
+  background: #7b6df5;
+  border-radius: 4px;
+}

@@ -1,0 +1,47 @@
+<div class="stmt-wrap">
+
+  <div class="stmt-list">
+    <div class="stmt-row"
+         *ngFor="let s of question.statements; let i = index; trackBy: trackByOrder"
+         [class.answered]="locked"
+         [class.correct]="isCorrect(i)"
+         [class.wrong]="isWrong(i)">
+
+      <div class="stmt-index">{{ i + 1 }}.</div>
+
+      <div class="stmt-text">
+        {{ s.text }}
+      </div>
+
+      <div class="tf-toggle" role="group" aria-label="True/False">
+        <button
+          type="button"
+          class="tf-btn"
+          [class.active]="isSelected(i, true)"
+          [disabled]="locked"
+          (click)="select(i, true)">
+          True
+        </button>
+
+        <button
+          type="button"
+          class="tf-btn"
+          [class.active]="isSelected(i, false)"
+          [disabled]="locked"
+          (click)="select(i, false)">
+          False
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Optional helper line -->
+  <div class="stmt-hint" *ngIf="!locked">
+    Select True/False for each statement.
+    <span class="stmt-hint-badge" [class.ready]="isComplete()">
+      {{ isComplete() ? 'Ready to submit' : 'Incomplete' }}
+    </span>
+  </div>
+
+</div>

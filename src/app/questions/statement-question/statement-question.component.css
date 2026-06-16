@@ -1,0 +1,137 @@
+.stmt-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.stmt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto;
+  padding-right: 6px;
+  min-height: 0;
+}
+
+.stmt-list::-webkit-scrollbar {
+  width: 8px;
+}
+.stmt-list::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+.stmt-list::-webkit-scrollbar-thumb {
+  background: #7b6df5;
+  border-radius: 4px;
+}
+
+.stmt-row {
+  display: grid;
+  grid-template-columns: 40px 1fr 200px;
+  align-items: center;
+  gap: 14px;
+
+  background: #242424;
+  border: 2px solid #2f2f2f;
+  border-radius: 14px;
+  padding: 14px 14px;
+
+  transition: 0.2s ease;
+}
+
+.stmt-row:hover {
+  border-color: #3a3a3a;
+}
+
+.stmt-index {
+  font-weight: 800;
+  color: #7b6df5;
+  text-align: center;
+}
+
+.stmt-text {
+  text-align: left;
+  line-height: 1.45;
+  color: #e0e0e0;
+  font-size: 16px;
+}
+
+.tf-toggle {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.tf-btn {
+  width: 90px;
+  padding: 10px 12px;
+
+  border-radius: 12px;
+  border: 2px solid #3a3a3a;
+
+  background: #2b2b2b;
+  color: #e0e0e0;
+
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.tf-btn:hover:not(:disabled) {
+  border-color: #7b6df5;
+  box-shadow: 0 0 10px rgba(123, 109, 245, 0.25);
+}
+
+.tf-btn.active {
+  background: #7b6df5;
+  border-color: #7b6df5;
+  color: #fff;
+  box-shadow: 0 0 14px rgba(123, 109, 245, 0.35);
+}
+
+.tf-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Optional correctness states */
+.stmt-row.answered.correct {
+  border-color: rgba(80, 200, 120, 0.6);
+  box-shadow: 0 0 12px rgba(80, 200, 120, 0.12);
+}
+
+.stmt-row.answered.wrong {
+  border-color: rgba(255, 90, 90, 0.65);
+  box-shadow: 0 0 12px rgba(255, 90, 90, 0.10);
+}
+
+/* hint */
+.stmt-hint {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: #202020;
+  border: 1px solid #2f2f2f;
+  border-radius: 12px;
+  padding: 10px 14px;
+
+  color: #cfcfcf;
+  font-size: 14px;
+}
+
+.stmt-hint-badge {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #2b2b2b;
+  border: 1px solid #3a3a3a;
+  color: #cfcfcf;
+  font-weight: 700;
+}
+
+.stmt-hint-badge.ready {
+  border-color: #7b6df5;
+  color: #7b6df5;
+}

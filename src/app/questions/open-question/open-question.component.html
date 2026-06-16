@@ -1,0 +1,49 @@
+<div class="open-q">
+  <div class="open-grid">
+
+    <!-- LEFT -->
+    <div class="pane">
+<!--      <div class="pane-title">Your answer</div>-->
+      <div class="grade-bar" *ngIf="isManualGrading()">
+        <div class="grade-label">Score</div>
+
+        <div class="grade-input">
+          <input
+            *ngIf="locked"
+            class="score-input"
+            type="number"
+            [(ngModel)]="scoredPoints"
+            (ngModelChange)="emitState()"
+            [min]="0"
+            [max]="maxPoints"
+            placeholder="0"
+          />
+          <span class="grade-max">/ {{ maxPoints }}</span>
+        </div>
+
+        <button type="button" class="lock-btn" (click)="toggleLock()" *ngIf="!locked">
+          Lock & grade
+        </button>
+      </div>
+
+      <textarea
+        class="user-text"
+        [(ngModel)]="text"
+        (ngModelChange)="emitState()"
+        [disabled]="locked"
+        placeholder="Type your answer..."
+      ></textarea>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="pane suggested-pane" [class.visible]="locked">
+      <div class="pane-title">Suggested answer</div>
+
+      <div class="suggested-box">
+        <div *ngIf="isAnswerHtml; else answerText" [innerHTML]="suggestedAnswer"></div>
+        <ng-template #answerText>{{ suggestedAnswer }}</ng-template>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,101 @@
+<div class="question-wrapper">
+  <div class="question-card" *ngIf="question; else loading">
+
+    <div class="question-layout">
+
+      <!-- LEFT: question + input -->
+      <div class="main-pane">
+        <div class="card-scroll-area" [style.flex]="getContentProportions">
+          <div class="question-text" #questionTextContainer>
+            <div *ngIf="isQuestionHtml" [innerHTML]="question.content.text"></div>
+            <div *ngIf="isQuestionText">{{ question.content.text }}</div>
+          </div>
+        </div>
+
+        <div class="question-type-box" [style.flex]="getAnswerProportions">
+          <app-closed-question
+            *ngIf="isClosed"
+            [question]="closedQuestion()"
+            [state]="closedQuestionState()"
+            (answerChange)="onChildAnswer($event)"
+          ></app-closed-question>
+
+          <app-open-question
+            *ngIf="isOpen"
+            [question]="openQuestion()"
+            [state]="openQuestionState()"
+            (answerChange)="onChildAnswer($event)"
+          ></app-open-question>
+
+          <app-term-definition-question
+            *ngIf="isTermDefinition"
+            [question]="termDefinitionQuestion()"
+            [state]="termDefinitionQuestionState()"
+            (answerChange)="onChildAnswer($event)"
+          ></app-term-definition-question>
+
+          <app-statement-question
+            *ngIf="isStatement"
+            [question]="statementQuestion()"
+            [state]="statementQuestionState()"
+            (answerChange)="onChildAnswer($event)"
+          ></app-statement-question>
+        </div>
+      </div>
+
+      <!-- RIGHT: controls / info -->
+
+      <aside class="side-pane">
+        <h2 class="exam-title">{{ testState!.testName }}</h2>
+        <div class="side-card">
+          <div class="side-title">Progress</div>
+
+          <div class="progress-bar-container">
+            <div class="progress-bar" [style.width.%]="progress"></div>
+            <span class="question-counter">{{ getCurrentQuestionIndex() }} / {{ totalQuestions() }}</span>
+          </div>
+
+          <div class="score-row" *ngIf="questionSubmitted()">
+            <span class="score-label">Score</span>
+            <span class="score-value">{{ questionScore() }} / {{ questionMaxScore() }}</span>
+          </div>
+        </div>
+
+        <div class="side-card">
+          <div class="side-title">Actions</div>
+
+          <button
+            *ngIf="!allQuestionsAnswered() && !questionSubmitted()"
+            class="submit-btn side-btn"
+            (click)="submitAnswer()">
+            Submit Answer
+          </button>
+
+          <button
+            *ngIf="!allQuestionsAnswered() && questionSubmitted()"
+            class="submit-btn side-btn"
+            (click)="nextQuestion()">
+            Next question
+          </button>
+
+          <button
+            *ngIf="allQuestionsAnswered()"
+            class="submit-btn side-btn"
+            (click)="finishTest()">
+            Finish test
+          </button>
+        </div>
+
+      </aside>
+
+    </div>
+  </div>
+
+  <ng-template #loading>
+    <div class="question-wrapper">
+      <div class="question-card">
+        <p>Loading question...</p>
+      </div>
+    </div>
+  </ng-template>
+</div>

@@ -1,0 +1,140 @@
+/* Sidebar container */
+.sidebar {
+  width: 250px;
+  background-color: #1f1f1f;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  border-right: 1px solid #333;
+  padding: 0;
+}
+
+/* Inner wrapper */
+.sidebar-inner {
+  padding: 20px;
+  transform: translateX(-10px); /* shift all content left */
+}
+
+/* User profile */
+.user-profile {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.user-profile .avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  border: 2px solid #555;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.user-profile .avatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px #7b68ee; /* blueish purple glow */
+}
+
+.user-profile h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+/* Menu */
+.menu ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.menu li {
+  margin-bottom: 6px;
+}
+
+.menu > ul > li {
+  margin-bottom: 20px; /* adds spacing between each Year block */
+}
+
+/* Links */
+.menu a {
+  color: #e0e0e0;
+  text-decoration: none;
+  display: block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.3s;
+}
+
+.menu a:hover {
+  background-color: #333;
+  color: #7b68ee; /* blueish purple hover text */
+  box-shadow: 0 0 8px #7b68ee; /* glow */
+}
+
+/* Expandable Titles */
+.menu-title.year {
+  margin-left: 0;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 5px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  background-color: #292929;
+  transition: all 0.3s;
+}
+
+.menu-title.year:hover {
+  background-color: #2c2c54;
+  color: #7b68ee;
+  box-shadow: 0 0 8px #7b68ee;
+}
+
+.menu-title.subject {
+  font-weight: 500;
+  font-size: 14px;
+  padding: 2px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-left: 20px;
+  transition: all 0.3s;
+}
+
+.menu-title.subject:hover {
+  background-color: #333;
+  color: #7b68ee;
+  box-shadow: 0 0 6px #7b68ee;
+}
+
+.menu .tests {
+  margin-left: 48px; /* More right than Subject */
+}
+
+/* Submenus */
+
+.menu > ul > li > .submenu {
+  list-style: none;
+  margin: 8px 0 0 0;       /* little separation from year title */
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;               /* SPACE BETWEEN SUBJECTS (reliable) */
+  box-sizing: border-box;
+}
+
+.menu > ul > li > .submenu > li {
+  display: block;
+}
+
+/* Rotating arrow for expanded items */
+.menu-title::after {
+  content: '';
+  float: right;
+  margin-left: 10px;
+  transition: transform 0.3s;
+}
+
+.menu-title.expanded::after {
+  transform: rotate(90deg);
+}

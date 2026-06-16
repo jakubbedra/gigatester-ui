@@ -1,0 +1,133 @@
+/* ======= CENTERING EVERYTHING ======= */
+
+.question-container {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* <-- CENTER HORIZONTALLY */
+  text-align: left;
+}
+
+/* ======= ANSWER GRID ======= */
+
+.answers {
+  width: 100%;
+  max-width: 900px;         /* keeps it readable */
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* two columns on wide screens */
+@media (min-width: 1100px) {
+  .answers {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ======= ANSWER BUTTON ======= */
+
+.answer-btn {
+  width: 100%;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  padding: 14px 16px;
+  border-radius: 12px;
+
+  background: #2b2b2b;
+  border: 1px solid #3a3a3a;
+  color: #e0e0e0;
+
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+/* hover */
+.answer-btn:hover {
+  border-color: #7b6df5;
+  box-shadow: 0 0 14px rgba(123, 109, 245, 0.22);
+}
+
+/* selected state */
+.answer-btn.selected {
+  border-color: #7b6df5;
+  background: rgba(123, 109, 245, 0.12);
+  box-shadow: 0 0 18px rgba(123, 109, 245, 0.28);
+}
+
+/* ======= RADIO vs CHECKBOX ======= */
+
+/* base shape */
+.bullet {
+  flex: 0 0 auto;
+  margin-top: 4px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #7b6df5;
+  background: transparent;
+  transition: 0.2s ease;
+}
+
+/* ROUND for single choice */
+.radio {
+  border-radius: 999px;
+}
+
+/* SQUARE for multiple choice */
+.checkbox {
+  border-radius: 4px;
+}
+
+/* fill when selected */
+.answer-btn.selected .bullet {
+  background: #7b6df5;
+  box-shadow: 0 0 10px rgba(123, 109, 245, 0.5);
+}
+
+/* ======= ANSWER TEXT ======= */
+
+.answer-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+/* ======= HINT ======= */
+
+.hint {
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.75;
+  color: #cfcfcf;
+  text-align: center;
+}
+
+/* correct answers */
+.answer-btn.correct {
+  border-color: #2ecc71;
+  background: rgba(46, 204, 113, 0.15);
+}
+
+/* incorrect SELECTED answers */
+.answer-btn.wrong {
+  border-color: #e74c3c;
+  background: rgba(231, 76, 60, 0.15);
+}
+
+/* keep your existing selected style but soften it after grading */
+.answer-btn.selected:not(.correct):not(.wrong) {
+  background: #2b2b2b;
+}
