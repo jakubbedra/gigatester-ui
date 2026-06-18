@@ -39,7 +39,6 @@ export class TestViewComponent implements OnInit {
         this.form = this.fb.group({
           closedQuestionsCount: [defaults.closedQuestionsCount],
           openQuestionsCount: [defaults.openQuestionsCount],
-          termDefinitionQuestionsCount: [defaults.termDefinitionQuestionsCount],
           passingPercentage: [defaults.passingPercentage],
           mode: [defaults.mode],
           displayType: [defaults.displayType]
@@ -51,9 +50,9 @@ export class TestViewComponent implements OnInit {
 
   buildDefaultState(test: TestResponse): TestStateRequest {
     return {
+      passingPercentage: 0,
       closedQuestionsCount: test.closedQuestionsCount,
       openQuestionsCount: test.openQuestionsCount,
-      termDefinitionQuestionsCount: test.termDefinitionQuestionsCount,
       statementQuestionsCount: 0,
       ...(test.passingPercentage !== undefined && test.passingPercentage !== null
         ? { passingPercentage: test.passingPercentage }

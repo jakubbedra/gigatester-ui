@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {TestService} from "../service/test.service";
-import {TestSummaryResponse} from "../models/models";
+import { Component, OnInit } from '@angular/core';
+import { TestService } from "../service/test.service";
+import { TestSummaryResponse } from "../models/models";
+import {SubjectsService} from "../service/subject.service";
 
 interface Test {
   name: string;
@@ -24,38 +25,38 @@ interface UniversityYear {
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
-export class SidebarComponent implements OnInit{
+export class SidebarComponent implements OnInit {
   universityYears: UniversityYear[] = [
     {
-      name: 'Matura',
+      name: 'Rok I',
       expanded: false,
-      subjects: [
-        {
-          name: 'Biologia',
-          expanded: false,
-          tests: [
-            { name: 'Test 1', id: '?' },
-            { name: 'Test 2', id: '?' }
-          ]
-        }
-      ]
+      subjects: []
     },
   ];
 
-  constructor(private testService: TestService) { }
+  constructor(
+    private testService: TestService,
+    private subjectsService: SubjectsService
+  ) {}
 
   ngOnInit() {
-    this.testService.getTests().subscribe(res => {
-      const tests = res.tests; // ✅ unwrap array
+    this.subjectsService.getSubjects().subscribe(res => {
+      const firstYear = this.universityYears[0];
 
-      this.universityYears.forEach(year => {
-        year.subjects.forEach(subject => {
-          if (subject.name === 'Biologia') {
-            subject.tests = tests.map((t: TestSummaryResponse) => ({
-              name: t.name,
-              id: t.id
-            }));
-          }
+      firstYear.subjects = res.subjects.map(subject => ({
+        name: subject.name,
+        expanded: false,
+        tests: []
+      }));
+
+      firstYear.subjects.forEach((subject, index) => {
+        const subjectId = res.subjects[index].id;
+        this.subjectsService.getSubject(subjectId).subscribe(detail => {
+          this.testService.getTests().subscribe(testsRes => {
+            subject.tests = testsRes.tests
+              .filter((t: TestSummaryResponse) => detail.tests.includes(t.id))
+              .map((t: TestSummaryResponse) => ({ name: t.name, id: t.id }));
+          });
         });
       });
     });

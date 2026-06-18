@@ -78,6 +78,7 @@ export class OpenQuestionComponent implements OnInit, OnChanges {
       return;
     }
     const req: OpenQuestionStateRequest = {
+      scoredPoints: null,
       questionId: this.question.id,
       questionType: QuestionType.OPEN,
       answered: this.locked,

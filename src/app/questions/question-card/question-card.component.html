@@ -27,13 +27,6 @@
             (answerChange)="onChildAnswer($event)"
           ></app-open-question>
 
-          <app-term-definition-question
-            *ngIf="isTermDefinition"
-            [question]="termDefinitionQuestion()"
-            [state]="termDefinitionQuestionState()"
-            (answerChange)="onChildAnswer($event)"
-          ></app-term-definition-question>
-
           <app-statement-question
             *ngIf="isStatement"
             [question]="statementQuestion()"
