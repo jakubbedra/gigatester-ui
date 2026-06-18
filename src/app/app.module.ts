@@ -7,12 +7,15 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { ClosedQuestionComponent } from './questions/closed-question/closed-question.component';
 import { OpenQuestionComponent } from './questions/open-question/open-question.component';
 import { QuestionCardComponent } from './questions/question-card/question-card.component';
-import {DragDropModule} from "@angular/cdk/drag-drop";
-import {HttpClientModule} from "@angular/common/http";
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { HttpClientModule } from '@angular/common/http';
 import { TestViewComponent } from './tests/test-view/test-view.component';
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TestSummaryComponent } from './tests/test-summary/test-summary.component';
 import { StatementQuestionComponent } from './questions/statement-question/statement-question.component';
+import { SubjectsListComponent } from './admin/subjects-list/subjects-list.component';
+import { TestsListComponent } from './admin/tests-list/tests-list.component';
+import { TestEditComponent } from './admin/test-edit/test-edit.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +26,10 @@ import { StatementQuestionComponent } from './questions/statement-question/state
     QuestionCardComponent,
     TestViewComponent,
     TestSummaryComponent,
-    StatementQuestionComponent
+    StatementQuestionComponent,
+    SubjectsListComponent,
+    TestsListComponent,
+    TestEditComponent,
   ],
   imports: [
     BrowserModule,

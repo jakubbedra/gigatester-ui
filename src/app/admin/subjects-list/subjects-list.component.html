@@ -1,0 +1,103 @@
+<div class="page">
+  <div class="page-header">
+    <h1 class="page-title">Subjects</h1>
+    <button class="btn-add" (click)="openAdd()">+ New Subject</button>
+  </div>
+
+  <div class="grid" *ngIf="subjects.length > 0; else empty">
+    <div class="card" *ngFor="let subject of subjects">
+
+      <div class="card-header">
+        <div class="card-icon">📚</div>
+        <div class="card-name">{{ subject.name }}</div>
+        <div class="context-wrapper" (click)="stopPropagation($event)">
+          <button class="ctx-btn" (click)="toggleMenu($event, subject.id)">···</button>
+          <div class="ctx-menu" *ngIf="openMenuId === subject.id">
+            <button (click)="openEdit($event, subject)">Edit</button>
+            <button class="danger" (click)="delete($event, subject.id)">Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tests-section">
+        <div class="tests-label">Tests <span class="test-count">{{ subject.tests.length }}</span></div>
+        <div class="tests-list" *ngIf="subject.tests.length > 0; else noTests">
+          <div class="test-row" *ngFor="let test of subject.tests" (click)="openTest(test.id)">
+            <span class="test-icon">📝</span>
+            <span class="test-name">{{ test.name }}</span>
+            <button class="test-edit-btn" (click)="$event.stopPropagation(); editTest(test.id)" title="Edit test">✎</button>
+          </div>
+        </div>
+        <ng-template #noTests>
+          <div class="no-tests">No tests assigned</div>
+        </ng-template>
+      </div>
+
+    </div>
+  </div>
+
+  <ng-template #empty>
+    <div class="empty-state">
+      <div class="empty-icon">📂</div>
+      <p>No subjects yet. Add one to get started.</p>
+    </div>
+  </ng-template>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" *ngIf="showEditModal" (click)="cancelEdit()">
+  <div class="modal" (click)="stopPropagation($event)">
+    <h2 class="modal-title">Edit Subject</h2>
+
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" [(ngModel)]="editName" placeholder="Subject name" />
+    </div>
+
+    <div class="form-group">
+      <label>Assigned Tests</label>
+      <ng-container *ngIf="allTests.length > 0; else noTestsAvailable">
+        <input class="search-input" type="text" [(ngModel)]="testSearch" placeholder="Search tests…" />
+        <div class="test-picker">
+          <ng-container *ngFor="let test of allTests">
+            <label class="test-check" *ngIf="!testSearch || test.name.toLowerCase().includes(testSearch.toLowerCase())"
+                   [class.selected]="isTestAssigned(test.id)"
+                   (click)="toggleTest(test.id)">
+              <span class="check-box">
+                <span class="check-mark" *ngIf="isTestAssigned(test.id)">✓</span>
+              </span>
+              <span class="check-label">{{ test.name }}</span>
+            </label>
+          </ng-container>
+        </div>
+      </ng-container>
+      <ng-template #noTestsAvailable>
+        <div class="no-tests-hint">No tests available. Create some first.</div>
+      </ng-template>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+      <button class="btn-primary" (click)="saveEdit()" [disabled]="saving || !editName.trim()">
+        {{ saving ? 'Saving…' : 'Save' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal-overlay" *ngIf="showAddModal" (click)="cancelAdd()">
+  <div class="modal" (click)="stopPropagation($event)">
+    <h2 class="modal-title">New Subject</h2>
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" [(ngModel)]="newSubjectName" placeholder="Subject name" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="cancelAdd()">Cancel</button>
+      <button class="btn-primary" (click)="saveAdd()" [disabled]="adding || !newSubjectName.trim()">
+        {{ adding ? 'Creating…' : 'Create' }}
+      </button>
+    </div>
+  </div>
+</div>

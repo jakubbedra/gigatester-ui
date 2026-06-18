@@ -6,34 +6,53 @@
 
   <nav class="menu">
     <ul>
-      <li><a href="#">Profile</a></li>
+      <li class="admin-links">
+        <span class="admin-link" (click)="navigateToAdminSubjects()">Subjects</span>
+        <span class="admin-link" (click)="navigateToTests()">Tests</span>
+      </li>
 
       <li *ngFor="let year of universityYears">
-        <!-- Year -->
         <span class="menu-title year"
               [class.expanded]="year.expanded"
               (click)="toggleYear(year)">
-          {{ year.name }} {{ year.expanded ? '▼' : '▶' }}
+          <span>{{ year.name }}</span>
+          <span>{{ year.expanded ? '▾' : '▸' }}</span>
         </span>
 
         <ul class="submenu" *ngIf="year.expanded">
           <li *ngFor="let subject of year.subjects">
-            <!-- Subject -->
-            <span class="menu-title subject"
-                  [class.expanded]="subject.expanded"
-                  (click)="toggleSubject(subject)">
-              {{ subject.name }} {{ subject.expanded ? '▼' : '▶' }}
-            </span>
+            <div class="menu-row">
+              <span class="menu-title subject"
+                    [class.expanded]="subject.expanded"
+                    (click)="toggleSubject(subject)">
+                {{ subject.name }} {{ subject.expanded ? '▾' : '▸' }}
+              </span>
+              <div class="context-wrapper">
+                <button class="ctx-btn" (click)="toggleMenu($event, 'subject-' + subject.id)">···</button>
+                <div class="ctx-menu" *ngIf="openMenuId === 'subject-' + subject.id">
+                  <button (click)="navigateToSubjects($event)">Edit</button>
+                  <button class="danger" (click)="deleteSubject($event, subject.id)">Delete</button>
+                </div>
+              </div>
+            </div>
 
             <ul class="submenu" *ngIf="subject.expanded">
               <li *ngFor="let test of subject.tests">
-                <a [routerLink]="['/tests', test.id]" class="tests">{{ test.name }}</a>
+                <div class="menu-row test-row">
+                  <a [routerLink]="['/tests', test.id]" class="tests">{{ test.name }}</a>
+                  <div class="context-wrapper">
+                    <button class="ctx-btn" (click)="toggleMenu($event, 'test-' + test.id)">···</button>
+                    <div class="ctx-menu" *ngIf="openMenuId === 'test-' + test.id">
+                      <button (click)="editTest($event, test.id)">Edit</button>
+                      <button class="danger" (click)="deleteTest($event, test.id, subject)">Delete</button>
+                    </div>
+                  </div>
+                </div>
               </li>
             </ul>
 
           </li>
         </ul>
-
       </li>
     </ul>
   </nav>

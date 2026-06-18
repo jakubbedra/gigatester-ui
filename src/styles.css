@@ -8,3 +8,64 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* ── Pretty scrollbar (global) ───────────────────────────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #4a4070 transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4a4070;
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #7b6df5;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ── Number input spinners ───────────────────────────────────────────────── */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #2a2a2a;
+  border-left: 1px solid #3d3d3d;
+  border-radius: 0 8px 8px 0;
+  width: 20px;
+  cursor: pointer;
+  opacity: 1;
+  display: flex;
+  flex-direction: column;
+  background-image:
+    linear-gradient(to bottom, transparent 49%, #3d3d3d 49%, #3d3d3d 51%, transparent 51%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='5'%3E%3Cpath d='M0 5 L5 0 L10 5Z' fill='%237b6df5'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='5'%3E%3Cpath d='M0 0 L5 5 L10 0Z' fill='%237b6df5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-position: center, center 30%, center 70%;
+  background-size: 100% 1px, 10px 5px, 10px 5px;
+  transition: background-color 0.15s;
+}
+
+input[type="number"]::-webkit-inner-spin-button:hover,
+input[type="number"]::-webkit-outer-spin-button:hover {
+  background-color: #333;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}

@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {TestModeDto} from "../../models/models";
+import {TestModeDto} from "../../models/models.d";
 import {ActivatedRoute, Router} from "@angular/router";
 import {TestStateService} from "../../service/test-state.service";
 

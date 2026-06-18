@@ -1,0 +1,63 @@
+<div class="page">
+  <div class="page-header">
+    <h1 class="page-title">Tests</h1>
+    <button class="btn-add" (click)="openAdd()">+ New Test</button>
+  </div>
+
+  <div class="grid" *ngIf="tests.length > 0; else empty">
+    <div class="card" *ngFor="let test of tests" (click)="openTest(test.id)">
+      <div class="card-body">
+        <div class="card-icon">📝</div>
+        <div class="card-name">{{ test.name }}</div>
+      </div>
+      <div class="context-wrapper" (click)="stopPropagation($event)">
+        <button class="ctx-btn" (click)="toggleMenu($event, test.id)">···</button>
+        <div class="ctx-menu" *ngIf="openMenuId === test.id">
+          <button (click)="edit($event, test.id)">Edit</button>
+          <button class="danger" (click)="delete($event, test.id)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #empty>
+    <div class="empty-state">
+      <div class="empty-icon">📋</div>
+      <p>No tests yet. Click <strong>+ New Test</strong> to create one.</p>
+    </div>
+  </ng-template>
+</div>
+
+<!-- Add Test Modal -->
+<div class="modal-overlay" *ngIf="showAddModal" (click)="cancelAdd()">
+  <div class="modal" (click)="stopPropagation($event)">
+    <h2 class="modal-title">New Test</h2>
+
+    <div class="form-group">
+      <label>Test Name</label>
+      <input type="text" [(ngModel)]="newName" placeholder="Test name" />
+    </div>
+
+    <div class="form-row-modal">
+      <div class="form-group">
+        <label>Closed Questions</label>
+        <input type="number" [(ngModel)]="newClosed" min="0" />
+      </div>
+      <div class="form-group">
+        <label>Open Questions</label>
+        <input type="number" [(ngModel)]="newOpen" min="0" />
+      </div>
+      <div class="form-group">
+        <label>Passing %</label>
+        <input type="number" [(ngModel)]="newPassing" min="0" max="100" />
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="cancelAdd()">Cancel</button>
+      <button class="btn-primary" (click)="saveAdd()" [disabled]="creating || !newName.trim()">
+        {{ creating ? 'Creating…' : 'Create & Edit' }}
+      </button>
+    </div>
+  </div>
+</div>
