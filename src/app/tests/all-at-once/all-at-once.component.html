@@ -1,0 +1,118 @@
+<div class="aao-wrapper" *ngIf="!loading; else loadingTpl">
+
+  <!-- Header bar -->
+  <div class="aao-header">
+    <div class="aao-meta">
+      <h2 class="aao-title">{{ testState!.testName }}</h2>
+      <span class="aao-counter">{{ answeredCount() }} / {{ entries.length }} answered</span>
+    </div>
+
+    <div class="aao-progress">
+      <div class="aao-bar" [style.width.%]="entries.length ? (answeredCount() / entries.length * 100) : 0"></div>
+    </div>
+
+    <div class="review-banner" *ngIf="isInReview() || (isLearningMode() && learningPhase === 'reviewing')">
+      Review mode — grade open questions, then finish.
+    </div>
+  </div>
+
+  <!-- Question list -->
+  <div class="aao-list">
+    <div class="aao-card" *ngFor="let entry of entries; let i = index">
+
+      <!-- Card header -->
+      <div class="aao-card-header">
+        <span class="q-number">{{ i + 1 }}</span>
+        <span class="q-type" [ngClass]="'type-' + entry.stateSummary.questionType.toLowerCase()">
+          {{ entry.stateSummary.questionType }}
+        </span>
+        <span class="q-score" *ngIf="entry.state?.answered">
+          {{ entry.state.score }} / {{ entry.question.points }} pts
+        </span>
+        <span class="q-badge answered" *ngIf="entry.state?.answered && !isInReview()">✓ Answered</span>
+      </div>
+
+      <!-- Question content -->
+      <div class="q-text">
+        <div *ngIf="entry.question.content?.type === 'HTML'" [innerHTML]="entry.question.content.text"></div>
+        <div *ngIf="entry.question.content?.type !== 'HTML'">{{ entry.question.content?.text }}</div>
+      </div>
+
+      <div class="q-answer">
+        <app-closed-question
+          *ngIf="entry.stateSummary.questionType === 'CLOSED'"
+          [question]="closedQuestion(entry)"
+          [state]="entry.state"
+          [mode]="getTestMode()"
+          (answerChange)="onChildAnswer(i, $event)"
+        ></app-closed-question>
+
+        <app-open-question
+          *ngIf="entry.stateSummary.questionType === 'OPEN'"
+          [question]="openQuestion(entry)"
+          [state]="entry.state"
+          [gradingEnabled]="gradingEnabled(entry)"
+          [forceLocked]="forceLocked(entry)"
+          (answerChange)="onChildAnswer(i, $event)"
+          [stretchHeight]="false"
+        ></app-open-question>
+
+        <app-statement-question
+          *ngIf="entry.stateSummary.questionType === 'STATEMENT'"
+          [question]="statementQuestion(entry)"
+          [state]="entry.state"
+          (answerChange)="onChildAnswer(i, $event)"
+        ></app-statement-question>
+      </div>
+
+
+    </div>
+  </div>
+
+  <!-- Sticky footer (LEARNING) -->
+  <div class="aao-footer" *ngIf="isLearningMode()">
+    <button *ngIf="learningPhase === 'answering'"
+            class="aao-submit-btn"
+            [disabled]="submitting"
+            (click)="submitAnswers()">
+      {{ submitting ? 'Submitting…' : 'Submit' }}
+    </button>
+    <button *ngIf="learningPhase === 'reviewing'"
+            class="aao-submit-btn"
+            [disabled]="submitting"
+            (click)="finishLearningReview()">
+      {{ submitting ? 'Finishing…' : 'Finish Review' }}
+    </button>
+    <button *ngIf="learningPhase === 'result' && !allCorrect"
+            class="aao-submit-btn"
+            (click)="startNextRound()">
+      Next Round →
+    </button>
+    <button *ngIf="learningPhase === 'result' && allCorrect"
+            class="aao-submit-btn"
+            (click)="finishTest()">
+      Finish Test
+    </button>
+  </div>
+
+  <!-- Sticky footer (EXAM) -->
+  <div class="aao-footer" *ngIf="isExamMode()">
+    <button *ngIf="!isInReview()"
+            class="aao-submit-btn"
+            [disabled]="submitting"
+            (click)="submitExam()">
+      {{ submitting ? 'Submitting…' : 'Submit Exam' }}
+    </button>
+    <button *ngIf="isInReview()"
+            class="aao-submit-btn"
+            [disabled]="submitting"
+            (click)="finishExamReview()">
+      {{ submitting ? 'Finishing…' : 'Finish Review' }}
+    </button>
+  </div>
+
+</div>
+
+<ng-template #loadingTpl>
+  <div class="aao-loading">Loading questions…</div>
+</ng-template>

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TestExecutionStateDto, TestModeDto, TestStateResponse, NavigateActionDto } from '../../models/models.d';
+import { TestDisplayTypeDto, TestExecutionStateDto, TestModeDto, TestStateResponse, NavigateActionDto } from '../../models/models.d';
 import { TestStateService } from '../../service/test-state.service';
 
 @Component({
@@ -45,8 +45,12 @@ export class TestSummaryComponent implements OnInit {
 
   retake() {
     if (!this.testState) return;
+    const isAllAtOnce = this.testState.displayType === TestDisplayTypeDto.ALL_AT_ONCE;
     this.testStateService.updateTestState(this.testState.id, { action: NavigateActionDto.NEXT }).subscribe(() => {
-      this.router.navigate(['/tests', this.testState!.id, 'executions']);
+      const segments = isAllAtOnce
+        ? ['/tests', this.testState!.id, 'executions', 'all']
+        : ['/tests', this.testState!.id, 'executions'];
+      this.router.navigate(segments);
     });
   }
 

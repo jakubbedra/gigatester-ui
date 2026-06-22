@@ -16,6 +16,7 @@ import { StatementQuestionComponent } from './questions/statement-question/state
 import { SubjectsListComponent } from './admin/subjects-list/subjects-list.component';
 import { TestsListComponent } from './admin/tests-list/tests-list.component';
 import { TestEditComponent } from './admin/test-edit/test-edit.component';
+import { AllAtOnceComponent } from './tests/all-at-once/all-at-once.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { TestEditComponent } from './admin/test-edit/test-edit.component';
     SubjectsListComponent,
     TestsListComponent,
     TestEditComponent,
+    AllAtOnceComponent,
   ],
   imports: [
     BrowserModule,

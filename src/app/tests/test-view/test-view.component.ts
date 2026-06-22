@@ -70,8 +70,10 @@ export class TestViewComponent implements OnInit {
     const state = this.form.value;
     this.testStateService.createTestState(this.testId, state).subscribe({
       next: (response) => {
-        // Navigate to question card
-        this.router.navigate(['/tests/' + response + '/executions']);
+        const path = state.displayType === TestDisplayTypeDto.ALL_AT_ONCE
+          ? `/tests/${response}/executions/all`
+          : `/tests/${response}/executions`;
+        this.router.navigate([path]);
       },
       error: (err) => console.error(err)
     });

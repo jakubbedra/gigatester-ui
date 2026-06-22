@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, HostBinding, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {
   GradingRule,
   OpenQuestionDto,
@@ -19,6 +19,9 @@ export class OpenQuestionComponent implements OnInit, OnChanges {
   @Input() state!: OpenQuestionStateResponse | null;
   @Input() gradingEnabled: boolean = true;
   @Input() forceLocked: boolean = false;
+  @Input() stretchHeight: boolean = true;
+
+  @HostBinding('class.stretch-height') get stretchClass() { return this.stretchHeight; }
 
   @Output() answerChange = new EventEmitter<OpenQuestionStateRequest>();
 
