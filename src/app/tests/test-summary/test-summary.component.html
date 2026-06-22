@@ -1,16 +1,16 @@
-<div class="summary-wrapper">
+<div class="summary-wrapper" *ngIf="!loading && testState; else loadingTpl">
   <div class="summary-card">
 
-    <h2 class="summary-title">{{ testName }}</h2>
+    <h2 class="summary-title">{{ testState.testName }}</h2>
 
     <!-- EXAM SUMMARY -->
     <ng-container *ngIf="isExam; else learningSummary">
 
       <div class="summary-score">
         <div class="score-main">
-          <span class="score-value">{{ score }}</span>
+          <span class="score-value">{{ testState.totalScore }}</span>
           <span class="score-sep">/</span>
-          <span class="score-max">{{ maxScore }}</span>
+          <span class="score-max">{{ testState.maxScore }}</span>
           <span class="score-pts">pts</span>
         </div>
 
@@ -27,14 +27,13 @@
           </span>
         </div>
 
-        <div class="meta-row" *ngIf="passingPercentage !== undefined && passingPercentage !== null">
-          Passing threshold: <span class="meta-accent">{{ passingPercentage }}%</span>
+        <div class="meta-row" *ngIf="testState.passingPercentage">
+          Passing threshold: <span class="meta-accent">{{ testState.passingPercentage }}%</span>
         </div>
       </div>
 
       <div class="actions">
-        <button class="btn secondary" (click)="onRetry()">Retry</button>
-        <button class="btn primary" (click)="startNew.emit()">Start New Test</button>
+        <button class="btn secondary" (click)="retake()">Retake</button>
       </div>
 
     </ng-container>
@@ -43,18 +42,21 @@
     <ng-template #learningSummary>
       <div class="learning-box">
         <div class="learning-title">Finished 🎉</div>
-        <div class="learning-text">
-          You completed all questions in learning mode.
-        </div>
+        <div class="learning-text">You completed all questions in learning mode.</div>
       </div>
 
       <div class="actions">
-        <button class="btn secondary" (click)="onRetry()">Retry Learning</button>
-        <button class="btn primary" (click)="startExam.emit()">Start a Real Test [coming soon...]</button>
+        <button class="btn secondary" (click)="retake()">Retry Learning</button>
       </div>
-
-<!--      <button class="btn ghost" (click)="startNew.emit()">Back to Test Selection</button>-->
     </ng-template>
 
   </div>
 </div>
+
+<ng-template #loadingTpl>
+  <div class="summary-wrapper">
+    <div class="summary-card">
+      <p style="text-align:center;color:#888">Loading results…</p>
+    </div>
+  </div>
+</ng-template>

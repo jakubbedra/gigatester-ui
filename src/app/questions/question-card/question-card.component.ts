@@ -3,9 +3,14 @@ import {
   ClosedQuestionDto,
   ClosedQuestionStateRequest,
   ClosedQuestionStateResponse,
+  GradingRule,
+  NavigateActionDto,
   OpenQuestionDto,
   OpenQuestionStateRequest,
-  OpenQuestionStateResponse, StatementQuestionDto, StatementQuestionStateRequest, StatementQuestionStateResponse,
+  OpenQuestionStateResponse,
+  StatementQuestionDto,
+  StatementQuestionStateRequest,
+  StatementQuestionStateResponse,
   TestExecutionStateDto,
   TestModeDto,
   TestStateResponse
@@ -14,6 +19,8 @@ import {QuestionsService} from "../../service/question.service";
 import {TestStateService} from "../../service/test-state.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {QuestionStateService} from "../../service/question-state.service";
+import {Observable, of} from "rxjs";
+import {switchMap} from "rxjs/operators";
 
 @Component({
   selector: 'app-question-card',
@@ -102,21 +109,19 @@ export class QuestionCardComponent implements OnInit {
 
   submitAnswer() {
     if (!this.childAnswer) return;
-
-    this.questionStateService.updateQuestionState(
-      this.testState?.id!,
-      this.testState?.questions[this.testState.currentQuestionIndex].id!,
-      this.childAnswer
-    ).subscribe(response => {
-      this.questionStateService.getQuestionState(
-        this.testState?.id!,
-        this.testState?.questions[this.testState.currentQuestionIndex].id!
-      ).subscribe(questionStateResponse => {
-          this.questionState = questionStateResponse;
-        }
-      );
-      // alert(response);
+    this.saveCurrentAnswer(true).subscribe(questionStateResponse => {
+      if (questionStateResponse) this.questionState = questionStateResponse;
     });
+  }
+
+  private saveCurrentAnswer(answered?: boolean): Observable<any> {
+    if (!this.childAnswer || !this.testState) return of(null);
+    const stateId = this.testState.id;
+    const questionStateId = this.testState.questions[this.testState.currentQuestionIndex].id;
+    const payload = answered !== undefined ? { ...this.childAnswer, answered } : { ...this.childAnswer };
+    return this.questionStateService.updateQuestionState(stateId, questionStateId, payload).pipe(
+      switchMap(() => this.questionStateService.getQuestionState(stateId, questionStateId))
+    );
   }
 
   get isClosed() {
@@ -163,33 +168,66 @@ export class QuestionCardComponent implements OnInit {
     return this.questionState == null ? false : this.questionState.answered;
   }
 
+  private shouldSaveInReview(): boolean {
+    if (!this.isOpen) return false;
+    return (this.question as OpenQuestionDto).gradingRules?.includes(GradingRule.MANUAL) ?? false;
+  }
+
   nextQuestion() {
-    if (this.testState == null) {
-      return;
-    }
-    this.testStateService.updateTestState(this.testState!.id).subscribe(resp => {
-      // todo: might remove this question index entirely from entity, and allow to move freely between questions
-      this.testStateService.getTestState(this.testState!.id).subscribe(testStateResponse => {
-        this.testState = testStateResponse;
-        this.testState.currentQuestionIndex = testStateResponse.currentQuestionIndex;
-        this.loadQuestion();
-      });
-    });
+    if (!this.testState) return;
+    const save$ = this.isInReview()
+      ? (this.shouldSaveInReview() ? this.saveCurrentAnswer() : of(null))
+      : this.isExamMode() ? this.saveCurrentAnswer(false) : of(null);
+    save$.pipe(
+      switchMap(() => this.testStateService.updateTestState(this.testState!.id, { action: NavigateActionDto.NEXT })),
+      switchMap(() => this.testStateService.getTestState(this.testState!.id))
+    ).subscribe(s => { this.testState = s; this.loadQuestion(); });
+  }
+
+  previousQuestion() {
+    if (!this.testState || this.testState.currentQuestionIndex === 0) return;
+    const save$ = this.isInReview()
+      ? (this.shouldSaveInReview() ? this.saveCurrentAnswer() : of(null))
+      : this.saveCurrentAnswer(false);
+    save$.pipe(
+      switchMap(() => this.testStateService.updateTestState(this.testState!.id, { action: NavigateActionDto.PREVIOUS })),
+      switchMap(() => this.testStateService.getTestState(this.testState!.id))
+    ).subscribe(s => { this.testState = s; this.loadQuestion(); });
   }
 
   allQuestionsAnswered() {
-    // if (this.testState!.mode == TestModeDto.LEARNING) {
-    //   return false;//todo: change
-    // }
     return this.testState!.currentQuestionIndex == this.testState!.questions.length - 1 && this.questionState?.answered;
   }
 
-  finishTest() {
-    this.testStateService.updateTestState(this.testState!.id).subscribe(() => {
-      if (this.testState!.mode !== TestModeDto.LEARNING) {
-        this.router.navigate(['/tests', this.testState!.id, 'summary']);
-        return;
+  isLastQuestion(): boolean {
+    return this.testState!.currentQuestionIndex === this.testState!.questions.length - 1;
+  }
+
+  isInReview(): boolean {
+    return (this.testState?.executionState as string) === 'IN_REVIEW';
+  }
+
+  submitExam() {
+    if (!this.testState) return;
+    const save$ = this.isInReview()
+      ? (this.shouldSaveInReview() ? this.saveCurrentAnswer() : of(null))
+      : this.saveCurrentAnswer(true);
+    save$.pipe(
+      switchMap(() => this.testStateService.updateTestState(this.testState!.id, { action: NavigateActionDto.FINISH })),
+      switchMap(() => this.testStateService.getTestState(this.testState!.id))
+    ).subscribe(s => {
+      this.testState = s;
+      if (s.executionState === TestExecutionStateDto.FINISHED) {
+        this.router.navigate(['/tests', s.id, 'summary']);
+      } else {
+        // IN_REVIEW — stay, reload current question
+        this.loadQuestion();
       }
+    });
+  }
+
+  finishTest() {
+    this.testStateService.updateTestState(this.testState!.id, { action: NavigateActionDto.FINISH }).subscribe(() => {
       this.testStateService.getTestState(this.testState!.id).subscribe(testStateResponse => {
         this.testState = testStateResponse;
         if (this.testState!.executionState != TestExecutionStateDto.FINISHED) {
@@ -219,6 +257,18 @@ export class QuestionCardComponent implements OnInit {
 
   totalQuestions() {
     return this.testState!.currentQuestionsCount;
+  }
+
+  getTestMode(): TestModeDto {
+    return this.testState!.mode;
+  }
+
+  isLearningMode() : boolean {
+    return this.testState!.mode === TestModeDto.LEARNING;
+  }
+
+  isExamMode() : boolean {
+    return this.testState!.mode === TestModeDto.EXAM;
   }
 
 }

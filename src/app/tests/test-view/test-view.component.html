@@ -1,38 +1,87 @@
-<div class="test-container" *ngIf="test && form">
-  <h2>Start Test: {{test.name}}</h2>
+<div class="test-wrapper" *ngIf="test && form">
+  <div class="test-card">
 
-  <form [formGroup]="form" (ngSubmit)="submit()">
+    <h1 class="test-title">{{ test.name }}</h1>
 
-    <div class="form-group">
-      <label>Test Mode</label>
-      <select formControlName="mode">
-        <option *ngFor="let m of modes()" [value]="m">{{ m }}</option>
-      </select>
-    </div>
+    <form [formGroup]="form" (ngSubmit)="submit()">
 
-    <div class="form-group" *ngIf="isExamMode()">
-      <label>Closed Questions Count</label>
-      <input type="number" formControlName="closedQuestionsCount">
-    </div>
+      <!-- Mode -->
+      <div class="field-section">
+        <div class="field-label">Mode</div>
+        <div class="toggle-row">
+          <button type="button" class="toggle-btn"
+                  [class.active]="form.get('mode')?.value === 'EXAM'"
+                  (click)="form.get('mode')?.setValue('EXAM')">
+            Exam
+          </button>
+          <button type="button" class="toggle-btn"
+                  [class.active]="form.get('mode')?.value === 'LEARNING'"
+                  (click)="form.get('mode')?.setValue('LEARNING')">
+            Learning
+          </button>
+        </div>
+      </div>
 
-    <div class="form-group" *ngIf="isExamMode()">
-      <label>Open Questions Count</label>
-      <input type="number" formControlName="openQuestionsCount">
-    </div>
+      <!-- Exam-only settings -->
+      <div class="exam-section" *ngIf="isExamMode()">
+        <div class="exam-grid">
 
-    <div class="form-group" *ngIf="isExamMode()">
-      <label>Passing Percentage</label>
-      <input type="number" formControlName="passingPercentage">
-    </div>
+          <div class="form-group">
+            <label>
+              Closed questions
+              <span class="avail">/ {{ test.storedClosedQuestionsCount }} available</span>
+            </label>
+            <input type="number" formControlName="closedQuestionsCount" min="0">
+            <span class="field-error" *ngIf="validationErrors?.['tooManyClosed']">
+              Max {{ validationErrors?.['tooManyClosed']?.max }}
+            </span>
+          </div>
 
-    <div class="form-group">
-      <label>Display Type</label>
-      <select formControlName="displayType">
-        <option *ngFor="let dt of displayTypes()" [value]="dt">{{ dt }}</option>
-      </select>
-    </div>
+          <div class="form-group">
+            <label>
+              Open questions
+              <span class="avail">/ {{ test.storedOpenQuestionsCount }} available</span>
+            </label>
+            <input type="number" formControlName="openQuestionsCount" min="0">
+            <span class="field-error" *ngIf="validationErrors?.['tooManyOpen']">
+              Max {{ validationErrors?.['tooManyOpen']?.max }}
+            </span>
+          </div>
 
-    <button type="submit" [disabled]="form.invalid">Start</button>
+          <div class="form-group passing-group">
+            <label>Passing percentage</label>
+            <div class="input-suffix-wrap">
+              <input type="number" formControlName="passingPercentage" min="0" max="100">
+              <span class="suffix">%</span>
+            </div>
+          </div>
 
-  </form>
+        </div>
+
+        <span class="field-error block-error" *ngIf="validationErrors?.['minOneQuestion']">
+          Total question count must be at least 1
+        </span>
+      </div>
+
+      <!-- Display type -->
+      <div class="field-section">
+        <div class="field-label">Display</div>
+        <div class="toggle-row">
+          <button type="button" class="toggle-btn"
+                  [class.active]="form.get('displayType')?.value === 'ONE_BY_ONE'"
+                  (click)="form.get('displayType')?.setValue('ONE_BY_ONE')">
+            One by one
+          </button>
+          <button type="button" class="toggle-btn"
+                  [class.active]="form.get('displayType')?.value === 'ALL_AT_ONCE'"
+                  (click)="form.get('displayType')?.setValue('ALL_AT_ONCE')">
+            All at once
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="start-btn" [disabled]="form.invalid">Start</button>
+
+    </form>
+  </div>
 </div>

@@ -4,7 +4,7 @@ import {
   ClosedQuestionDto,
   ClosedQuestionStateRequest,
   ClosedQuestionStateResponse,
-  QuestionType
+  QuestionType, TestModeDto
 } from "../../models/models.d";
 
 @Component({
@@ -14,6 +14,7 @@ import {
 })
 export class ClosedQuestionComponent implements OnInit, OnChanges {
 
+  @Input() mode!: TestModeDto;
   @Input() question!: ClosedQuestionDto;
   @Input() state!: ClosedQuestionStateResponse | null;
 
@@ -63,7 +64,7 @@ export class ClosedQuestionComponent implements OnInit, OnChanges {
   }
 
   onSelect(answerId: string) {
-    if (!this.question) return;
+    if (!this.question || this.state?.answered) return;
 
     if (this.question.multipleChoice) {
       // toggle in array

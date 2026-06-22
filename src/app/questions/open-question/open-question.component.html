@@ -4,7 +4,7 @@
     <!-- LEFT -->
     <div class="pane">
 <!--      <div class="pane-title">Your answer</div>-->
-      <div class="grade-bar" *ngIf="isManualGrading()">
+      <div class="grade-bar" *ngIf="isManualGrading() && gradingEnabled">
         <div class="grade-label">Score</div>
 
         <div class="grade-input">
@@ -21,7 +21,8 @@
           <span class="grade-max">/ {{ maxPoints }}</span>
         </div>
 
-        <button type="button" class="lock-btn" (click)="toggleLock()" *ngIf="!locked">
+        <button type="button" class="lock-btn" (click)="toggleLock()"
+                *ngIf="!locked" [disabled]="!gradingEnabled">
           Lock & grade
         </button>
       </div>

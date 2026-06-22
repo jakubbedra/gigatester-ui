@@ -293,7 +293,27 @@
 /* Make side buttons full-width and not huge margins */
 .side-btn {
   width: 100%;
-  margin-top: 0; /* override your 40px */
+  margin-top: 0;
+}
+
+.review-banner {
+  background: rgba(123, 109, 245, 0.12);
+  border: 1px solid rgba(123, 109, 245, 0.35);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #c0b0ff;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.nav-row {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-row .side-btn {
+  flex: 1;
 }
 
 /* Responsive: stack on smaller screens */

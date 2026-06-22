@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {TestStateRequest, TestStateResponse} from '../models/models.d';
+import {TestStateRequest, TestStateResponse, TestStateUpdateRequest} from '../models/models.d';
 import {Environment} from "../../../environment";
 
 @Injectable({ providedIn: 'root' })
@@ -24,8 +24,8 @@ export class TestStateService {
     return this.http.get<TestStateResponse>(`${this.statesUrl}/${testStateId}`);
   }
 
-  updateTestState(testStateId: string): Observable<any> {
-    return this.http.put(`${this.statesUrl}/${testStateId}`, {});
+  updateTestState(testStateId: string, req: TestStateUpdateRequest): Observable<any> {
+    return this.http.put(`${this.statesUrl}/${testStateId}`, req);
   }
 
 }

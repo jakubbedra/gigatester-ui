@@ -17,6 +17,7 @@
             *ngIf="isClosed"
             [question]="closedQuestion()"
             [state]="closedQuestionState()"
+            [mode]="getTestMode()"
             (answerChange)="onChildAnswer($event)"
           ></app-closed-question>
 
@@ -24,6 +25,8 @@
             *ngIf="isOpen"
             [question]="openQuestion()"
             [state]="openQuestionState()"
+            [gradingEnabled]="isInReview() || isLearningMode()"
+            [forceLocked]="isInReview()"
             (answerChange)="onChildAnswer($event)"
           ></app-open-question>
 
@@ -54,7 +57,7 @@
           </div>
         </div>
 
-        <div class="side-card">
+        <div class="side-card" *ngIf="isLearningMode()">
           <div class="side-title">Actions</div>
 
           <button
@@ -79,8 +82,45 @@
           </button>
         </div>
 
-      </aside>
+      <div class="review-banner" *ngIf="isInReview()">
+        Review mode — grade open questions, then finish.
+      </div>
 
+      <div class="side-card" *ngIf="isExamMode()">
+        <div class="side-title">Actions</div>
+
+        <div class="nav-row">
+          <button
+            class="submit-btn side-btn"
+            [disabled]="testState!.currentQuestionIndex === 0"
+            (click)="previousQuestion()">
+            ← Previous
+          </button>
+
+          <button
+            *ngIf="!isLastQuestion()"
+            class="submit-btn side-btn"
+            (click)="nextQuestion()">
+            Next →
+          </button>
+
+          <button
+            *ngIf="isLastQuestion() && !isInReview()"
+            class="submit-btn side-btn submit-exam-btn"
+            (click)="submitExam()">
+            Submit
+          </button>
+
+          <button
+            *ngIf="isLastQuestion() && isInReview()"
+            class="submit-btn side-btn submit-exam-btn"
+            (click)="submitExam()">
+            Finish Review
+          </button>
+        </div>
+      </div>
+
+      </aside>
     </div>
   </div>
 

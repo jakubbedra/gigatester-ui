@@ -17,6 +17,8 @@ export class OpenQuestionComponent implements OnInit, OnChanges {
 
   @Input() question!: OpenQuestionDto;
   @Input() state!: OpenQuestionStateResponse | null;
+  @Input() gradingEnabled: boolean = true;
+  @Input() forceLocked: boolean = false;
 
   @Output() answerChange = new EventEmitter<OpenQuestionStateRequest>();
 
@@ -25,49 +27,33 @@ export class OpenQuestionComponent implements OnInit, OnChanges {
   locked = false;
 
   ngOnInit() {
-    // preload state if exists
     if (this.state) {
       this.text = this.state.givenAnswer ?? '';
-      this.scoredPoints = this.state.score ?? null;
-      this.locked = !!this.state.answered;
-      alert("dupa");
+      this.scoredPoints = this.state.score ?? 0.0;
     }
-    // emit initial state so parent has something
+    this.locked = this.forceLocked || !!this.state?.answered;
     this.emitState();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // Reset when a NEW question comes in
-    console.log("dupa1");
-    if (changes['question']) {
-      this.locked = this.state != null && this.state.answered;
-      this.scoredPoints = this.state == null || this.state.score == null ? 0.0 : this.state.score;
-      console.log("dupa2");
+    if (changes['question'] || changes['gradingEnabled'] || changes['forceLocked']) {
+      this.text = this.state?.givenAnswer ?? '';
+      this.scoredPoints = this.state?.score ?? 0.0;
+      this.locked = this.forceLocked || (this.state?.answered ?? false);
+      this.emitState();
       return;
     }
 
-    // If only state changed (e.g. backend refreshed), re-apply state
-    if (changes['state']) {
-      console.log("dupa3");
-      this.text = this.state!.givenAnswer;
-      if (this.state!.score != null) {
-        this.scoredPoints = this.state!.score;
-        console.log("dupa4");
-      }
-      this.locked = this.state!.answered;
+    if (changes['state'] && this.state) {
+      this.text = this.state.givenAnswer ?? '';
+      this.scoredPoints = this.state.score ?? 0.0;
+      this.locked = this.forceLocked || this.state.answered;
+      this.emitState();
     }
   }
 
   emitState() {
     if (this.question.gradingRules.includes(GradingRule.MANUAL)) {
-      console.log('DUUUUUUUUUUPAAAAAAA:');
-      console.log({
-        questionId: this.question.id,
-        questionType: QuestionType.OPEN,
-        givenAnswer: this.text,
-        answered: this.locked,
-        scoredPoints: this.scoredPoints
-      });
       this.answerChange.emit({
         questionId: this.question.id,
         questionType: QuestionType.OPEN,

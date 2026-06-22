@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {TestDisplayTypeDto, TestModeDto, TestResponse, TestStateRequest} from "../../models/models.d";
 import {TestService} from "../../service/test.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn} from "@angular/forms";
 import {TestStateService} from "../../service/test-state.service";
 
 @Component({
@@ -42,7 +42,7 @@ export class TestViewComponent implements OnInit {
           passingPercentage: [defaults.passingPercentage],
           mode: [defaults.mode],
           displayType: [defaults.displayType]
-        });
+        }, { validators: this.examValidator(test) });
       });
 
     });
@@ -87,6 +87,26 @@ export class TestViewComponent implements OnInit {
 
   isExamMode(): boolean {
     return this.form.get('mode')?.value === 'EXAM';
+  }
+
+  examValidator(test: TestResponse): ValidatorFn {
+    return (group: AbstractControl): ValidationErrors | null => {
+      if (group.get('mode')?.value !== TestModeDto.EXAM) return null;
+
+      const closed = Number(group.get('closedQuestionsCount')?.value) || 0;
+      const open = Number(group.get('openQuestionsCount')?.value) || 0;
+      const errors: ValidationErrors = {};
+
+      if (closed + open < 1) errors['minOneQuestion'] = true;
+      if (closed > test.storedClosedQuestionsCount) errors['tooManyClosed'] = { max: test.storedClosedQuestionsCount };
+      if (open > test.storedOpenQuestionsCount) errors['tooManyOpen'] = { max: test.storedOpenQuestionsCount };
+
+      return Object.keys(errors).length ? errors : null;
+    };
+  }
+
+  get validationErrors() {
+    return this.form.errors;
   }
 
 }
