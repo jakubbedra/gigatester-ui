@@ -332,3 +332,62 @@
   }
 }
 
+/* Mobile */
+@media (max-width: 768px) {
+  .question-wrapper {
+    align-items: flex-start;
+    padding: 12px;
+    box-sizing: border-box;
+    height: auto;
+  }
+
+  .question-card {
+    height: auto;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+  }
+
+  .question-layout {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Side panel goes on top */
+  .side-pane {
+    order: -1;
+    height: auto;
+    flex-direction: column;
+  }
+
+  .side-card {
+    flex: none;
+  }
+
+  .main-pane {
+    height: auto;
+  }
+
+  /* Override Angular's inline flex proportions so content flows naturally */
+  .card-scroll-area {
+    flex: none !important;
+    overflow-y: visible;
+    max-height: none;
+  }
+
+  .question-type-box {
+    flex: none !important;
+    overflow: visible;
+  }
+
+  .submit-btn {
+    margin-top: 8px;
+    font-size: 16px;
+    padding: 13px;
+  }
+
+  .nav-row {
+    gap: 6px;
+  }
+}
+

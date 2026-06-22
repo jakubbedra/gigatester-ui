@@ -9,33 +9,18 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Pretty scrollbar (global) ───────────────────────────────────────────── */
+/* router-outlet renders as inline by default, adding line-height to its container */
+router-outlet {
+  display: block;
+}
+
+/* ── Hide scrollbars globally (scroll still works via mouse wheel / touch) ── */
 * {
-  scrollbar-width: thin;
-  scrollbar-color: #4a4070 transparent;
+  scrollbar-width: none;
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #4a4070;
-  border-radius: 10px;
-  transition: background 0.2s;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #7b6df5;
-}
-
-::-webkit-scrollbar-corner {
-  background: transparent;
+  display: none;
 }
 
 /* ── Number input spinners ───────────────────────────────────────────────── */

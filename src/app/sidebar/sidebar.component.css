@@ -10,6 +10,57 @@
   flex-shrink: 0;
 }
 
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    background: #1f1f1f;
+    overflow-y: auto;
+  }
+
+  .user-profile {
+    padding: 28px 24px 20px;
+  }
+
+  .user-profile .avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .user-profile h3 {
+    font-size: 16px;
+  }
+
+  /* Bigger tap targets for admin links */
+  .admin-link {
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+
+  /* Bigger year headers */
+  .menu-title.year {
+    padding: 12px 10px;
+    font-size: 12px;
+  }
+
+  /* Bigger subject rows */
+  .menu-title.subject {
+    padding: 11px 12px;
+    font-size: 14px;
+  }
+
+  /* Bigger test links */
+  .menu a {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  /* Context menu buttons bigger */
+  .ctx-btn {
+    padding: 6px 8px;
+    font-size: 15px;
+  }
+}
+
 /* ── User profile ──────────────────────────────────────────────────────── */
 .user-profile {
   display: flex;

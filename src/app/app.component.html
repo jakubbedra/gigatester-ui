@@ -1,9 +1,24 @@
 <div class="app-container">
-  <aside class="sidebar">
+
+  <!-- Mobile top bar -->
+  <header class="mobile-topbar">
+    <button class="hamburger" (click)="toggleSidebar()" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+    <span class="mobile-title">Gigatester</span>
+  </header>
+
+  <!-- Overlay backdrop (mobile only) -->
+  <div class="sidebar-overlay" [class.visible]="sidebarOpen" (click)="closeSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.open]="sidebarOpen">
+    <button class="sidebar-close" (click)="closeSidebar()" aria-label="Close menu">✕</button>
     <app-sidebar></app-sidebar>
   </aside>
 
   <main class="main-content">
     <router-outlet></router-outlet>
   </main>
+
 </div>
