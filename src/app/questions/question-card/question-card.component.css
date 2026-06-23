@@ -391,3 +391,25 @@
   }
 }
 
+/* ── Question tags ─────────────────────────────────────────────────────────── */
+.tags-card {
+  flex-shrink: 0;
+}
+
+.question-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.question-tag {
+  background: #1c1740;
+  border: 1px solid #7b6df5;
+  color: #c4b4ff;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+

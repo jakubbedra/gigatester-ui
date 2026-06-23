@@ -105,7 +105,7 @@
         </ng-container>
 
         <div class="tags" *ngIf="(q.tags || []).length > 0">
-          <span class="tag" *ngFor="let t of q.tags">{{ t }}</span>
+          <span class="tag" *ngFor="let t of q.tags">{{ t.key }}</span>
         </div>
 
       </div>
@@ -259,6 +259,38 @@
         </div>
       </div>
     </ng-container>
+
+    <!-- ── Tags ── -->
+    <div class="form-group tag-section">
+      <div class="label-row">
+        <label>Tags</label>
+      </div>
+
+      <div class="assigned-tags" *ngIf="(editDraft.tags || []).length > 0">
+        <span class="tag tag-assigned" *ngFor="let t of editDraft.tags">
+          {{ t.key }}
+          <button class="tag-remove" (click)="removeTag(t)" title="Remove tag">×</button>
+        </span>
+      </div>
+
+      <input class="tag-search-input"
+             type="text"
+             [(ngModel)]="tagSearch"
+             (focus)="tagDropdownOpen = true"
+             (input)="tagDropdownOpen = true"
+             (blur)="onTagBlur()"
+             placeholder="Search or create tag…" />
+
+      <div class="tag-suggestions" *ngIf="tagDropdownOpen && (filteredTags.length > 0 || canCreateTag)"
+           (mousedown)="$event.preventDefault()">
+        <button class="tag-suggestion" *ngFor="let t of filteredTags" (click)="assignTag(t)">
+          {{ t.key }}
+        </button>
+        <button class="tag-suggestion tag-suggestion-create" *ngIf="canCreateTag" (click)="createAndAssignTag()">
+          + Create "{{ tagSearch.trim() }}"
+        </button>
+      </div>
+    </div>
 
     <!-- ── Test preview ── -->
     <div class="preview-section">

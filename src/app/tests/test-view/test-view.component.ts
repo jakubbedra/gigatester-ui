@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {TestDisplayTypeDto, TestModeDto, TestResponse, TestStateRequest} from "../../models/models.d";
+import {TagResponse, TestDisplayTypeDto, TestModeDto, TestResponse, TestStateRequest} from "../../models/models.d";
 import {TestService} from "../../service/test.service";
 import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn} from "@angular/forms";
 import {TestStateService} from "../../service/test-state.service";
+import {TagService} from "../../service/tag.service";
 
 @Component({
   selector: 'app-test-view',
@@ -16,12 +17,19 @@ export class TestViewComponent implements OnInit {
   testId!: string;
   test!: TestResponse;
 
+  allTags: TagResponse[] = [];
+  selectedTags: TagResponse[] = [];
+  availableClosed = 0;
+  availableOpen = 0;
+  availableStatement = 0;
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private testService: TestService,
-    private testStateService: TestStateService
+    private testStateService: TestStateService,
+    private tagService: TagService
   ) { }
 
   ngOnInit() {
@@ -29,20 +37,22 @@ export class TestViewComponent implements OnInit {
 
       this.testId = params.get('id')!;
 
+      this.tagService.getTags().subscribe(tags => this.allTags = tags);
+
       this.testService.getTest(this.testId).subscribe(test => {
         this.test = test;
+        this.availableClosed = test.storedClosedQuestionsCount;
+        this.availableOpen = test.storedOpenQuestionsCount;
+        this.availableStatement = 0;
 
-        // Create default request based on test
         const defaults = this.buildDefaultState(test);
-
-        // Create the form with defaults
         this.form = this.fb.group({
           closedQuestionsCount: [defaults.closedQuestionsCount],
           openQuestionsCount: [defaults.openQuestionsCount],
           passingPercentage: [defaults.passingPercentage],
           mode: [defaults.mode],
           displayType: [defaults.displayType]
-        }, { validators: this.examValidator(test) });
+        }, { validators: () => this.examValidatorFn() });
       });
 
     });
@@ -67,7 +77,7 @@ export class TestViewComponent implements OnInit {
     if (this.form.invalid) return;
     // console.log(this.form.value);
 
-    const state = this.form.value;
+    const state = { ...this.form.value, tagIds: this.selectedTags.map(t => t.id) };
     this.testStateService.createTestState(this.testId, state).subscribe({
       next: (response) => {
         const path = state.displayType === TestDisplayTypeDto.ALL_AT_ONCE
@@ -91,20 +101,51 @@ export class TestViewComponent implements OnInit {
     return this.form.get('mode')?.value === 'EXAM';
   }
 
+  private examValidatorFn(): ValidationErrors | null {
+    if (!this.form) return null;
+    if (this.form.get('mode')?.value !== TestModeDto.EXAM) return null;
+    const closed = Number(this.form.get('closedQuestionsCount')?.value) || 0;
+    const open = Number(this.form.get('openQuestionsCount')?.value) || 0;
+    const errors: ValidationErrors = {};
+    if (closed + open < 1) errors['minOneQuestion'] = true;
+    if (closed > this.availableClosed) errors['tooManyClosed'] = { max: this.availableClosed };
+    if (open > this.availableOpen) errors['tooManyOpen'] = { max: this.availableOpen };
+    return Object.keys(errors).length ? errors : null;
+  }
+
   examValidator(test: TestResponse): ValidatorFn {
-    return (group: AbstractControl): ValidationErrors | null => {
-      if (group.get('mode')?.value !== TestModeDto.EXAM) return null;
+    return (): ValidationErrors | null => this.examValidatorFn();
+  }
 
-      const closed = Number(group.get('closedQuestionsCount')?.value) || 0;
-      const open = Number(group.get('openQuestionsCount')?.value) || 0;
-      const errors: ValidationErrors = {};
+  get availableTags(): TagResponse[] {
+    const selectedIds = new Set(this.selectedTags.map(t => t.id));
+    return this.allTags.filter(t => !selectedIds.has(t.id));
+  }
 
-      if (closed + open < 1) errors['minOneQuestion'] = true;
-      if (closed > test.storedClosedQuestionsCount) errors['tooManyClosed'] = { max: test.storedClosedQuestionsCount };
-      if (open > test.storedOpenQuestionsCount) errors['tooManyOpen'] = { max: test.storedOpenQuestionsCount };
+  toggleTag(tag: TagResponse) {
+    const idx = this.selectedTags.findIndex(t => t.id === tag.id);
+    if (idx === -1) this.selectedTags = [...this.selectedTags, tag];
+    else this.selectedTags = this.selectedTags.filter(t => t.id !== tag.id);
+    this.refreshCounts();
+  }
 
-      return Object.keys(errors).length ? errors : null;
-    };
+  private refreshCounts() {
+    const tagIds = this.selectedTags.map(t => t.id);
+    this.testService.getQuestionCounts(this.testId, tagIds).subscribe(counts => {
+      this.availableClosed = counts.closedQuestionsCount;
+      this.availableOpen = counts.openQuestionsCount;
+      this.availableStatement = counts.statementQuestionsCount;
+      // Clamp current form values to the new limits
+      const cc = this.form.get('closedQuestionsCount');
+      const oc = this.form.get('openQuestionsCount');
+      if (cc && cc.value > this.availableClosed) cc.setValue(this.availableClosed);
+      if (oc && oc.value > this.availableOpen) oc.setValue(this.availableOpen);
+      this.form.updateValueAndValidity();
+    });
+  }
+
+  isTagSelected(tag: TagResponse): boolean {
+    return this.selectedTags.some(t => t.id === tag.id);
   }
 
   get validationErrors() {

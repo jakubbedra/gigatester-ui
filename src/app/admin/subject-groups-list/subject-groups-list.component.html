@@ -1,0 +1,103 @@
+<div class="page">
+  <div class="page-header">
+    <h1 class="page-title">Subject Groups</h1>
+    <button class="btn-add" (click)="openAdd()">+ New Group</button>
+  </div>
+
+  <div class="grid" *ngIf="groups.length > 0; else empty">
+    <div class="card" *ngFor="let group of groups">
+
+      <div class="card-header">
+        <div class="card-icon">🗂️</div>
+        <div class="card-name">{{ group.name }}</div>
+        <div class="context-wrapper" (click)="stopPropagation($event)">
+          <button class="ctx-btn" (click)="toggleMenu($event, group.id)">···</button>
+          <div class="ctx-menu" *ngIf="openMenuId === group.id">
+            <button (click)="openEdit($event, group)">Edit</button>
+            <button class="danger" (click)="delete($event, group.id)">Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="subjects-section">
+        <div class="subjects-label">Subjects <span class="subject-count">{{ group.subjects.length }}</span></div>
+        <div class="subjects-list" *ngIf="group.subjects.length > 0; else noSubjects">
+          <div class="subject-row" *ngFor="let subject of group.subjects">
+            <span class="subject-icon">📚</span>
+            <span class="subject-name">{{ subject.name }}</span>
+          </div>
+        </div>
+        <ng-template #noSubjects>
+          <div class="no-subjects">No subjects assigned</div>
+        </ng-template>
+      </div>
+
+    </div>
+  </div>
+
+  <ng-template #empty>
+    <div class="empty-state">
+      <div class="empty-icon">🗂️</div>
+      <p>No subject groups yet. Add one to get started.</p>
+    </div>
+  </ng-template>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" *ngIf="showEditModal" (click)="cancelEdit()">
+  <div class="modal" (click)="stopPropagation($event)">
+    <h2 class="modal-title">Edit Subject Group</h2>
+
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" [(ngModel)]="editName" placeholder="Group name" />
+    </div>
+
+    <div class="form-group">
+      <label>Assigned Subjects</label>
+      <ng-container *ngIf="allSubjects.length > 0; else noSubjectsAvailable">
+        <input class="search-input" type="text" [(ngModel)]="subjectSearch" placeholder="Search subjects…" />
+        <div class="subject-picker">
+          <ng-container *ngFor="let subject of allSubjects">
+            <label class="subject-check"
+                   *ngIf="!subjectSearch || subject.name.toLowerCase().includes(subjectSearch.toLowerCase())"
+                   [class.selected]="isSubjectAssigned(subject.id)"
+                   (click)="toggleSubject(subject.id)">
+              <span class="check-box">
+                <span class="check-mark" *ngIf="isSubjectAssigned(subject.id)">✓</span>
+              </span>
+              <span class="check-label">{{ subject.name }}</span>
+            </label>
+          </ng-container>
+        </div>
+      </ng-container>
+      <ng-template #noSubjectsAvailable>
+        <div class="no-subjects-hint">No subjects available. Create some first.</div>
+      </ng-template>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+      <button class="btn-primary" (click)="saveEdit()" [disabled]="saving || !editName.trim()">
+        {{ saving ? 'Saving…' : 'Save' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal-overlay" *ngIf="showAddModal" (click)="cancelAdd()">
+  <div class="modal" (click)="stopPropagation($event)">
+    <h2 class="modal-title">New Subject Group</h2>
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" [(ngModel)]="newGroupName" placeholder="Group name" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="cancelAdd()">Cancel</button>
+      <button class="btn-primary" (click)="saveAdd()" [disabled]="adding || !newGroupName.trim()">
+        {{ adding ? 'Creating…' : 'Create' }}
+      </button>
+    </div>
+  </div>
+</div>

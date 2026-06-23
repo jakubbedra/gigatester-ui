@@ -33,4 +33,10 @@ export class TestService {
     return this.http.delete<void>(`${this.baseUrl}/${testId}`);
   }
 
+  getQuestionCounts(testId: string, tagIds: string[]): Observable<{ closedQuestionsCount: number; openQuestionsCount: number; statementQuestionsCount: number }> {
+    let params: any = {};
+    if (tagIds.length) params['tagIds'] = tagIds;
+    return this.http.get<any>(`${this.baseUrl}/${testId}/question-counts`, { params });
+  }
+
 }

@@ -6,7 +6,7 @@
     <button
       type="button"
       class="answer-btn"
-      *ngFor="let a of question.answers; trackBy: trackByAnswerId"
+      *ngFor="let a of shuffledAnswers; trackBy: trackByAnswerId"
       (click)="onSelect(a.id)"
       [class.selected]="selectedAnswerIds.includes(a.id)"
       [class.correct]="state?.answered && isCorrect(a)"

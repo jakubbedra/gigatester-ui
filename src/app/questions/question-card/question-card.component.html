@@ -82,6 +82,13 @@
           </button>
         </div>
 
+      <div class="side-card tags-card" *ngIf="(question?.tags || []).length > 0">
+        <div class="side-title">Tags</div>
+        <div class="question-tags">
+          <span class="question-tag" *ngFor="let t of question!.tags">{{ t.key }}</span>
+        </div>
+      </div>
+
       <div class="review-banner" *ngIf="isInReview()">
         Review mode — grade open questions, then finish.
       </div>

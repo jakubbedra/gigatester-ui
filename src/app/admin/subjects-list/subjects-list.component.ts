@@ -4,12 +4,14 @@ import { forkJoin, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { SubjectsService } from '../../service/subject.service';
 import { TestService } from '../../service/test.service';
-import { SubjectResponse, TestSummaryResponse } from '../../models/models.d';
+import { CrosswordService } from '../../service/crossword.service';
+import { SubjectResponse, TestSummaryResponse, CrosswordSummaryResponse } from '../../models/models.d';
 
 interface SubjectCard {
   id: string;
   name: string;
   tests: TestSummaryResponse[];
+  crosswords: CrosswordSummaryResponse[];
 }
 
 @Component({
@@ -20,6 +22,7 @@ interface SubjectCard {
 export class SubjectsListComponent implements OnInit {
   subjects: SubjectCard[] = [];
   allTests: TestSummaryResponse[] = [];
+  allCrosswords: CrosswordSummaryResponse[] = [];
   openMenuId: string | null = null;
 
   // Edit modal
@@ -27,8 +30,10 @@ export class SubjectsListComponent implements OnInit {
   editingSubject: SubjectResponse | null = null;
   editName = '';
   editTestIds: string[] = [];
+  editCrosswordIds: string[] = [];
   saving = false;
   testSearch = '';
+  crosswordSearch = '';
 
   // Add modal
   showAddModal = false;
@@ -38,6 +43,7 @@ export class SubjectsListComponent implements OnInit {
   constructor(
     private subjectsService: SubjectsService,
     private testService: TestService,
+    private crosswordService: CrosswordService,
     private router: Router
   ) {}
 
@@ -46,9 +52,13 @@ export class SubjectsListComponent implements OnInit {
   }
 
   load() {
-    this.testService.getTests().pipe(
-      switchMap(testsRes => {
+    forkJoin([
+      this.testService.getTests(),
+      this.crosswordService.getCrosswords()
+    ]).pipe(
+      switchMap(([testsRes, crosswordsRes]) => {
         this.allTests = testsRes.tests;
+        this.allCrosswords = crosswordsRes.crosswords;
         return this.subjectsService.getSubjects();
       }),
       switchMap(subjectsRes => {
@@ -59,7 +69,8 @@ export class SubjectsListComponent implements OnInit {
       this.subjects = details.map(d => ({
         id: d.id,
         name: d.name,
-        tests: this.allTests.filter(t => d.tests.includes(t.id))
+        tests: this.allTests.filter(t => d.tests.includes(t.id)),
+        crosswords: this.allCrosswords.filter(c => (d.crosswords ?? []).includes(c.id))
       }));
     });
   }
@@ -81,7 +92,9 @@ export class SubjectsListComponent implements OnInit {
       this.editingSubject = detail;
       this.editName = detail.name;
       this.editTestIds = [...detail.tests];
+      this.editCrosswordIds = [...(detail.crosswords ?? [])];
       this.testSearch = '';
+      this.crosswordSearch = '';
       this.showEditModal = true;
     });
   }
@@ -96,12 +109,23 @@ export class SubjectsListComponent implements OnInit {
     else this.editTestIds.splice(idx, 1);
   }
 
+  isCrosswordAssigned(crosswordId: string): boolean {
+    return this.editCrosswordIds.includes(crosswordId);
+  }
+
+  toggleCrossword(crosswordId: string) {
+    const idx = this.editCrosswordIds.indexOf(crosswordId);
+    if (idx === -1) this.editCrosswordIds.push(crosswordId);
+    else this.editCrosswordIds.splice(idx, 1);
+  }
+
   saveEdit() {
     if (!this.editingSubject || !this.editName.trim()) return;
     this.saving = true;
     this.subjectsService.updateSubject(this.editingSubject.id, {
       name: this.editName.trim(),
-      tests: this.editTestIds
+      tests: this.editTestIds,
+      crosswords: this.editCrosswordIds
     }).subscribe({
       next: () => {
         this.saving = false;
@@ -133,7 +157,7 @@ export class SubjectsListComponent implements OnInit {
   saveAdd() {
     if (!this.newSubjectName.trim()) return;
     this.adding = true;
-    this.subjectsService.addSubject({ name: this.newSubjectName.trim(), tests: [] }).subscribe({
+    this.subjectsService.addSubject({ name: this.newSubjectName.trim(), tests: [], crosswords: [] }).subscribe({
       next: () => {
         this.adding = false;
         this.showAddModal = false;

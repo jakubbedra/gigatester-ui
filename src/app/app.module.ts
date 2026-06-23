@@ -14,9 +14,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TestSummaryComponent } from './tests/test-summary/test-summary.component';
 import { StatementQuestionComponent } from './questions/statement-question/statement-question.component';
 import { SubjectsListComponent } from './admin/subjects-list/subjects-list.component';
+import { SubjectGroupsListComponent } from './admin/subject-groups-list/subject-groups-list.component';
+import { CrosswordsListComponent } from './admin/crosswords-list/crosswords-list.component';
+import { CrosswordEditComponent } from './admin/crossword-edit/crossword-edit.component';
 import { TestsListComponent } from './admin/tests-list/tests-list.component';
 import { TestEditComponent } from './admin/test-edit/test-edit.component';
 import { AllAtOnceComponent } from './tests/all-at-once/all-at-once.component';
+import { CrosswordViewComponent } from './crosswords/crossword-view/crossword-view.component';
+import { CrosswordPlayComponent } from './crosswords/crossword-play/crossword-play.component';
 
 @NgModule({
   declarations: [
@@ -29,9 +34,14 @@ import { AllAtOnceComponent } from './tests/all-at-once/all-at-once.component';
     TestSummaryComponent,
     StatementQuestionComponent,
     SubjectsListComponent,
+    SubjectGroupsListComponent,
+    CrosswordsListComponent,
+    CrosswordEditComponent,
     TestsListComponent,
     TestEditComponent,
     AllAtOnceComponent,
+    CrosswordViewComponent,
+    CrosswordPlayComponent,
   ],
   imports: [
     BrowserModule,

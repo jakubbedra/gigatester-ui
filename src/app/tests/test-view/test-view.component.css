@@ -215,3 +215,42 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+.field-hint {
+  font-size: 11px;
+  font-weight: 400;
+  color: #666;
+  margin-left: 6px;
+}
+
+.tag-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.tag-filter-chip {
+  background: #1a1a2e;
+  border: 1px solid #3a3060;
+  border-radius: 20px;
+  color: #9080cc;
+  padding: 5px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.tag-filter-chip:hover {
+  background: #2a2060;
+  border-color: #7b6df5;
+  color: #e0d8ff;
+}
+
+.tag-filter-chip.selected {
+  background: #7b6df5;
+  border-color: #7b6df5;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(123, 109, 245, 0.4);
+}

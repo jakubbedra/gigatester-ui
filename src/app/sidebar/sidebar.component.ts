@@ -1,10 +1,14 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { TestService } from '../service/test.service';
 import { SubjectsService } from '../service/subject.service';
-import { TestSummaryResponse } from '../models/models.d';
+import { SubjectGroupService } from '../service/subject-group.service';
+import { CrosswordService } from '../service/crossword.service';
+import { CrosswordSummaryResponse, TestSummaryResponse } from '../models/models.d';
 
-interface Test {
+interface Item {
   name: string;
   id: string;
 }
@@ -12,12 +16,14 @@ interface Test {
 interface Subject {
   name: string;
   id: string;
-  tests: Test[];
+  tests: Item[];
+  crosswords: Item[];
   expanded?: boolean;
 }
 
 interface UniversityYear {
   name: string;
+  id: string;
   subjects: Subject[];
   expanded?: boolean;
 }
@@ -28,15 +34,15 @@ interface UniversityYear {
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
-  universityYears: UniversityYear[] = [
-    { name: 'Rok I', expanded: false, subjects: [] },
-  ];
+  universityYears: UniversityYear[] = [];
 
   openMenuId: string | null = null;
 
   constructor(
     private testService: TestService,
     private subjectsService: SubjectsService,
+    private subjectGroupService: SubjectGroupService,
+    private crosswordService: CrosswordService,
     private router: Router
   ) {}
 
@@ -45,25 +51,49 @@ export class SidebarComponent implements OnInit {
   }
 
   loadData() {
-    this.subjectsService.getSubjects().subscribe(res => {
-      const firstYear = this.universityYears[0];
-      firstYear.subjects = res.subjects.map(subject => ({
-        name: subject.name,
-        id: subject.id,
-        expanded: false,
-        tests: []
-      }));
+    this.subjectGroupService.getSubjectGroups().pipe(
+      switchMap(groupsRes => {
+        if (groupsRes.subjectGroups.length === 0) return of({ groups: [], allTests: [] as TestSummaryResponse[], allCrosswords: [] as CrosswordSummaryResponse[] });
+        return forkJoin([
+          forkJoin(groupsRes.subjectGroups.map(g => this.subjectGroupService.getSubjectGroup(g.id))),
+          this.testService.getTests(),
+          this.crosswordService.getCrosswords()
+        ]).pipe(
+          switchMap(([groupDetails, testsRes, crosswordsRes]) => {
+            const subjectIds = [...new Set(groupDetails.flatMap(g => g.subjects))];
+            if (subjectIds.length === 0) {
+              return of({ groups: groupDetails, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], subjectDetails: [] as any[] });
+            }
+            return forkJoin(subjectIds.map(id => this.subjectsService.getSubject(id))).pipe(
+              switchMap(subjectDetails => of({ groups: groupDetails, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], subjectDetails }))
+            );
+          })
+        );
+      })
+    ).subscribe((result: any) => {
+      const { groups, allTests, allCrosswords, subjectDetails = [] } = result;
+      const subjectMap = new Map(subjectDetails.map((s: any) => [s.id, s]));
 
-      firstYear.subjects.forEach((subject, index) => {
-        const subjectId = res.subjects[index].id;
-        this.subjectsService.getSubject(subjectId).subscribe(detail => {
-          this.testService.getTests().subscribe(testsRes => {
-            subject.tests = testsRes.tests
-              .filter((t: TestSummaryResponse) => detail.tests.includes(t.id))
-              .map((t: TestSummaryResponse) => ({ name: t.name, id: t.id }));
-          });
-        });
-      });
+      this.universityYears = groups.map((g: any) => ({
+        id: g.id,
+        name: g.name,
+        expanded: false,
+        subjects: g.subjects.map((subjectId: string) => {
+          const subject = subjectMap.get(subjectId) as any;
+          if (!subject) return null;
+          return {
+            id: subject.id,
+            name: subject.name,
+            expanded: false,
+            tests: allTests
+              .filter((t: TestSummaryResponse) => subject.tests.includes(t.id))
+              .map((t: TestSummaryResponse) => ({ name: t.name, id: t.id })),
+            crosswords: allCrosswords
+              .filter((c: CrosswordSummaryResponse) => (subject.crosswords ?? []).includes(c.id))
+              .map((c: CrosswordSummaryResponse) => ({ name: c.name, id: c.id }))
+          };
+        }).filter(Boolean)
+      }));
     });
   }
 
@@ -96,7 +126,7 @@ export class SidebarComponent implements OnInit {
     this.openMenuId = null;
     if (confirm('Are you sure you want to delete this test?')) {
       this.testService.deleteTest(testId).subscribe(() => {
-        subject.tests = subject.tests.filter(t => t.id !== testId);
+        subject.tests = subject.tests.filter((t: Item) => t.id !== testId);
       });
     }
   }
@@ -107,15 +137,26 @@ export class SidebarComponent implements OnInit {
     this.router.navigate(['/admin/subjects']);
   }
 
+  navigateToSubjectGroups(event: Event) {
+    event.stopPropagation();
+    this.openMenuId = null;
+    this.router.navigate(['/admin/subject-groups']);
+  }
+
   deleteSubject(event: Event, subjectId: string) {
     event.stopPropagation();
     this.openMenuId = null;
     if (confirm('Are you sure you want to delete this subject?')) {
       this.subjectsService.deleteSubject(subjectId).subscribe(() => {
-        const firstYear = this.universityYears[0];
-        firstYear.subjects = firstYear.subjects.filter(s => s.id !== subjectId);
+        this.universityYears.forEach(year => {
+          year.subjects = year.subjects.filter(s => s.id !== subjectId);
+        });
       });
     }
+  }
+
+  navigateToCrosswords() {
+    this.router.navigate(['/admin/crosswords']);
   }
 
   navigateToTests() {

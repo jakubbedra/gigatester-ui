@@ -1,0 +1,82 @@
+<div class="page" *ngIf="!loading; else loader">
+
+  <div class="page-header">
+    <button class="btn-back" (click)="back()">← Crosswords</button>
+    <h1 class="page-title">Edit Crossword</h1>
+  </div>
+
+  <div class="meta-card">
+    <div class="form-group">
+      <label>Crossword Name</label>
+      <input type="text" [(ngModel)]="crosswordName" placeholder="Crossword name" />
+    </div>
+    <div class="meta-actions">
+      <button class="btn-save" (click)="save()" [disabled]="saving || !crosswordName.trim()">
+        {{ saving ? 'Saving…' : 'Save Changes' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <h2 class="section-title">Terms <span class="count">{{ terms.length }}</span></h2>
+    <button class="btn-add-term" (click)="addTerm()">+ Add Term</button>
+  </div>
+
+  <div class="terms-list" *ngIf="terms.length > 0; else noTerms">
+    <div class="term-item" *ngFor="let t of terms; let i = index"
+         [class.editing]="editingIndex === i">
+
+      <!-- View mode -->
+      <ng-container *ngIf="editingIndex !== i">
+        <div class="term-index">{{ i + 1 }}</div>
+        <div class="term-content">
+          <div class="term-word">{{ t.term || '—' }}</div>
+          <div class="term-clue">{{ t.clue || '—' }}</div>
+        </div>
+        <span class="clue-badge" [class.url]="t.clueType === 'URL'">{{ t.clueType }}</span>
+        <div class="row-actions">
+          <button class="btn-edit" (click)="openEdit(i)" title="Edit">✎</button>
+          <button class="btn-remove" (click)="removeTerm(i)" title="Remove">✕</button>
+        </div>
+      </ng-container>
+
+      <!-- Edit mode -->
+      <ng-container *ngIf="editingIndex === i && editDraft">
+        <div class="term-index">{{ i + 1 }}</div>
+        <div class="term-edit-fields">
+          <div class="edit-field-group">
+            <label>Term</label>
+            <input type="text" [(ngModel)]="editDraft.term" placeholder="Term (e.g. Paris)" autofocus />
+          </div>
+          <div class="edit-field-group clue-group">
+            <label>Clue</label>
+            <input type="text" [(ngModel)]="editDraft.clue" placeholder="Clue / hint" />
+          </div>
+          <div class="edit-field-group type-group">
+            <label>Type</label>
+            <select [(ngModel)]="editDraft.clueType">
+              <option *ngFor="let ct of clueTypes" [value]="ct">{{ ct }}</option>
+            </select>
+          </div>
+          <div class="edit-inline-actions">
+            <button class="btn-confirm" (click)="confirmEdit()">✓</button>
+            <button class="btn-cancel-edit" (click)="cancelEdit()">✕</button>
+          </div>
+        </div>
+      </ng-container>
+
+    </div>
+  </div>
+
+  <ng-template #noTerms>
+    <div class="empty-state">
+      <div class="empty-icon">🔠</div>
+      <p>No terms yet. Click <strong>+ Add Term</strong> to begin.</p>
+    </div>
+  </ng-template>
+
+</div>
+
+<ng-template #loader>
+  <div class="loader">Loading…</div>
+</ng-template>

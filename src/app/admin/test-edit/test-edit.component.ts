@@ -6,6 +6,7 @@ import { switchMap, map } from 'rxjs/operators';
 import { TestService } from '../../service/test.service';
 import { QuestionsService } from '../../service/question.service';
 import { ImageService } from '../../service/image.service';
+import { TagService } from '../../service/tag.service';
 import {
   TestResponse,
   ClosedQuestionDto,
@@ -13,6 +14,7 @@ import {
   StatementQuestionDto,
   QuestionDtoUnion,
   GradingRule,
+  TagResponse,
 } from '../../models/models.d';
 
 @Component({
@@ -35,6 +37,24 @@ export class TestEditComponent implements OnInit {
   showPreview = false;
   uploadingImage = false;
 
+  // Tag management
+  allTags: TagResponse[] = [];
+  tagSearch = '';
+  tagDropdownOpen = false;
+
+  get filteredTags(): TagResponse[] {
+    const q = this.tagSearch.toLowerCase().trim();
+    const assignedIds = new Set((this.editDraft?.tags ?? []).map((t: TagResponse) => t.id));
+    return this.allTags.filter(t =>
+      !assignedIds.has(t.id) && (!q || t.key.toLowerCase().includes(q))
+    );
+  }
+
+  get canCreateTag(): boolean {
+    const q = this.tagSearch.trim();
+    return q.length > 0 && !this.allTags.some(t => t.key.toLowerCase() === q.toLowerCase());
+  }
+
   // Add question modal
   showAddModal = false;
   addDraft: any = null;
@@ -54,6 +74,7 @@ export class TestEditComponent implements OnInit {
     private testService: TestService,
     private questionsService: QuestionsService,
     private imageService: ImageService,
+    private tagService: TagService,
     private sanitizer: DomSanitizer
   ) {}
 
@@ -112,12 +133,46 @@ export class TestEditComponent implements OnInit {
     this.editingQuestion = q;
     this.editDraft = JSON.parse(JSON.stringify(q));
     this.showPreview = false;
+    this.tagSearch = '';
+    this.tagDropdownOpen = false;
+    this.tagService.getTags().subscribe(tags => this.allTags = tags);
   }
 
   closeEdit() {
     this.editingQuestion = null;
     this.editDraft = null;
     this.showPreview = false;
+    this.tagDropdownOpen = false;
+  }
+
+  assignTag(tag: TagResponse) {
+    if (!this.editDraft?.id) return;
+    this.tagService.addTagToQuestion(this.editDraft.id, tag.id).subscribe(() => {
+      this.editDraft.tags = [...(this.editDraft.tags ?? []), tag];
+      const q = this.questions.find((q: any) => q.id === this.editDraft.id);
+      if (q) (q as any).tags = this.editDraft.tags;
+      this.tagSearch = '';
+      this.tagDropdownOpen = false;
+    });
+  }
+
+  removeTag(tag: TagResponse) {
+    if (!this.editDraft?.id) return;
+    this.tagService.removeTagFromQuestion(this.editDraft.id, tag.id).subscribe(() => {
+      this.editDraft.tags = (this.editDraft.tags ?? []).filter((t: TagResponse) => t.id !== tag.id);
+      const q = this.questions.find((q: any) => q.id === this.editDraft.id);
+      if (q) (q as any).tags = this.editDraft.tags;
+    });
+  }
+
+  createAndAssignTag() {
+    const key = this.tagSearch.trim();
+    if (!key) return;
+    this.tagService.createTag({ key }).subscribe(newId => {
+      const newTag: TagResponse = { id: newId, key };
+      this.allTags = [...this.allTags, newTag];
+      this.assignTag(newTag);
+    });
   }
 
   uploadImage(event: Event) {
@@ -259,6 +314,10 @@ export class TestEditComponent implements OnInit {
   asClosed(q: QuestionDtoUnion): ClosedQuestionDto { return q as ClosedQuestionDto; }
   asOpen(q: QuestionDtoUnion): OpenQuestionDto { return q as OpenQuestionDto; }
   asStatement(q: QuestionDtoUnion): StatementQuestionDto { return q as StatementQuestionDto; }
+
+  onTagBlur() {
+    setTimeout(() => { this.tagDropdownOpen = false; }, 200);
+  }
 
   stopPropagation(e: Event) { e.stopPropagation(); }
 

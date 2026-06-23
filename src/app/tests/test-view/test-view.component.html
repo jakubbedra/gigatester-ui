@@ -29,9 +29,9 @@
           <div class="form-group">
             <label>
               Closed questions
-              <span class="avail">/ {{ test.storedClosedQuestionsCount }} available</span>
+              <span class="avail">/ {{ availableClosed }} available</span>
             </label>
-            <input type="number" formControlName="closedQuestionsCount" min="0">
+            <input type="number" formControlName="closedQuestionsCount" min="0" [max]="availableClosed">
             <span class="field-error" *ngIf="validationErrors?.['tooManyClosed']">
               Max {{ validationErrors?.['tooManyClosed']?.max }}
             </span>
@@ -40,9 +40,9 @@
           <div class="form-group">
             <label>
               Open questions
-              <span class="avail">/ {{ test.storedOpenQuestionsCount }} available</span>
+              <span class="avail">/ {{ availableOpen }} available</span>
             </label>
-            <input type="number" formControlName="openQuestionsCount" min="0">
+            <input type="number" formControlName="openQuestionsCount" min="0" [max]="availableOpen">
             <span class="field-error" *ngIf="validationErrors?.['tooManyOpen']">
               Max {{ validationErrors?.['tooManyOpen']?.max }}
             </span>
@@ -61,6 +61,19 @@
         <span class="field-error block-error" *ngIf="validationErrors?.['minOneQuestion']">
           Total question count must be at least 1
         </span>
+      </div>
+
+      <!-- Tag filter -->
+      <div class="field-section" *ngIf="allTags.length > 0">
+        <div class="field-label">Tag filter <span class="field-hint">(leave empty to include all questions)</span></div>
+        <div class="tag-filter-chips">
+          <button type="button" class="tag-filter-chip"
+                  *ngFor="let t of allTags"
+                  [class.selected]="isTagSelected(t)"
+                  (click)="toggleTag(t)">
+            {{ t.key }}
+          </button>
+        </div>
       </div>
 
       <!-- Display type -->

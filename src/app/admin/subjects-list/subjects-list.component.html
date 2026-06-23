@@ -33,6 +33,16 @@
         </ng-template>
       </div>
 
+      <div class="tests-section" *ngIf="subject.crosswords.length > 0">
+        <div class="tests-label">Crosswords <span class="test-count">{{ subject.crosswords.length }}</span></div>
+        <div class="tests-list">
+          <div class="test-row crossword-row" *ngFor="let cw of subject.crosswords">
+            <span class="test-icon">🔠</span>
+            <span class="test-name">{{ cw.name }}</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -73,6 +83,28 @@
       </ng-container>
       <ng-template #noTestsAvailable>
         <div class="no-tests-hint">No tests available. Create some first.</div>
+      </ng-template>
+    </div>
+
+    <div class="form-group">
+      <label>Assigned Crosswords</label>
+      <ng-container *ngIf="allCrosswords.length > 0; else noCrosswordsAvailable">
+        <input class="search-input" type="text" [(ngModel)]="crosswordSearch" placeholder="Search crosswords…" />
+        <div class="test-picker">
+          <ng-container *ngFor="let cw of allCrosswords">
+            <label class="test-check" *ngIf="!crosswordSearch || cw.name.toLowerCase().includes(crosswordSearch.toLowerCase())"
+                   [class.selected]="isCrosswordAssigned(cw.id)"
+                   (click)="toggleCrossword(cw.id)">
+              <span class="check-box">
+                <span class="check-mark" *ngIf="isCrosswordAssigned(cw.id)">✓</span>
+              </span>
+              <span class="check-label">🔠 {{ cw.name }}</span>
+            </label>
+          </ng-container>
+        </div>
+      </ng-container>
+      <ng-template #noCrosswordsAvailable>
+        <div class="no-tests-hint">No crosswords available. Create some first.</div>
       </ng-template>
     </div>
 

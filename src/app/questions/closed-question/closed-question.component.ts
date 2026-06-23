@@ -21,8 +21,10 @@ export class ClosedQuestionComponent implements OnInit, OnChanges {
   @Output() answerChange = new EventEmitter<ClosedQuestionStateRequest>();
 
   selectedAnswerIds: string[] = [];
+  shuffledAnswers: ClosedQuestionAnswerDto[] = [];
 
   ngOnInit() {
+    this.shuffledAnswers = this.shuffle(this.question.answers);
     this.initFromState();
     this.emitState(false); // send initial (not forcing answered)
   }
@@ -30,6 +32,7 @@ export class ClosedQuestionComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     // when switching to a new question or receiving new state from backend
     if (changes['question']) {
+      this.shuffledAnswers = this.shuffle(this.question.answers);
       this.selectedAnswerIds = [];
       this.initFromState();
       this.emitState(false);
@@ -90,6 +93,15 @@ export class ClosedQuestionComponent implements OnInit, OnChanges {
     };
 
     this.answerChange.emit(req);
+  }
+
+  private shuffle(answers: ClosedQuestionAnswerDto[]): ClosedQuestionAnswerDto[] {
+    const arr = [...answers];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
   }
 
   trackByAnswerId(_: number, a: { id: string }) {

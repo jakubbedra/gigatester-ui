@@ -26,6 +26,7 @@
         <span class="q-type" [ngClass]="'type-' + entry.stateSummary.questionType.toLowerCase()">
           {{ entry.stateSummary.questionType }}
         </span>
+        <span class="q-tag" *ngFor="let t of (entry.question.tags || [])">{{ t.key }}</span>
         <span class="q-score" *ngIf="entry.state?.answered">
           {{ entry.state.score }} / {{ entry.question.points }} pts
         </span>

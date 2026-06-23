@@ -1,0 +1,29 @@
+<div class="test-wrapper" *ngIf="crossword && form">
+  <div class="test-card">
+
+    <h1 class="test-title">{{ crossword.name }}</h1>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+
+      <div class="field-section">
+        <div class="field-label">Number of words</div>
+        <div class="form-group">
+          <label>
+            Words to include
+            <span class="avail">/ {{ termCount }} available</span>
+          </label>
+          <input type="number" formControlName="numberOfWords" min="1" [max]="termCount">
+          <span class="field-error" *ngIf="form.get('numberOfWords')?.errors?.['min']">
+            Minimum 1 word required
+          </span>
+          <span class="field-error" *ngIf="form.get('numberOfWords')?.errors?.['max']">
+            Max {{ termCount }} words available
+          </span>
+        </div>
+      </div>
+
+      <button type="submit" class="start-btn" [disabled]="form.invalid">Start</button>
+
+    </form>
+  </div>
+</div>

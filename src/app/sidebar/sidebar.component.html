@@ -7,8 +7,10 @@
   <nav class="menu">
     <ul>
       <li class="admin-links">
+        <span class="admin-link" (click)="navigateToSubjectGroups($event)">Groups</span>
         <span class="admin-link" (click)="navigateToAdminSubjects()">Subjects</span>
         <span class="admin-link" (click)="navigateToTests()">Tests</span>
+        <span class="admin-link" (click)="navigateToCrosswords()">Crosswords</span>
       </li>
 
       <li *ngFor="let year of universityYears">
@@ -47,6 +49,11 @@
                       <button class="danger" (click)="deleteTest($event, test.id, subject)">Delete</button>
                     </div>
                   </div>
+                </div>
+              </li>
+              <li *ngFor="let cw of subject.crosswords">
+                <div class="menu-row test-row">
+                  <a [routerLink]="['/crosswords', cw.id]" class="tests crossword-link">🔠 {{ cw.name }}</a>
                 </div>
               </li>
             </ul>

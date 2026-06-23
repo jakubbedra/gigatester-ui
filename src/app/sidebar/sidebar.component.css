@@ -8,6 +8,8 @@
   overflow: hidden;
   border-right: 1px solid rgba(123, 109, 245, 0.15);
   flex-shrink: 0;
+  position: relative;
+  z-index: 600;
 }
 
 @media (max-width: 768px) {
@@ -116,7 +118,8 @@
 
 /* ── Admin quick links ─────────────────────────────────────────────────── */
 .admin-links {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 6px;
   margin-bottom: 16px;
   padding: 0 4px;
