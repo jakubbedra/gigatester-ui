@@ -1,24 +1,34 @@
-<div class="app-container">
+<ng-container *ngIf="isLoginPage; else appShell">
+  <router-outlet></router-outlet>
+</ng-container>
 
-  <!-- Mobile top bar -->
-  <header class="mobile-topbar">
-    <button class="hamburger" (click)="toggleSidebar()" aria-label="Open menu">
-      <span></span><span></span><span></span>
-    </button>
-    <span class="mobile-title">Gigatester</span>
-  </header>
+<ng-template #appShell>
+  <div class="app-container">
 
-  <!-- Overlay backdrop (mobile only) -->
-  <div class="sidebar-overlay" [class.visible]="sidebarOpen" (click)="closeSidebar()"></div>
+    <!-- Mobile top bar -->
+    <header class="mobile-topbar">
+      <button class="hamburger" (click)="toggleSidebar()" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+      <span class="mobile-title">Gigatester</span>
+    </header>
 
-  <!-- Sidebar -->
-  <aside class="sidebar" [class.open]="sidebarOpen">
-    <button class="sidebar-close" (click)="closeSidebar()" aria-label="Close menu">✕</button>
-    <app-sidebar></app-sidebar>
-  </aside>
+    <!-- Overlay backdrop (mobile only) -->
+    <div class="sidebar-overlay" [class.visible]="sidebarOpen" (click)="closeSidebar()"></div>
 
-  <main class="main-content">
-    <router-outlet></router-outlet>
-  </main>
+    <!-- Sidebar -->
+    <aside class="sidebar" [class.open]="sidebarOpen">
+      <button class="sidebar-close" (click)="closeSidebar()" aria-label="Close menu">✕</button>
+      <app-sidebar></app-sidebar>
+      <div class="sidebar-footer">
+        <span class="sidebar-user">{{ user?.username }}</span>
+        <button class="logout-btn" (click)="logout()">Sign out</button>
+      </div>
+    </aside>
 
-</div>
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+</ng-template>

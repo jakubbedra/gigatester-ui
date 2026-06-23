@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -8,7 +9,6 @@ import { ClosedQuestionComponent } from './questions/closed-question/closed-ques
 import { OpenQuestionComponent } from './questions/open-question/open-question.component';
 import { QuestionCardComponent } from './questions/question-card/question-card.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { HttpClientModule } from '@angular/common/http';
 import { TestViewComponent } from './tests/test-view/test-view.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TestSummaryComponent } from './tests/test-summary/test-summary.component';
@@ -22,6 +22,9 @@ import { TestEditComponent } from './admin/test-edit/test-edit.component';
 import { AllAtOnceComponent } from './tests/all-at-once/all-at-once.component';
 import { CrosswordViewComponent } from './crosswords/crossword-view/crossword-view.component';
 import { CrosswordPlayComponent } from './crosswords/crossword-play/crossword-play.component';
+import { LoginComponent } from './auth/login/login.component';
+import { AccountComponent } from './account/account.component';
+import { AuthInterceptor } from './interceptor/auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -42,6 +45,8 @@ import { CrosswordPlayComponent } from './crosswords/crossword-play/crossword-pl
     AllAtOnceComponent,
     CrosswordViewComponent,
     CrosswordPlayComponent,
+    LoginComponent,
+    AccountComponent,
   ],
   imports: [
     BrowserModule,
@@ -51,7 +56,9 @@ import { CrosswordPlayComponent } from './crosswords/crossword-play/crossword-pl
     ReactiveFormsModule,
     FormsModule
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -12,20 +12,27 @@ import { TestEditComponent } from './admin/test-edit/test-edit.component';
 import { AllAtOnceComponent } from './tests/all-at-once/all-at-once.component';
 import { CrosswordViewComponent } from './crosswords/crossword-view/crossword-view.component';
 import { CrosswordPlayComponent } from './crosswords/crossword-play/crossword-play.component';
+import { LoginComponent } from './auth/login/login.component';
+import { AccountComponent } from './account/account.component';
+import { AuthGuard } from './guard/auth.guard';
+import { ModeratorGuard } from './guard/moderator.guard';
 
 const routes: Routes = [
-  { path: 'tests/:id', component: TestViewComponent },
-  { path: 'tests/:id/executions', component: QuestionCardComponent },
-  { path: 'tests/:id/executions/all', component: AllAtOnceComponent },
-  { path: 'tests/:id/summary', component: TestSummaryComponent },
-  { path: 'admin/subjects', component: SubjectsListComponent },
-  { path: 'admin/subject-groups', component: SubjectGroupsListComponent },
-  { path: 'admin/crosswords', component: CrosswordsListComponent },
-  { path: 'admin/crosswords/:id/edit', component: CrosswordEditComponent },
-  { path: 'admin/tests', component: TestsListComponent },
-  { path: 'admin/tests/:id/edit', component: TestEditComponent },
-  { path: 'crosswords/states/:id', component: CrosswordPlayComponent },
-  { path: 'crosswords/:id', component: CrosswordViewComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'account', component: AccountComponent, canActivate: [AuthGuard] },
+  { path: 'tests/:id', component: TestViewComponent, canActivate: [AuthGuard] },
+  { path: 'tests/:id/executions', component: QuestionCardComponent, canActivate: [AuthGuard] },
+  { path: 'tests/:id/executions/all', component: AllAtOnceComponent, canActivate: [AuthGuard] },
+  { path: 'tests/:id/summary', component: TestSummaryComponent, canActivate: [AuthGuard] },
+  { path: 'admin/subjects', component: SubjectsListComponent, canActivate: [AuthGuard, ModeratorGuard] },
+  { path: 'admin/subject-groups', component: SubjectGroupsListComponent, canActivate: [AuthGuard, ModeratorGuard] },
+  { path: 'admin/crosswords', component: CrosswordsListComponent, canActivate: [AuthGuard, ModeratorGuard] },
+  { path: 'admin/crosswords/:id/edit', component: CrosswordEditComponent, canActivate: [AuthGuard, ModeratorGuard] },
+  { path: 'admin/tests', component: TestsListComponent, canActivate: [AuthGuard, ModeratorGuard] },
+  { path: 'admin/tests/:id/edit', component: TestEditComponent, canActivate: [AuthGuard, ModeratorGuard] },
+  { path: 'crosswords/states/:id', component: CrosswordPlayComponent, canActivate: [AuthGuard] },
+  { path: 'crosswords/:id', component: CrosswordViewComponent, canActivate: [AuthGuard] },
+  { path: '**', redirectTo: 'login' },
 ];
 
 @NgModule({

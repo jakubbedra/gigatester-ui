@@ -1,0 +1,40 @@
+<div class="login-page">
+  <div class="login-card">
+
+    <div class="brand">
+      <span class="brand-icon">🧠</span>
+      <span class="brand-name">Gigatester</span>
+    </div>
+
+    <div class="tab-row">
+      <button class="tab" [class.active]="mode === 'login'" (click)="switchMode('login')">Sign in</button>
+      <button class="tab" [class.active]="mode === 'register'" (click)="switchMode('register')">Create account</button>
+    </div>
+
+    <form (ngSubmit)="submit()" #f="ngForm">
+
+      <div class="field">
+        <label>Username</label>
+        <input type="text" [(ngModel)]="username" name="username" autocomplete="username" placeholder="Enter username" />
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input type="password" [(ngModel)]="password" name="password" autocomplete="current-password" placeholder="Enter password" />
+      </div>
+
+      <div class="field" *ngIf="mode === 'register'">
+        <label>Confirm password</label>
+        <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" autocomplete="new-password" placeholder="Repeat password" />
+      </div>
+
+      <p class="error-msg" *ngIf="error">{{ error }}</p>
+
+      <button type="submit" class="submit-btn" [disabled]="loading">
+        {{ loading ? 'Please wait…' : (mode === 'login' ? 'Sign in' : 'Create account') }}
+      </button>
+
+    </form>
+
+  </div>
+</div>

@@ -1,12 +1,12 @@
 <aside class="sidebar">
   <div class="user-profile">
-    <img src="assets/img/avatar.jpg" class="avatar" alt="User Avatar">
-    <h3>Janusz Pawlacz</h3>
+    <img [src]="avatarUrl" class="avatar" alt="User Avatar" (click)="goToAccount()" style="cursor:pointer" />
+    <h3>{{ displayName }}</h3>
   </div>
 
   <nav class="menu">
     <ul>
-      <li class="admin-links">
+      <li class="admin-links" *ngIf="isModerator">
         <span class="admin-link" (click)="navigateToSubjectGroups($event)">Groups</span>
         <span class="admin-link" (click)="navigateToAdminSubjects()">Subjects</span>
         <span class="admin-link" (click)="navigateToTests()">Tests</span>
@@ -29,7 +29,7 @@
                     (click)="toggleSubject(subject)">
                 {{ subject.name }} {{ subject.expanded ? '▾' : '▸' }}
               </span>
-              <div class="context-wrapper">
+              <div class="context-wrapper" *ngIf="isModerator">
                 <button class="ctx-btn" (click)="toggleMenu($event, 'subject-' + subject.id)">···</button>
                 <div class="ctx-menu" *ngIf="openMenuId === 'subject-' + subject.id">
                   <button (click)="navigateToSubjects($event)">Edit</button>
@@ -42,7 +42,7 @@
               <li *ngFor="let test of subject.tests">
                 <div class="menu-row test-row">
                   <a [routerLink]="['/tests', test.id]" class="tests">{{ test.name }}</a>
-                  <div class="context-wrapper">
+                  <div class="context-wrapper" *ngIf="isModerator">
                     <button class="ctx-btn" (click)="toggleMenu($event, 'test-' + test.id)">···</button>
                     <div class="ctx-menu" *ngIf="openMenuId === 'test-' + test.id">
                       <button (click)="editTest($event, test.id)">Edit</button>

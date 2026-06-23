@@ -1,5 +1,6 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../service/auth.service';
 import { forkJoin, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { TestService } from '../service/test.service';
@@ -43,8 +44,28 @@ export class SidebarComponent implements OnInit {
     private subjectsService: SubjectsService,
     private subjectGroupService: SubjectGroupService,
     private crosswordService: CrosswordService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
+
+  get isModerator(): boolean {
+    const role = this.authService.getUser()?.role;
+    return role === 'MODERATOR' || role === 'ADMIN';
+  }
+
+  get displayName(): string {
+    const user = this.authService.getUser();
+    if (!user) return '';
+    return user.username === 'admin' ? 'Janusz Pawlacz' : user.username;
+  }
+
+  get avatarUrl(): string {
+    return this.authService.getUser()?.profilePictureUrl ?? 'assets/img/avatar.jpg';
+  }
+
+  goToAccount(): void {
+    this.router.navigate(['/account']);
+  }
 
   ngOnInit() {
     this.loadData();
