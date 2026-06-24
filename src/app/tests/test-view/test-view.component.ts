@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {TagResponse, TestDisplayTypeDto, TestModeDto, TestResponse, TestStateRequest} from "../../models/models.d";
+import {TagResponse, TestDisplayTypeDto, TestModeDto, TestResponse, TestStateRequest, TestStateResponse} from "../../models/models.d";
 import {TestService} from "../../service/test.service";
 import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn} from "@angular/forms";
 import {TestStateService} from "../../service/test-state.service";
@@ -16,6 +16,9 @@ export class TestViewComponent implements OnInit {
   form!: FormGroup;
   testId!: string;
   test!: TestResponse;
+
+  existingState: TestStateResponse | null = null;
+  showNewForm = false;
 
   allTags: TagResponse[] = [];
   selectedTags: TagResponse[] = [];
@@ -39,7 +42,7 @@ export class TestViewComponent implements OnInit {
 
       this.tagService.getTags().subscribe(tags => this.allTags = tags);
 
-      this.testService.getTest(this.testId).subscribe(test => {
+      this.testService.getTest(this.testId).subscribe({next: test => {
         this.test = test;
         this.availableClosed = test.storedClosedQuestionsCount;
         this.availableOpen = test.storedOpenQuestionsCount;
@@ -53,7 +56,23 @@ export class TestViewComponent implements OnInit {
           mode: [defaults.mode],
           displayType: [defaults.displayType]
         }, { validators: () => this.examValidatorFn() });
-      });
+
+        this.testStateService.getTestStateFromTestId(this.testId).subscribe({
+          next: (state) => {
+            if (state.executionState !== 'FINISHED') {
+              this.existingState = state;
+              this.showNewForm = false;
+            } else {
+              this.existingState = null;
+              this.showNewForm = true;
+            }
+          },
+          error: () => {
+            this.existingState = null;
+            this.showNewForm = true;
+          }
+        });
+      }, error: () => this.router.navigate(['/home'])});
 
     });
   }
@@ -71,6 +90,14 @@ export class TestViewComponent implements OnInit {
       displayType: TestDisplayTypeDto.ONE_BY_ONE,
       timeLimitEnabled: false
     };
+  }
+
+  continueTest(): void {
+    if (!this.existingState) return;
+    const path = this.existingState.displayType === 'ALL_AT_ONCE'
+      ? `/tests/${this.existingState.id}/executions/all`
+      : `/tests/${this.existingState.id}/executions`;
+    this.router.navigate([path]);
   }
 
   submit() {

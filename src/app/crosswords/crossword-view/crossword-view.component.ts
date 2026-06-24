@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CrosswordResponse } from '../../models/models.d';
+import { CrosswordResponse, CrosswordStateResponse } from '../../models/models.d';
 import { CrosswordService } from '../../service/crossword.service';
 import { CrosswordStateService } from '../../service/crossword-state.service';
 
@@ -16,6 +16,9 @@ export class CrosswordViewComponent implements OnInit {
   crossword!: CrosswordResponse;
   form!: FormGroup;
 
+  existingState: CrosswordStateResponse | null = null;
+  showNewForm = false;
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -27,6 +30,7 @@ export class CrosswordViewComponent implements OnInit {
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       this.crosswordId = params.get('id')!;
+
       this.crosswordService.getCrossword(this.crosswordId).subscribe(crossword => {
         this.crossword = crossword;
         this.form = this.fb.group({
@@ -36,11 +40,33 @@ export class CrosswordViewComponent implements OnInit {
           ]
         });
       });
+
+      this.crosswordStateService.getUserCrosswordState(this.crosswordId).subscribe({
+        next: (state) => {
+          if (state.currentGrid?.includes('_')) {
+            this.existingState = state;
+            this.showNewForm = false;
+          } else {
+            this.existingState = null;
+            this.showNewForm = true;
+          }
+        },
+        error: () => {
+          this.existingState = null;
+          this.showNewForm = true;
+        }
+      });
     });
   }
 
   get termCount(): number {
     return this.crossword?.terms?.length ?? 0;
+  }
+
+  continueGame(): void {
+    if (!this.existingState) return;
+    this.router.navigate(['/crosswords/states', this.existingState.id],
+      { queryParams: { cid: this.crosswordId } });
   }
 
   submit() {
@@ -53,5 +79,4 @@ export class CrosswordViewComponent implements OnInit {
       error: (err) => console.error(err)
     });
   }
-
 }

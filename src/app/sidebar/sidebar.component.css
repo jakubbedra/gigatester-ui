@@ -116,6 +116,27 @@
   margin-bottom: 8px;
 }
 
+/* ── Home link ──────────────────────────────────────────────────────────── */
+.home-link-item {
+  padding: 0 12px 4px;
+}
+
+.home-link {
+  display: block;
+  padding: 9px 14px;
+  border-radius: 8px;
+  color: #aaa;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.home-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #e0e0e0;
+}
+
 /* ── Admin quick links ─────────────────────────────────────────────────── */
 .admin-links {
   display: grid;

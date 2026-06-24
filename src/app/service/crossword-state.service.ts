@@ -11,6 +11,10 @@ export class CrosswordStateService {
 
   constructor(private http: HttpClient) {}
 
+  getUserCrosswordState(crosswordId: string): Observable<CrosswordStateResponse> {
+    return this.http.get<CrosswordStateResponse>(`${this.baseUrl}/by-crossword/${crosswordId}`);
+  }
+
   createCrosswordState(request: CrosswordStateRequest): Observable<CrosswordStateResponse> {
     return this.http.post<CrosswordStateResponse>(this.baseUrl, request);
   }

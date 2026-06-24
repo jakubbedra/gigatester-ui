@@ -29,23 +29,29 @@
   <div class="card" *ngIf="user.username !== 'admin'">
     <div class="card-title">Change password</div>
     <form (ngSubmit)="changePassword()">
-      <div class="field">
-        <label>Current password</label>
-        <input type="password" [(ngModel)]="currentPassword" name="currentPassword" placeholder="Enter current password" />
+      <div class="form-fields">
+        <div class="field">
+          <label>Current password</label>
+          <input type="password" [(ngModel)]="currentPassword" name="currentPassword" placeholder="Enter current password" />
+        </div>
+        <div class="field">
+          <label>New password</label>
+          <input type="password" [(ngModel)]="newPassword" name="newPassword" placeholder="Enter new password" />
+        </div>
+        <div class="field">
+          <label>Confirm new password</label>
+          <input type="password" [(ngModel)]="confirmNewPassword" name="confirmNewPassword" placeholder="Repeat new password" />
+        </div>
       </div>
-      <div class="field">
-        <label>New password</label>
-        <input type="password" [(ngModel)]="newPassword" name="newPassword" placeholder="Enter new password" />
+      <div class="form-footer">
+        <div>
+          <p class="error-msg" *ngIf="passwordError">{{ passwordError }}</p>
+          <p class="success-msg" *ngIf="passwordSuccess">{{ passwordSuccess }}</p>
+        </div>
+        <button type="submit" class="submit-btn" [disabled]="passwordLoading">
+          {{ passwordLoading ? 'Saving…' : 'Change password' }}
+        </button>
       </div>
-      <div class="field">
-        <label>Confirm new password</label>
-        <input type="password" [(ngModel)]="confirmNewPassword" name="confirmNewPassword" placeholder="Repeat new password" />
-      </div>
-      <p class="error-msg" *ngIf="passwordError">{{ passwordError }}</p>
-      <p class="success-msg" *ngIf="passwordSuccess">{{ passwordSuccess }}</p>
-      <button type="submit" class="submit-btn" [disabled]="passwordLoading">
-        {{ passwordLoading ? 'Saving…' : 'Change password' }}
-      </button>
     </form>
   </div>
 

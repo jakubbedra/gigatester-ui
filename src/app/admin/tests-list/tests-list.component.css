@@ -12,11 +12,54 @@
   margin-bottom: 40px;
 }
 
+.title-area {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+  align-self: flex-start;
+}
+
+.back-btn:hover {
+  color: #ccc;
+}
+
 .page-title {
   font-size: 28px;
   font-weight: 700;
   margin: 0;
   color: #fff;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #555;
+  margin-bottom: 14px;
+  margin-top: 32px;
+}
+
+.section-label:first-of-type {
+  margin-top: 0;
+}
+
+.empty-inline {
+  font-size: 13px;
+  color: #555;
+  font-style: italic;
+  margin-bottom: 32px;
 }
 
 .btn-add {

@@ -1,16 +1,21 @@
 <div class="page">
   <div class="page-header">
-    <h1 class="page-title">Tests</h1>
-    <button class="btn-add" (click)="openAdd()">+ New Test</button>
+    <div class="title-area">
+      <button class="back-btn" *ngIf="subjectId" (click)="goBack()">← Back</button>
+      <h1 class="page-title">{{ subjectName ?? 'Tests' }}</h1>
+    </div>
+    <button class="btn-add" *ngIf="canModify && !subjectId" (click)="openAdd()">+ New Test</button>
   </div>
 
-  <div class="grid" *ngIf="tests.length > 0; else empty">
+  <!-- Tests -->
+  <div class="section-label" *ngIf="subjectId">Tests</div>
+  <div class="grid" *ngIf="tests.length > 0; else emptyTests">
     <div class="card" *ngFor="let test of tests" (click)="openTest(test.id)">
       <div class="card-body">
         <div class="card-icon">📝</div>
         <div class="card-name">{{ test.name }}</div>
       </div>
-      <div class="context-wrapper" (click)="stopPropagation($event)">
+      <div class="context-wrapper" *ngIf="canModify" (click)="stopPropagation($event)">
         <button class="ctx-btn" (click)="toggleMenu($event, test.id)">···</button>
         <div class="ctx-menu" *ngIf="openMenuId === test.id">
           <button (click)="edit($event, test.id)">Edit</button>
@@ -19,13 +24,36 @@
       </div>
     </div>
   </div>
-
-  <ng-template #empty>
-    <div class="empty-state">
+  <ng-template #emptyTests>
+    <div class="empty-state" *ngIf="!subjectId">
       <div class="empty-icon">📋</div>
       <p>No tests yet. Click <strong>+ New Test</strong> to create one.</p>
     </div>
+    <div class="empty-inline" *ngIf="subjectId">No tests assigned to this subject.</div>
   </ng-template>
+
+  <!-- Crosswords (subject view only) -->
+  <ng-container *ngIf="subjectId">
+    <div class="section-label">Crosswords</div>
+    <div class="grid" *ngIf="crosswords.length > 0; else emptyCrosswords">
+      <div class="card" *ngFor="let cw of crosswords" (click)="openCrossword(cw.id)">
+        <div class="card-body">
+          <div class="card-icon">🔠</div>
+          <div class="card-name">{{ cw.name }}</div>
+        </div>
+        <div class="context-wrapper" *ngIf="canModify" (click)="stopPropagation($event)">
+          <button class="ctx-btn" (click)="toggleMenu($event, 'cw-' + cw.id)">···</button>
+          <div class="ctx-menu" *ngIf="openMenuId === 'cw-' + cw.id">
+            <button (click)="editCrossword($event, cw.id)">Edit</button>
+            <button class="danger" (click)="deleteCrossword($event, cw.id)">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-template #emptyCrosswords>
+      <div class="empty-inline">No crosswords assigned to this subject.</div>
+    </ng-template>
+  </ng-container>
 </div>
 
 <!-- Add Test Modal -->

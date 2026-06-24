@@ -23,7 +23,10 @@ import { AllAtOnceComponent } from './tests/all-at-once/all-at-once.component';
 import { CrosswordViewComponent } from './crosswords/crossword-view/crossword-view.component';
 import { CrosswordPlayComponent } from './crosswords/crossword-play/crossword-play.component';
 import { LoginComponent } from './auth/login/login.component';
+import { ResetPasswordComponent } from './auth/reset-password/reset-password.component';
 import { AccountComponent } from './account/account.component';
+import { HomeComponent } from './home/home.component';
+import { UsersListComponent } from './admin/users-list/users-list.component';
 import { AuthInterceptor } from './interceptor/auth.interceptor';
 
 @NgModule({
@@ -47,6 +50,9 @@ import { AuthInterceptor } from './interceptor/auth.interceptor';
     CrosswordPlayComponent,
     LoginComponent,
     AccountComponent,
+    HomeComponent,
+    UsersListComponent,
+    ResetPasswordComponent,
   ],
   imports: [
     BrowserModule,

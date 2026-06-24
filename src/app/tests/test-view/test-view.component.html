@@ -3,7 +3,19 @@
 
     <h1 class="test-title">{{ test.name }}</h1>
 
-    <form [formGroup]="form" (ngSubmit)="submit()">
+    <!-- In-progress state banner -->
+    <div class="resume-banner" *ngIf="existingState && !showNewForm">
+      <div class="resume-info">
+        <span class="resume-label">You have an unfinished attempt</span>
+        <span class="resume-meta">{{ existingState.mode }} · {{ existingState.displayType === 'ALL_AT_ONCE' ? 'All at once' : 'One by one' }} · question {{ existingState.currentQuestionIndex + 1 }} / {{ existingState.currentQuestionsCount }}</span>
+      </div>
+      <div class="resume-actions">
+        <button type="button" class="resume-btn primary" (click)="continueTest()">Continue</button>
+        <button type="button" class="resume-btn secondary" (click)="showNewForm = true">Start new</button>
+      </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="showNewForm">
 
       <!-- Mode -->
       <div class="field-section">

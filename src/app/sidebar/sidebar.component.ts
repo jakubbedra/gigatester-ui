@@ -7,6 +7,7 @@ import { TestService } from '../service/test.service';
 import { SubjectsService } from '../service/subject.service';
 import { SubjectGroupService } from '../service/subject-group.service';
 import { CrosswordService } from '../service/crossword.service';
+import { SubjectGroupAccessService } from '../service/subject-group-access.service';
 import { CrosswordSummaryResponse, TestSummaryResponse } from '../models/models.d';
 
 interface Item {
@@ -44,6 +45,7 @@ export class SidebarComponent implements OnInit {
     private subjectsService: SubjectsService,
     private subjectGroupService: SubjectGroupService,
     private crosswordService: CrosswordService,
+    private accessService: SubjectGroupAccessService,
     private router: Router,
     private authService: AuthService
   ) {}
@@ -51,6 +53,10 @@ export class SidebarComponent implements OnInit {
   get isModerator(): boolean {
     const role = this.authService.getUser()?.role;
     return role === 'MODERATOR' || role === 'ADMIN';
+  }
+
+  get isAdmin(): boolean {
+    return this.authService.getUser()?.role === 'ADMIN';
   }
 
   get displayName(): string {
@@ -72,21 +78,27 @@ export class SidebarComponent implements OnInit {
   }
 
   loadData() {
+    const canSeeAll = this.isModerator;
+
     this.subjectGroupService.getSubjectGroups().pipe(
       switchMap(groupsRes => {
         if (groupsRes.subjectGroups.length === 0) return of({ groups: [], allTests: [] as TestSummaryResponse[], allCrosswords: [] as CrosswordSummaryResponse[] });
         return forkJoin([
           forkJoin(groupsRes.subjectGroups.map(g => this.subjectGroupService.getSubjectGroup(g.id))),
           this.testService.getTests(),
-          this.crosswordService.getCrosswords()
+          this.crosswordService.getCrosswords(),
+          canSeeAll ? of([] as any[]) : this.accessService.getMyAccess()
         ]).pipe(
-          switchMap(([groupDetails, testsRes, crosswordsRes]) => {
-            const subjectIds = [...new Set(groupDetails.flatMap(g => g.subjects))];
+          switchMap(([groupDetails, testsRes, crosswordsRes, accessStatuses]: [any[], any, any, any[]]) => {
+            const visibleGroups = canSeeAll
+              ? groupDetails
+              : groupDetails.filter((g: any) => accessStatuses.some((a: any) => a.groupId === g.id && a.status === 'APPROVED'));
+            const subjectIds = [...new Set(visibleGroups.flatMap((g: any) => g.subjects as string[]))];
             if (subjectIds.length === 0) {
-              return of({ groups: groupDetails, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], subjectDetails: [] as any[] });
+              return of({ groups: visibleGroups, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], subjectDetails: [] as any[] });
             }
             return forkJoin(subjectIds.map(id => this.subjectsService.getSubject(id))).pipe(
-              switchMap(subjectDetails => of({ groups: groupDetails, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], subjectDetails }))
+              switchMap(subjectDetails => of({ groups: visibleGroups, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], subjectDetails }))
             );
           })
         );
@@ -186,5 +198,9 @@ export class SidebarComponent implements OnInit {
 
   navigateToAdminSubjects() {
     this.router.navigate(['/admin/subjects']);
+  }
+
+  navigateToUsers() {
+    this.router.navigate(['/admin/users']);
   }
 }

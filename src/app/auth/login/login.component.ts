@@ -16,7 +16,7 @@ export class LoginComponent implements OnInit {
   error = '';
   loading = false;
 
-  private returnUrl = '/admin/tests';
+  private returnUrl = '/home';
 
   constructor(private authService: AuthService, private router: Router, private route: ActivatedRoute) {}
 
@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
       this.router.navigate([this.returnUrl]);
       return;
     }
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] ?? '/admin/tests';
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] ?? '/home';
   }
 
   submit(): void {
