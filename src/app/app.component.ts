@@ -10,13 +10,15 @@ import { AuthService } from './service/auth.service';
 })
 export class AppComponent {
   sidebarOpen = false;
-  isLoginPage = false;
+  readonly authRoutes = ['/login', '/reset-password'];
+  isLoginPage = true;
 
   constructor(private router: Router, private authService: AuthService) {
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd)
     ).subscribe((e: any) => {
-      this.isLoginPage = (e.urlAfterRedirects ?? e.url) === '/login';
+      const url = (e.urlAfterRedirects ?? e.url).split('?')[0];
+      this.isLoginPage = this.authRoutes.includes(url);
       this.sidebarOpen = false;
     });
   }
