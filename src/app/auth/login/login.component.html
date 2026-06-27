@@ -7,31 +7,31 @@
     </div>
 
     <div class="tab-row">
-      <button class="tab" [class.active]="mode === 'login'" (click)="switchMode('login')">Sign in</button>
-      <button class="tab" [class.active]="mode === 'register'" (click)="switchMode('register')">Create account</button>
+      <button class="tab" [class.active]="mode === 'login'" (click)="switchMode('login')">{{ 'LOGIN.SIGN_IN' | translate }}</button>
+      <button class="tab" [class.active]="mode === 'register'" (click)="switchMode('register')">{{ 'LOGIN.CREATE_ACCOUNT' | translate }}</button>
     </div>
 
     <form (ngSubmit)="submit()" #f="ngForm">
 
       <div class="field">
-        <label>Username</label>
-        <input type="text" [(ngModel)]="username" name="username" autocomplete="username" placeholder="Enter username" />
+        <label>{{ 'LOGIN.USERNAME' | translate }}</label>
+        <input type="text" [(ngModel)]="username" name="username" autocomplete="username" [placeholder]="'LOGIN.USERNAME_PLACEHOLDER' | translate" />
       </div>
 
       <div class="field">
-        <label>Password</label>
-        <input type="password" [(ngModel)]="password" name="password" autocomplete="current-password" placeholder="Enter password" />
+        <label>{{ 'LOGIN.PASSWORD' | translate }}</label>
+        <input type="password" [(ngModel)]="password" name="password" autocomplete="current-password" [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate" />
       </div>
 
       <div class="field" *ngIf="mode === 'register'">
-        <label>Confirm password</label>
-        <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" autocomplete="new-password" placeholder="Repeat password" />
+        <label>{{ 'LOGIN.CONFIRM_PASSWORD' | translate }}</label>
+        <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" autocomplete="new-password" [placeholder]="'LOGIN.CONFIRM_PASSWORD_PLACEHOLDER' | translate" />
       </div>
 
       <p class="error-msg" *ngIf="error">{{ error }}</p>
 
       <button type="submit" class="submit-btn" [disabled]="loading">
-        {{ loading ? 'Please wait…' : (mode === 'login' ? 'Sign in' : 'Create account') }}
+        {{ loading ? ('LOGIN.PLEASE_WAIT' | translate) : (mode === 'login' ? ('LOGIN.SIGN_IN' | translate) : ('LOGIN.CREATE_ACCOUNT' | translate)) }}
       </button>
 
     </form>

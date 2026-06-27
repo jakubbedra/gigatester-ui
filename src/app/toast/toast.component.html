@@ -1,0 +1,8 @@
+<div class="toast-container">
+  <div *ngFor="let t of toasts"
+       class="toast"
+       [class.visible]="t.visible">
+    <span *ngIf="t.icon" class="toast-icon">{{ t.icon }}</span>
+    <span class="toast-message">{{ t.message }}</span>
+  </div>
+</div>

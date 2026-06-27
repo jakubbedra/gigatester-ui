@@ -1,25 +1,25 @@
 <div class="account-page" *ngIf="user">
 
   <div class="page-header">
-    <h1 class="page-title">Account settings</h1>
+    <h1 class="page-title">{{ 'ACCOUNT.TITLE' | translate }}</h1>
   </div>
 
   <!-- Profile picture -->
   <div class="card">
-    <div class="card-title">Profile picture</div>
+    <div class="card-title">{{ 'ACCOUNT.PROFILE_PICTURE' | translate }}</div>
     <div class="avatar-row">
       <div class="avatar-wrap">
-        <img [src]="avatarUrl || 'assets/img/avatar.jpg'" class="avatar" alt="Profile picture" />
+        <img [src]="avatarUrl || 'assets/img/avatar.jpg'" class="avatar" [attr.alt]="'ACCOUNT.PROFILE_PICTURE' | translate" />
         <label class="avatar-overlay" [class.loading]="pictureLoading">
-          <span *ngIf="!pictureLoading">Change</span>
-          <span *ngIf="pictureLoading">Uploading…</span>
+          <span *ngIf="!pictureLoading">{{ 'ACCOUNT.CHANGE' | translate }}</span>
+          <span *ngIf="pictureLoading">{{ 'ACCOUNT.UPLOADING' | translate }}</span>
           <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
         </label>
       </div>
       <div class="avatar-info">
         <div class="avatar-name">{{ displayName }}</div>
         <div class="avatar-role">{{ user.role }}</div>
-        <p class="avatar-hint">Click the picture to upload a new one.</p>
+        <p class="avatar-hint">{{ 'ACCOUNT.UPLOAD_HINT' | translate }}</p>
         <p class="error-msg" *ngIf="pictureError">{{ pictureError }}</p>
       </div>
     </div>
@@ -27,20 +27,20 @@
 
   <!-- Change password -->
   <div class="card" *ngIf="user.username !== 'admin'">
-    <div class="card-title">Change password</div>
+    <div class="card-title">{{ 'ACCOUNT.CHANGE_PASSWORD' | translate }}</div>
     <form (ngSubmit)="changePassword()">
       <div class="form-fields">
         <div class="field">
-          <label>Current password</label>
-          <input type="password" [(ngModel)]="currentPassword" name="currentPassword" placeholder="Enter current password" />
+          <label>{{ 'ACCOUNT.CURRENT_PASSWORD' | translate }}</label>
+          <input type="password" [(ngModel)]="currentPassword" name="currentPassword" [placeholder]="'ACCOUNT.CURRENT_PASSWORD_PLACEHOLDER' | translate" />
         </div>
         <div class="field">
-          <label>New password</label>
-          <input type="password" [(ngModel)]="newPassword" name="newPassword" placeholder="Enter new password" />
+          <label>{{ 'ACCOUNT.NEW_PASSWORD' | translate }}</label>
+          <input type="password" [(ngModel)]="newPassword" name="newPassword" [placeholder]="'ACCOUNT.NEW_PASSWORD_PLACEHOLDER' | translate" />
         </div>
         <div class="field">
-          <label>Confirm new password</label>
-          <input type="password" [(ngModel)]="confirmNewPassword" name="confirmNewPassword" placeholder="Repeat new password" />
+          <label>{{ 'ACCOUNT.CONFIRM_PASSWORD' | translate }}</label>
+          <input type="password" [(ngModel)]="confirmNewPassword" name="confirmNewPassword" [placeholder]="'ACCOUNT.CONFIRM_PASSWORD_PLACEHOLDER' | translate" />
         </div>
       </div>
       <div class="form-footer">
@@ -49,7 +49,7 @@
           <p class="success-msg" *ngIf="passwordSuccess">{{ passwordSuccess }}</p>
         </div>
         <button type="submit" class="submit-btn" [disabled]="passwordLoading">
-          {{ passwordLoading ? 'Saving…' : 'Change password' }}
+          {{ passwordLoading ? ('ACCOUNT.SAVING' | translate) : ('ACCOUNT.CHANGE_PASSWORD' | translate) }}
         </button>
       </div>
     </form>

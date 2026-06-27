@@ -353,3 +353,28 @@
   background: rgba(240, 80, 80, 0.1);
   color: #f07070;
 }
+
+/* ── Streak display ── */
+.streak-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: #c8c8e8;
+}
+
+.streak-fire {
+  font-size: 1rem;
+}
+
+.streak-count {
+  font-weight: 700;
+  color: #ff8c42;
+  font-size: 1rem;
+}
+
+.streak-label {
+  color: #9090b0;
+}
+

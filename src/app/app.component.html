@@ -7,10 +7,10 @@
 
     <!-- Mobile top bar -->
     <header class="mobile-topbar">
-      <button class="hamburger" (click)="toggleSidebar()" aria-label="Open menu">
+      <button class="hamburger" (click)="toggleSidebar()" [attr.aria-label]="'APP.OPEN_MENU' | translate">
         <span></span><span></span><span></span>
       </button>
-      <span class="mobile-title">Gigatester</span>
+      <span class="mobile-title">{{ 'APP.TITLE' | translate }}</span>
     </header>
 
     <!-- Overlay backdrop (mobile only) -->
@@ -18,11 +18,13 @@
 
     <!-- Sidebar -->
     <aside class="sidebar" [class.open]="sidebarOpen">
-      <button class="sidebar-close" (click)="closeSidebar()" aria-label="Close menu">✕</button>
+      <button class="sidebar-close" (click)="closeSidebar()" [attr.aria-label]="'APP.CLOSE_MENU' | translate">✕</button>
       <app-sidebar></app-sidebar>
       <div class="sidebar-footer">
         <span class="sidebar-user">{{ user?.username }}</span>
-        <button class="logout-btn" (click)="logout()">Sign out</button>
+        <button class="flag-btn" [class.active]="lang.current() === 'en'" (click)="lang.use('en')" title="English">🇬🇧</button>
+        <button class="flag-btn" [class.active]="lang.current() === 'pl'" (click)="lang.use('pl')" title="Polski">🇵🇱</button>
+        <button class="logout-btn" (click)="logout()">{{ 'APP.SIGN_OUT' | translate }}</button>
       </div>
     </aside>
 
@@ -32,3 +34,5 @@
 
   </div>
 </ng-template>
+
+<app-toast></app-toast>

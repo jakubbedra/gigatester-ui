@@ -6,12 +6,12 @@
     <!-- In-progress state banner -->
     <div class="resume-banner" *ngIf="existingState && !showNewForm">
       <div class="resume-info">
-        <span class="resume-label">You have an unfinished attempt</span>
-        <span class="resume-meta">{{ existingState.mode }} · {{ existingState.displayType === 'ALL_AT_ONCE' ? 'All at once' : 'One by one' }} · question {{ existingState.currentQuestionIndex + 1 }} / {{ existingState.currentQuestionsCount }}</span>
+        <span class="resume-label">{{ 'TEST_VIEW.CONTINUE_TEST' | translate }}</span>
+        <span class="resume-meta">{{ existingState.mode }} · {{ existingState.displayType === 'ALL_AT_ONCE' ? ('TEST_VIEW.ALL_AT_ONCE' | translate) : ('TEST_VIEW.ONE_BY_ONE' | translate) }} · question {{ existingState.currentQuestionIndex + 1 }} / {{ existingState.currentQuestionsCount }}</span>
       </div>
       <div class="resume-actions">
-        <button type="button" class="resume-btn primary" (click)="continueTest()">Continue</button>
-        <button type="button" class="resume-btn secondary" (click)="showNewForm = true">Start new</button>
+        <button type="button" class="resume-btn primary" (click)="continueTest()">{{ 'TEST_VIEW.CONTINUE_TEST' | translate }}</button>
+        <button type="button" class="resume-btn secondary" (click)="showNewForm = true">{{ 'TEST_VIEW.NEW_TEST' | translate }}</button>
       </div>
     </div>
 
@@ -19,17 +19,17 @@
 
       <!-- Mode -->
       <div class="field-section">
-        <div class="field-label">Mode</div>
+        <div class="field-label">{{ 'TEST_VIEW.MODE' | translate }}</div>
         <div class="toggle-row">
           <button type="button" class="toggle-btn"
                   [class.active]="form.get('mode')?.value === 'EXAM'"
                   (click)="form.get('mode')?.setValue('EXAM')">
-            Exam
+            {{ 'TEST_VIEW.EXAM' | translate }}
           </button>
           <button type="button" class="toggle-btn"
                   [class.active]="form.get('mode')?.value === 'LEARNING'"
                   (click)="form.get('mode')?.setValue('LEARNING')">
-            Learning
+            {{ 'TEST_VIEW.LEARNING' | translate }}
           </button>
         </div>
       </div>
@@ -40,8 +40,8 @@
 
           <div class="form-group">
             <label>
-              Closed questions
-              <span class="avail">/ {{ availableClosed }} available</span>
+              {{ 'TEST_VIEW.CLOSED_QUESTIONS' | translate }}
+              <span class="avail">/ {{ availableClosed }} {{ 'TEST_VIEW.AVAILABLE' | translate }}</span>
             </label>
             <input type="number" formControlName="closedQuestionsCount" min="0" [max]="availableClosed">
             <span class="field-error" *ngIf="validationErrors?.['tooManyClosed']">
@@ -51,8 +51,8 @@
 
           <div class="form-group">
             <label>
-              Open questions
-              <span class="avail">/ {{ availableOpen }} available</span>
+              {{ 'TEST_VIEW.OPEN_QUESTIONS' | translate }}
+              <span class="avail">/ {{ availableOpen }} {{ 'TEST_VIEW.AVAILABLE' | translate }}</span>
             </label>
             <input type="number" formControlName="openQuestionsCount" min="0" [max]="availableOpen">
             <span class="field-error" *ngIf="validationErrors?.['tooManyOpen']">
@@ -61,7 +61,7 @@
           </div>
 
           <div class="form-group passing-group">
-            <label>Passing percentage</label>
+            <label>{{ 'TEST_VIEW.PASSING_PERCENTAGE' | translate }}</label>
             <div class="input-suffix-wrap">
               <input type="number" formControlName="passingPercentage" min="0" max="100">
               <span class="suffix">%</span>
@@ -77,7 +77,10 @@
 
       <!-- Tag filter -->
       <div class="field-section" *ngIf="allTags.length > 0">
-        <div class="field-label">Tag filter <span class="field-hint">(leave empty to include all questions)</span></div>
+        <div class="field-label">
+          {{ 'TEST_VIEW.TAG_FILTER' | translate }}
+          <span class="field-hint">({{ 'TEST_VIEW.TAG_FILTER_HINT' | translate }})</span>
+        </div>
         <div class="tag-filter-chips">
           <button type="button" class="tag-filter-chip"
                   *ngFor="let t of allTags"
@@ -86,26 +89,32 @@
             {{ t.key }}
           </button>
         </div>
+        <div class="tag-mode-toggle" *ngIf="selectedTags.length > 0">
+          <button type="button" class="tag-mode-btn" [class.active]="!excludeTags"
+                  (click)="excludeTags = false; onExcludeToggle()">{{ 'TEST_VIEW.TAG_INCLUDE' | translate }}</button>
+          <button type="button" class="tag-mode-btn" [class.active]="excludeTags"
+                  (click)="excludeTags = true; onExcludeToggle()">{{ 'TEST_VIEW.TAG_EXCLUDE' | translate }}</button>
+        </div>
       </div>
 
       <!-- Display type -->
       <div class="field-section">
-        <div class="field-label">Display</div>
+        <div class="field-label">{{ 'TEST_VIEW.DISPLAY_TYPE' | translate }}</div>
         <div class="toggle-row">
           <button type="button" class="toggle-btn"
                   [class.active]="form.get('displayType')?.value === 'ONE_BY_ONE'"
                   (click)="form.get('displayType')?.setValue('ONE_BY_ONE')">
-            One by one
+            {{ 'TEST_VIEW.ONE_BY_ONE' | translate }}
           </button>
           <button type="button" class="toggle-btn"
                   [class.active]="form.get('displayType')?.value === 'ALL_AT_ONCE'"
                   (click)="form.get('displayType')?.setValue('ALL_AT_ONCE')">
-            All at once
+            {{ 'TEST_VIEW.ALL_AT_ONCE' | translate }}
           </button>
         </div>
       </div>
 
-      <button type="submit" class="start-btn" [disabled]="form.invalid">Start</button>
+      <button type="submit" class="start-btn" [disabled]="form.invalid">{{ 'TEST_VIEW.START_TEST' | translate }}</button>
 
     </form>
   </div>

@@ -1,25 +1,25 @@
 <div class="page" *ngIf="!loading; else loader">
 
   <div class="page-header">
-    <button class="btn-back" (click)="back()">← Crosswords</button>
-    <h1 class="page-title">Edit Crossword</h1>
+    <button class="btn-back" (click)="back()">← {{ 'CROSSWORD_EDIT.BACK' | translate }}</button>
+    <h1 class="page-title">{{ 'CROSSWORD_EDIT.TITLE' | translate }}</h1>
   </div>
 
   <div class="meta-card">
     <div class="form-group">
-      <label>Crossword Name</label>
-      <input type="text" [(ngModel)]="crosswordName" placeholder="Crossword name" />
+      <label>{{ 'CROSSWORD_EDIT.NAME' | translate }}</label>
+      <input type="text" [(ngModel)]="crosswordName" [placeholder]="'CROSSWORD_EDIT.NAME' | translate" />
     </div>
     <div class="meta-actions">
       <button class="btn-save" (click)="save()" [disabled]="saving || !crosswordName.trim()">
-        {{ saving ? 'Saving…' : 'Save Changes' }}
+        {{ saving ? ('CROSSWORD_EDIT.SAVING' | translate) : ('CROSSWORD_EDIT.SAVE' | translate) }}
       </button>
     </div>
   </div>
 
   <div class="section-header">
-    <h2 class="section-title">Terms <span class="count">{{ terms.length }}</span></h2>
-    <button class="btn-add-term" (click)="addTerm()">+ Add Term</button>
+    <h2 class="section-title">{{ 'CROSSWORD_EDIT.TERMS' | translate }} <span class="count">{{ terms.length }}</span></h2>
+    <button class="btn-add-term" (click)="addTerm()">+ {{ 'CROSSWORD_EDIT.ADD_TERM' | translate }}</button>
   </div>
 
   <div class="terms-list" *ngIf="terms.length > 0; else noTerms">
@@ -35,8 +35,8 @@
         </div>
         <span class="clue-badge" [class.url]="t.clueType === 'URL'">{{ t.clueType }}</span>
         <div class="row-actions">
-          <button class="btn-edit" (click)="openEdit(i)" title="Edit">✎</button>
-          <button class="btn-remove" (click)="removeTerm(i)" title="Remove">✕</button>
+          <button class="btn-edit" (click)="openEdit(i)" [title]="'CROSSWORD_EDIT.EDIT' | translate">✎</button>
+          <button class="btn-remove" (click)="removeTerm(i)" [title]="'CROSSWORD_EDIT.REMOVE' | translate">✕</button>
         </div>
       </ng-container>
 
@@ -45,15 +45,15 @@
         <div class="term-index">{{ i + 1 }}</div>
         <div class="term-edit-fields">
           <div class="edit-field-group">
-            <label>Term</label>
+            <label>{{ 'CROSSWORD_EDIT.TERM' | translate }}</label>
             <input type="text" [(ngModel)]="editDraft.term" placeholder="Term (e.g. Paris)" autofocus />
           </div>
           <div class="edit-field-group clue-group">
-            <label>Clue</label>
+            <label>{{ 'CROSSWORD_EDIT.CLUE' | translate }}</label>
             <input type="text" [(ngModel)]="editDraft.clue" placeholder="Clue / hint" />
           </div>
           <div class="edit-field-group type-group">
-            <label>Type</label>
+            <label>{{ 'CROSSWORD_EDIT.TYPE' | translate }}</label>
             <select [(ngModel)]="editDraft.clueType">
               <option *ngFor="let ct of clueTypes" [value]="ct">{{ ct }}</option>
             </select>
@@ -71,12 +71,12 @@
   <ng-template #noTerms>
     <div class="empty-state">
       <div class="empty-icon">🔠</div>
-      <p>No terms yet. Click <strong>+ Add Term</strong> to begin.</p>
+      <p>{{ 'CROSSWORD_EDIT.EMPTY' | translate }}</p>
     </div>
   </ng-template>
 
 </div>
 
 <ng-template #loader>
-  <div class="loader">Loading…</div>
+  <div class="loader">{{ 'CROSSWORD_EDIT.LOADING' | translate }}</div>
 </ng-template>

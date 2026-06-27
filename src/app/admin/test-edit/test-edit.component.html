@@ -1,40 +1,40 @@
 <div class="page" *ngIf="!loading; else loader">
   <div class="page-header">
-    <button class="btn-back" (click)="back()">← Tests</button>
-    <h1 class="page-title">Edit Test</h1>
+    <button class="btn-back" (click)="back()">← {{ 'TEST_EDIT.BACK' | translate }}</button>
+    <h1 class="page-title">{{ 'TEST_EDIT.TITLE' | translate }}</h1>
   </div>
 
   <!-- Test meta -->
   <div class="meta-card">
     <div class="form-row">
       <div class="form-group">
-        <label>Test Name</label>
-        <input type="text" [(ngModel)]="testName" placeholder="Test name" />
+        <label>{{ 'TEST_EDIT.TEST_NAME' | translate }}</label>
+        <input type="text" [(ngModel)]="testName" [placeholder]="'TEST_EDIT.TEST_NAME' | translate" />
       </div>
       <div class="form-group small">
-        <label>Closed Questions</label>
+        <label>{{ 'TEST_EDIT.CLOSED_QUESTIONS' | translate }}</label>
         <input type="number" [(ngModel)]="test!.closedQuestionsCount" min="0" />
       </div>
       <div class="form-group small">
-        <label>Open Questions</label>
+        <label>{{ 'TEST_EDIT.OPEN_QUESTIONS' | translate }}</label>
         <input type="number" [(ngModel)]="test!.openQuestionsCount" min="0" />
       </div>
       <div class="form-group small">
-        <label>Passing %</label>
+        <label>{{ 'TEST_EDIT.PASSING' | translate }}</label>
         <input type="number" [(ngModel)]="test!.passingPercentage" min="0" max="100" />
       </div>
     </div>
     <div class="meta-actions">
       <button class="btn-save" (click)="save()" [disabled]="saving || !testName.trim()">
-        {{ saving ? 'Saving…' : 'Save Changes' }}
+        {{ saving ? ('TEST_EDIT.SAVE' | translate) : ('TEST_EDIT.SAVE' | translate) }}
       </button>
     </div>
   </div>
 
   <!-- Section header -->
   <div class="section-header">
-    <h2 class="section-title">Questions <span class="count">{{ questions.length }}</span></h2>
-    <button class="btn-add-question" (click)="openAddQuestion()">+ Add Question</button>
+    <h2 class="section-title">{{ 'TEST_EDIT.QUESTIONS' | translate }} <span class="count">{{ questions.length }}</span></h2>
+    <button class="btn-add-question" (click)="openAddQuestion()">+ {{ 'TEST_EDIT.ADD_QUESTION' | translate }}</button>
   </div>
 
   <!-- Questions list -->
@@ -49,7 +49,7 @@
                                         q.type === 'OPEN' ? asOpen(q).points :
                                         asStatement(q).points }} pts</span>
           <span class="html-badge" *ngIf="isHtml(q.content?.type)">HTML</span>
-          <span class="prop-badge" title="Content / Answer proportions">
+          <span class="prop-badge" [title]="'TEST_EDIT.CONTENT_AREA' | translate">
             {{ q.contentProportions || 1 }} : {{ q.answerProportions || 2 }}
           </span>
         </div>
@@ -61,7 +61,7 @@
 
         <!-- CLOSED details -->
         <ng-container *ngIf="q.type === 'CLOSED'">
-          <div class="detail-label">{{ asClosed(q).multipleChoice ? 'Multiple choice' : 'Single choice' }}</div>
+          <div class="detail-label">{{ asClosed(q).multipleChoice ? ('TEST_EDIT.MULTIPLE_CHOICE' | translate) : ('TEST_EDIT.SINGLE_CHOICE' | translate) }}</div>
           <div class="answers-grid">
             <div class="answer" *ngFor="let a of asClosed(q).answers" [class.correct]="a.correct">
               <span class="answer-indicator">{{ a.correct ? '✓' : '✗' }}</span>
@@ -73,18 +73,18 @@
 
         <!-- OPEN details -->
         <ng-container *ngIf="q.type === 'OPEN'">
-          <div class="detail-label">Expected answer</div>
+          <div class="detail-label">{{ 'TEST_EDIT.EXPECTED_ANSWER' | translate }}</div>
           <div class="open-answer html-content" *ngIf="isHtml(asOpen(q).answer?.type)"
                [innerHTML]="safe(asOpen(q).answer.text)"></div>
           <div class="open-answer" *ngIf="!isHtml(asOpen(q).answer?.type)">{{ asOpen(q).answer?.text }}</div>
           <ng-container *ngIf="(asOpen(q).answerVariations || []).length > 0">
-            <div class="detail-label">Variations</div>
+            <div class="detail-label">{{ 'TEST_EDIT.VARIATIONS' | translate }}</div>
             <div class="variations">
               <span class="variation" *ngFor="let v of asOpen(q).answerVariations">{{ v.text }}</span>
             </div>
           </ng-container>
           <ng-container *ngIf="(asOpen(q).gradingRules || []).length > 0">
-            <div class="detail-label">Grading rules</div>
+            <div class="detail-label">{{ 'TEST_EDIT.GRADING_RULES' | translate }}</div>
             <div class="tags">
               <span class="tag" *ngFor="let r of asOpen(q).gradingRules">{{ r }}</span>
             </div>
@@ -98,7 +98,7 @@
               <span class="stmt-index">{{ si + 1 }}</span>
               <span class="stmt-text">{{ s.text }}</span>
               <span class="stmt-answer" [class.true]="s.answer" [class.false]="!s.answer">
-                {{ s.answer ? 'True' : 'False' }}
+                {{ s.answer ? ('TEST_EDIT.TRUE' | translate) : ('TEST_EDIT.FALSE' | translate) }}
               </span>
             </div>
           </div>
@@ -111,7 +111,7 @@
       </div>
 
       <div class="row-actions">
-        <button class="btn-edit" (click)="openEdit(q)" title="Edit question">✎</button>
+        <button class="btn-edit" (click)="openEdit(q)" [title]="'TEST_EDIT.EDIT_QUESTION' | translate">✎</button>
         <button class="btn-remove" (click)="removeQuestion(q.id)" title="Remove from test">✕</button>
       </div>
     </div>
@@ -120,7 +120,7 @@
   <ng-template #noQuestions>
     <div class="empty-state">
       <div class="empty-icon">❓</div>
-      <p>No questions yet. Click <strong>+ Add Question</strong> to create one.</p>
+      <p>{{ 'TEST_EDIT.NO_ANSWERS' | translate }}</p>
     </div>
   </ng-template>
 </div>
@@ -138,7 +138,7 @@
 
     <div class="modal-header">
       <h2 class="modal-title">
-        Edit Question
+        {{ 'TEST_EDIT.EDIT_QUESTION' | translate }}
         <span class="type-badge" [class]="'type-' + editDraft.type.toLowerCase()">{{ editDraft.type }}</span>
       </h2>
       <button class="btn-close" (click)="closeEdit()">✕</button>
@@ -147,42 +147,42 @@
     <!-- ── Content text ── -->
     <div class="form-group">
       <div class="label-row">
-        <label>Question Text <span class="type-hint">{{ editDraft.content?.type }}</span></label>
+        <label>{{ 'TEST_EDIT.QUESTION_TEXT' | translate }} <span class="type-hint">{{ editDraft.content?.type }}</span></label>
         <div class="label-actions" *ngIf="isHtml(editDraft.content?.type)">
           <label class="btn-upload" [class.uploading]="uploadingImage">
             <input type="file" accept="image/*" (change)="uploadImage($event)" hidden />
-            {{ uploadingImage ? 'Uploading…' : '📎 Upload Image' }}
+            {{ uploadingImage ? ('TEST_EDIT.UPLOADING' | translate) : ('TEST_EDIT.UPLOAD_IMAGE' | translate) }}
           </label>
         </div>
       </div>
       <!-- Split editor+preview for HTML -->
       <div class="split-editor" *ngIf="isHtml(editDraft.content?.type)">
         <textarea rows="6" [(ngModel)]="editDraft.content.text"
-                  placeholder="Enter HTML…" class="split-textarea"></textarea>
+                  [placeholder]="'TEST_EDIT.QUESTION_TEXT' | translate" class="split-textarea"></textarea>
         <div class="split-preview html-content"
              [innerHTML]="safe(editDraft.content.text || '')"></div>
       </div>
       <!-- Plain textarea for TEXT -->
       <textarea *ngIf="!isHtml(editDraft.content?.type)" rows="4"
                 [(ngModel)]="editDraft.content.text"
-                placeholder="Question text"></textarea>
+                [placeholder]="'TEST_EDIT.QUESTION_TEXT' | translate"></textarea>
     </div>
 
     <!-- ── Points + proportions ── -->
     <div class="proportions-row">
       <div class="form-group form-group-inline">
-        <label>Points</label>
+        <label>{{ 'TEST_EDIT.POINTS' | translate }}</label>
         <input type="number" [(ngModel)]="editDraft.points" min="0" />
       </div>
       <div class="form-group prop-group">
-        <label>Content area <span class="prop-val">{{ editDraft.contentProportions || 1 }}</span></label>
+        <label>{{ 'TEST_EDIT.CONTENT_AREA' | translate }} <span class="prop-val">{{ editDraft.contentProportions || 1 }}</span></label>
         <input type="range" min="1" max="10" step="1"
                [ngModel]="editDraft.contentProportions || 1"
                (ngModelChange)="editDraft.contentProportions = $event"
                class="scale-slider" />
       </div>
       <div class="form-group prop-group">
-        <label>Answer area <span class="prop-val">{{ editDraft.answerProportions || 2 }}</span></label>
+        <label>{{ 'TEST_EDIT.ANSWER_AREA' | translate }} <span class="prop-val">{{ editDraft.answerProportions || 2 }}</span></label>
         <input type="range" min="1" max="10" step="1"
                [ngModel]="editDraft.answerProportions || 2"
                (ngModelChange)="editDraft.answerProportions = $event"
@@ -195,17 +195,17 @@
       <div class="form-group form-group-checkbox">
         <label>
           <input type="checkbox" [(ngModel)]="editDraft.multipleChoice" />
-          Multiple choice
+          {{ 'TEST_EDIT.MULTIPLE_CHOICE' | translate }}
         </label>
       </div>
       <div class="form-group">
         <div class="label-row">
-          <label>Answers</label>
-          <button class="btn-add-item" (click)="addAnswer()">+ Add</button>
+          <label>{{ 'TEST_EDIT.ANSWERS' | translate }}</label>
+          <button class="btn-add-item" (click)="addAnswer()">+ {{ 'TEST_EDIT.ADD' | translate }}</button>
         </div>
         <div class="edit-answers">
           <div class="edit-answer-row" *ngFor="let a of editDraft.answers; let ai = index">
-            <input type="text" [(ngModel)]="a.text" placeholder="Answer text" class="flex-input" />
+            <input type="text" [(ngModel)]="a.text" [placeholder]="'TEST_EDIT.ANSWERS' | translate" class="flex-input" />
             <input type="number" [(ngModel)]="a.points" min="0" placeholder="pts" class="pts-input" />
             <label class="correct-toggle" [class.active]="a.correct" (click)="a.correct = !a.correct">✓</label>
             <button class="btn-remove-item" (click)="removeAnswer(ai)">✕</button>
@@ -217,23 +217,23 @@
     <!-- ── OPEN ── -->
     <ng-container *ngIf="editDraft.type === 'OPEN'">
       <div class="form-group">
-        <label>Expected Answer <span class="type-hint">{{ editDraft.answer?.type }}</span></label>
+        <label>{{ 'TEST_EDIT.EXPECTED_ANSWER' | translate }} <span class="type-hint">{{ editDraft.answer?.type }}</span></label>
         <textarea rows="2" [(ngModel)]="editDraft.answer.text" placeholder="Correct answer"></textarea>
       </div>
       <div class="form-group">
         <div class="label-row">
-          <label>Answer Variations</label>
-          <button class="btn-add-item" (click)="addVariation()">+ Add</button>
+          <label>{{ 'TEST_EDIT.ANSWER_VARIATIONS' | translate }}</label>
+          <button class="btn-add-item" (click)="addVariation()">+ {{ 'TEST_EDIT.ADD' | translate }}</button>
         </div>
         <div class="variations-edit">
           <div class="variation-row" *ngFor="let v of editDraft.answerVariations; let vi = index">
-            <input type="text" [(ngModel)]="v.text" placeholder="Variation" class="flex-input" />
+            <input type="text" [(ngModel)]="v.text" [placeholder]="'TEST_EDIT.VARIATION' | translate" class="flex-input" />
             <button class="btn-remove-item" (click)="removeVariation(vi)">✕</button>
           </div>
         </div>
       </div>
       <div class="form-group">
-        <label>Grading Rules</label>
+        <label>{{ 'TEST_EDIT.GRADING_RULES_LABEL' | translate }}</label>
         <div class="rule-toggles">
           <label class="rule-toggle" *ngFor="let r of gradingRuleOptions"
                  [class.active]="hasGradingRule(r)" (click)="toggleGradingRule(r)">{{ r }}</label>
@@ -245,15 +245,15 @@
     <ng-container *ngIf="editDraft.type === 'STATEMENT'">
       <div class="form-group">
         <div class="label-row">
-          <label>Statements</label>
-          <button class="btn-add-item" (click)="addStatement()">+ Add</button>
+          <label>{{ 'TEST_EDIT.STATEMENTS' | translate }}</label>
+          <button class="btn-add-item" (click)="addStatement()">+ {{ 'TEST_EDIT.ADD' | translate }}</button>
         </div>
         <div class="edit-statements">
           <div class="edit-stmt-row" *ngFor="let s of editDraft.statements; let si = index">
             <span class="stmt-num">{{ si + 1 }}</span>
             <input type="text" [(ngModel)]="s.text" placeholder="Statement text" class="flex-input" />
             <label class="bool-toggle" [class.true]="s.answer" [class.false]="!s.answer"
-                   (click)="s.answer = !s.answer">{{ s.answer ? 'True' : 'False' }}</label>
+                   (click)="s.answer = !s.answer">{{ s.answer ? ('TEST_EDIT.TRUE' | translate) : ('TEST_EDIT.FALSE' | translate) }}</label>
             <button class="btn-remove-item" (click)="removeStatement(si)">✕</button>
           </div>
         </div>
@@ -263,7 +263,7 @@
     <!-- ── Tags ── -->
     <div class="form-group tag-section">
       <div class="label-row">
-        <label>Tags</label>
+        <label>{{ 'TEST_EDIT.TAGS' | translate }}</label>
       </div>
 
       <div class="assigned-tags" *ngIf="(editDraft.tags || []).length > 0">
@@ -279,7 +279,7 @@
              (focus)="tagDropdownOpen = true"
              (input)="tagDropdownOpen = true"
              (blur)="onTagBlur()"
-             placeholder="Search or create tag…" />
+             [placeholder]="'TEST_EDIT.SEARCH_TAG' | translate" />
 
       <div class="tag-suggestions" *ngIf="tagDropdownOpen && (filteredTags.length > 0 || canCreateTag)"
            (mousedown)="$event.preventDefault()">
@@ -287,7 +287,7 @@
           {{ t.key }}
         </button>
         <button class="tag-suggestion tag-suggestion-create" *ngIf="canCreateTag" (click)="createAndAssignTag()">
-          + Create "{{ tagSearch.trim() }}"
+          + {{ 'TEST_EDIT.CREATE_TAG' | translate }} "{{ tagSearch.trim() }}"
         </button>
       </div>
     </div>
@@ -295,7 +295,7 @@
     <!-- ── Test preview ── -->
     <div class="preview-section">
       <button class="btn-preview-section" (click)="showPreview = !showPreview">
-        {{ showPreview ? '▲ Hide' : '▼ Show' }} Test Preview
+        {{ showPreview ? ('TEST_EDIT.HIDE' | translate) : ('TEST_EDIT.SHOW' | translate) }} {{ 'TEST_EDIT.TEST_PREVIEW' | translate }}
       </button>
 
       <div class="test-preview-card" *ngIf="showPreview">
@@ -317,14 +317,14 @@
                           [class.radio]="!editDraft.multipleChoice"></span>
                     {{ a.text || '…' }}
                   </button>
-                  <div class="tp-empty-hint" *ngIf="!editDraft.answers?.length">No answers added yet</div>
+                  <div class="tp-empty-hint" *ngIf="!editDraft.answers?.length">{{ 'TEST_EDIT.NO_ANSWERS' | translate }}</div>
                 </div>
               </ng-container>
 
               <!-- OPEN preview -->
               <ng-container *ngIf="editDraft.type === 'OPEN'">
                 <div class="tp-open">
-                  <textarea class="tp-textarea" placeholder="Student's answer will appear here…" disabled></textarea>
+                  <textarea class="tp-textarea" [placeholder]="'TEST_EDIT.STUDENT_ANSWER' | translate" disabled></textarea>
                 </div>
               </ng-container>
 
@@ -335,11 +335,11 @@
                     <span class="tp-stmt-num">{{ si + 1 }}</span>
                     <span class="tp-stmt-text">{{ s.text || '…' }}</span>
                     <div class="tp-bool-btns">
-                      <button class="tp-bool-btn">True</button>
-                      <button class="tp-bool-btn">False</button>
+                      <button class="tp-bool-btn">{{ 'TEST_EDIT.TRUE' | translate }}</button>
+                      <button class="tp-bool-btn">{{ 'TEST_EDIT.FALSE' | translate }}</button>
                     </div>
                   </div>
-                  <div class="tp-empty-hint" *ngIf="!editDraft.statements?.length">No statements added yet</div>
+                  <div class="tp-empty-hint" *ngIf="!editDraft.statements?.length">{{ 'TEST_EDIT.NO_STATEMENTS' | translate }}</div>
                 </div>
               </ng-container>
             </div>
@@ -349,17 +349,17 @@
           <div class="tp-side">
             <div class="tp-side-title">{{ testName || 'Test name' }}</div>
             <div class="tp-side-card">
-              <div class="tp-side-label">Progress</div>
+              <div class="tp-side-label">{{ 'QUESTION_CARD.PROGRESS' | translate }}</div>
               <div class="tp-progress-bar"><div class="tp-progress-fill" style="width: 40%"></div></div>
               <div class="tp-counter">? / ?</div>
             </div>
             <div class="tp-side-card">
-              <div class="tp-side-label">Actions</div>
-              <button class="tp-action-btn">Submit Answer</button>
+              <div class="tp-side-label">{{ 'QUESTION_CARD.ACTIONS' | translate }}</div>
+              <button class="tp-action-btn">{{ 'QUESTION_CARD.SUBMIT_ANSWER' | translate }}</button>
             </div>
             <div class="tp-prop-info">
-              <span>Content: <strong>{{ editDraft.contentProportions || 1 }}</strong></span>
-              <span>Answer: <strong>{{ editDraft.answerProportions || 2 }}</strong></span>
+              <span>{{ 'TEST_EDIT.CONTENT_AREA' | translate }}: <strong>{{ editDraft.contentProportions || 1 }}</strong></span>
+              <span>{{ 'TEST_EDIT.ANSWER_AREA' | translate }}: <strong>{{ editDraft.answerProportions || 2 }}</strong></span>
             </div>
           </div>
         </div>
@@ -367,9 +367,9 @@
     </div>
 
     <div class="modal-actions">
-      <button class="btn-secondary" (click)="closeEdit()">Cancel</button>
+      <button class="btn-secondary" (click)="closeEdit()">{{ 'TEST_EDIT.CANCEL' | translate }}</button>
       <button class="btn-primary" (click)="saveQuestionEdit()" [disabled]="savingQuestion">
-        {{ savingQuestion ? 'Saving…' : 'Save Question' }}
+        {{ savingQuestion ? ('TEST_EDIT.SAVE' | translate) : ('TEST_EDIT.SAVE_QUESTION' | translate) }}
       </button>
     </div>
   </div>
@@ -383,27 +383,27 @@
   <div class="modal" (click)="stopPropagation($event)">
 
     <div class="modal-header">
-      <h2 class="modal-title">Add Question</h2>
+      <h2 class="modal-title">{{ 'TEST_EDIT.CREATE_QUESTION' | translate }}</h2>
       <button class="btn-close" (click)="cancelAdd()">✕</button>
     </div>
 
     <!-- Type selector -->
     <div class="type-selector">
-      <button class="type-tab" [class.active]="addType === 'CLOSED'"   (click)="setAddType('CLOSED')">Closed</button>
-      <button class="type-tab" [class.active]="addType === 'OPEN'"     (click)="setAddType('OPEN')">Open</button>
-      <button class="type-tab" [class.active]="addType === 'STATEMENT'" (click)="setAddType('STATEMENT')">Statement</button>
+      <button class="type-tab" [class.active]="addType === 'CLOSED'"   (click)="setAddType('CLOSED')">{{ 'TEST_EDIT.TYPE_CLOSED' | translate }}</button>
+      <button class="type-tab" [class.active]="addType === 'OPEN'"     (click)="setAddType('OPEN')">{{ 'TEST_EDIT.TYPE_OPEN' | translate }}</button>
+      <button class="type-tab" [class.active]="addType === 'STATEMENT'" (click)="setAddType('STATEMENT')">{{ 'TEST_EDIT.TYPE_STATEMENT' | translate }}</button>
     </div>
 
     <ng-container *ngIf="addDraft">
       <!-- Content text -->
       <div class="form-group">
         <div class="label-row">
-          <label>Question Text</label>
+          <label>{{ 'TEST_EDIT.QUESTION_TEXT' | translate }}</label>
           <div class="content-type-toggle">
             <button class="mini-tab" [class.active]="addDraft.content.type === 'TEXT'"
-                    (click)="addDraft.content.type = 'TEXT'">Text</button>
+                    (click)="addDraft.content.type = 'TEXT'">{{ 'TEST_EDIT.FORMAT_TEXT' | translate }}</button>
             <button class="mini-tab" [class.active]="addDraft.content.type === 'HTML'"
-                    (click)="addDraft.content.type = 'HTML'; addDraft.content.text = addDraft.content.text || htmlTemplate">HTML</button>
+                    (click)="addDraft.content.type = 'HTML'; addDraft.content.text = addDraft.content.text || htmlTemplate">{{ 'TEST_EDIT.FORMAT_HTML' | translate }}</button>
           </div>
         </div>
         <!-- Split editor+preview for HTML -->
@@ -414,24 +414,24 @@
                [innerHTML]="safe(addDraft.content.text || '')"></div>
         </div>
         <textarea *ngIf="!isHtml(addDraft.content.type)" rows="4"
-                  [(ngModel)]="addDraft.content.text" placeholder="Question text"></textarea>
+                  [(ngModel)]="addDraft.content.text" [placeholder]="'TEST_EDIT.QUESTION_TEXT' | translate"></textarea>
         <div class="upload-note" *ngIf="isHtml(addDraft.content.type)">
-          💡 Images can be uploaded after the question is created (via Edit).
+          💡 {{ 'TEST_EDIT.IMAGE_HINT' | translate }}
         </div>
       </div>
 
       <!-- Points + proportions -->
       <div class="proportions-row">
         <div class="form-group form-group-inline">
-          <label>Points</label>
+          <label>{{ 'TEST_EDIT.POINTS' | translate }}</label>
           <input type="number" [(ngModel)]="addDraft.points" min="0" />
         </div>
         <div class="form-group prop-group">
-          <label>Content area <span class="prop-val">{{ addDraft.contentProportions }}</span></label>
+          <label>{{ 'TEST_EDIT.CONTENT_AREA' | translate }} <span class="prop-val">{{ addDraft.contentProportions }}</span></label>
           <input type="range" min="1" max="10" step="1" [(ngModel)]="addDraft.contentProportions" class="scale-slider" />
         </div>
         <div class="form-group prop-group">
-          <label>Answer area <span class="prop-val">{{ addDraft.answerProportions }}</span></label>
+          <label>{{ 'TEST_EDIT.ANSWER_AREA' | translate }} <span class="prop-val">{{ addDraft.answerProportions }}</span></label>
           <input type="range" min="1" max="10" step="1" [(ngModel)]="addDraft.answerProportions" class="scale-slider" />
         </div>
       </div>
@@ -439,16 +439,16 @@
       <!-- CLOSED fields -->
       <ng-container *ngIf="addType === 'CLOSED'">
         <div class="form-group form-group-checkbox">
-          <label><input type="checkbox" [(ngModel)]="addDraft.multipleChoice" /> Multiple choice</label>
+          <label><input type="checkbox" [(ngModel)]="addDraft.multipleChoice" /> {{ 'TEST_EDIT.MULTIPLE_CHOICE' | translate }}</label>
         </div>
         <div class="form-group">
           <div class="label-row">
-            <label>Answers</label>
-            <button class="btn-add-item" (click)="addAnswer(addDraft)">+ Add</button>
+            <label>{{ 'TEST_EDIT.ANSWERS' | translate }}</label>
+            <button class="btn-add-item" (click)="addAnswer(addDraft)">+ {{ 'TEST_EDIT.ADD' | translate }}</button>
           </div>
           <div class="edit-answers">
             <div class="edit-answer-row" *ngFor="let a of addDraft.answers; let ai = index">
-              <input type="text" [(ngModel)]="a.text" placeholder="Answer text" class="flex-input" />
+              <input type="text" [(ngModel)]="a.text" [placeholder]="'TEST_EDIT.ANSWERS' | translate" class="flex-input" />
               <input type="number" [(ngModel)]="a.points" min="0" placeholder="pts" class="pts-input" />
               <label class="correct-toggle" [class.active]="a.correct" (click)="a.correct = !a.correct">✓</label>
               <button class="btn-remove-item" (click)="removeAnswer(ai, addDraft)">✕</button>
@@ -461,30 +461,30 @@
       <ng-container *ngIf="addType === 'OPEN'">
         <div class="form-group">
           <div class="label-row">
-            <label>Expected Answer</label>
+            <label>{{ 'TEST_EDIT.EXPECTED_ANSWER' | translate }}</label>
             <div class="content-type-toggle">
               <button class="mini-tab" [class.active]="addDraft.answer.type === 'TEXT'"
-                      (click)="addDraft.answer.type = 'TEXT'">Text</button>
+                      (click)="addDraft.answer.type = 'TEXT'">{{ 'TEST_EDIT.FORMAT_TEXT' | translate }}</button>
               <button class="mini-tab" [class.active]="addDraft.answer.type === 'HTML'"
-                      (click)="addDraft.answer.type = 'HTML'">HTML</button>
+                      (click)="addDraft.answer.type = 'HTML'">{{ 'TEST_EDIT.FORMAT_HTML' | translate }}</button>
             </div>
           </div>
           <textarea rows="2" [(ngModel)]="addDraft.answer.text" placeholder="Correct answer"></textarea>
         </div>
         <div class="form-group">
           <div class="label-row">
-            <label>Variations</label>
-            <button class="btn-add-item" (click)="addVariation(addDraft)">+ Add</button>
+            <label>{{ 'TEST_EDIT.VARIATIONS' | translate }}</label>
+            <button class="btn-add-item" (click)="addVariation(addDraft)">+ {{ 'TEST_EDIT.ADD' | translate }}</button>
           </div>
           <div class="variations-edit">
             <div class="variation-row" *ngFor="let v of addDraft.answerVariations; let vi = index">
-              <input type="text" [(ngModel)]="v.text" placeholder="Variation" class="flex-input" />
+              <input type="text" [(ngModel)]="v.text" [placeholder]="'TEST_EDIT.VARIATION' | translate" class="flex-input" />
               <button class="btn-remove-item" (click)="removeVariation(vi, addDraft)">✕</button>
             </div>
           </div>
         </div>
         <div class="form-group">
-          <label>Grading Rules</label>
+          <label>{{ 'TEST_EDIT.GRADING_RULES_LABEL' | translate }}</label>
           <div class="rule-toggles">
             <label class="rule-toggle" *ngFor="let r of gradingRuleOptions"
                    [class.active]="hasGradingRule(r, addDraft)" (click)="toggleGradingRule(r, addDraft)">{{ r }}</label>
@@ -496,15 +496,15 @@
       <ng-container *ngIf="addType === 'STATEMENT'">
         <div class="form-group">
           <div class="label-row">
-            <label>Statements</label>
-            <button class="btn-add-item" (click)="addStatement(addDraft)">+ Add</button>
+            <label>{{ 'TEST_EDIT.STATEMENTS' | translate }}</label>
+            <button class="btn-add-item" (click)="addStatement(addDraft)">+ {{ 'TEST_EDIT.ADD' | translate }}</button>
           </div>
           <div class="edit-statements">
             <div class="edit-stmt-row" *ngFor="let s of addDraft.statements; let si = index">
               <span class="stmt-num">{{ si + 1 }}</span>
               <input type="text" [(ngModel)]="s.text" placeholder="Statement text" class="flex-input" />
               <label class="bool-toggle" [class.true]="s.answer" [class.false]="!s.answer"
-                     (click)="s.answer = !s.answer">{{ s.answer ? 'True' : 'False' }}</label>
+                     (click)="s.answer = !s.answer">{{ s.answer ? ('TEST_EDIT.TRUE' | translate) : ('TEST_EDIT.FALSE' | translate) }}</label>
               <button class="btn-remove-item" (click)="removeStatement(si, addDraft)">✕</button>
             </div>
           </div>
@@ -513,9 +513,9 @@
     </ng-container>
 
     <div class="modal-actions">
-      <button class="btn-secondary" (click)="cancelAdd()">Cancel</button>
+      <button class="btn-secondary" (click)="cancelAdd()">{{ 'TEST_EDIT.CANCEL' | translate }}</button>
       <button class="btn-primary" (click)="createQuestion()" [disabled]="addingQuestion || !addDraft?.content?.text?.trim()">
-        {{ addingQuestion ? 'Creating…' : 'Create Question' }}
+        {{ addingQuestion ? ('TEST_EDIT.UPLOADING' | translate) : ('TEST_EDIT.ADD_QUESTION_BTN' | translate) }}
       </button>
     </div>
   </div>

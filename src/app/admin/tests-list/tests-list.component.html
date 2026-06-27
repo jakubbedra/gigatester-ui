@@ -1,14 +1,14 @@
 <div class="page">
   <div class="page-header">
     <div class="title-area">
-      <button class="back-btn" *ngIf="subjectId" (click)="goBack()">← Back</button>
-      <h1 class="page-title">{{ subjectName ?? 'Tests' }}</h1>
+      <button class="back-btn" *ngIf="subjectId" (click)="goBack()">← {{ 'TESTS_LIST.BACK' | translate }}</button>
+      <h1 class="page-title">{{ subjectName ?? ('TESTS_LIST.TITLE' | translate) }}</h1>
     </div>
-    <button class="btn-add" *ngIf="canModify && !subjectId" (click)="openAdd()">+ New Test</button>
+    <button class="btn-add" *ngIf="canModify && !subjectId" (click)="openAdd()">+ {{ 'TESTS_LIST.NEW_TEST' | translate }}</button>
   </div>
 
   <!-- Tests -->
-  <div class="section-label" *ngIf="subjectId">Tests</div>
+  <div class="section-label" *ngIf="subjectId">{{ 'TESTS_LIST.TITLE' | translate }}</div>
   <div class="grid" *ngIf="tests.length > 0; else emptyTests">
     <div class="card" *ngFor="let test of tests" (click)="openTest(test.id)">
       <div class="card-body">
@@ -18,8 +18,8 @@
       <div class="context-wrapper" *ngIf="canModify" (click)="stopPropagation($event)">
         <button class="ctx-btn" (click)="toggleMenu($event, test.id)">···</button>
         <div class="ctx-menu" *ngIf="openMenuId === test.id">
-          <button (click)="edit($event, test.id)">Edit</button>
-          <button class="danger" (click)="delete($event, test.id)">Delete</button>
+          <button (click)="edit($event, test.id)">{{ 'SIDEBAR.EDIT' | translate }}</button>
+          <button class="danger" (click)="delete($event, test.id)">{{ 'SIDEBAR.DELETE' | translate }}</button>
         </div>
       </div>
     </div>
@@ -27,14 +27,14 @@
   <ng-template #emptyTests>
     <div class="empty-state" *ngIf="!subjectId">
       <div class="empty-icon">📋</div>
-      <p>No tests yet. Click <strong>+ New Test</strong> to create one.</p>
+      <p>{{ 'TESTS_LIST.EMPTY' | translate }}</p>
     </div>
-    <div class="empty-inline" *ngIf="subjectId">No tests assigned to this subject.</div>
+    <div class="empty-inline" *ngIf="subjectId">{{ 'TESTS_LIST.NO_TESTS_SUBJECT' | translate }}</div>
   </ng-template>
 
   <!-- Crosswords (subject view only) -->
   <ng-container *ngIf="subjectId">
-    <div class="section-label">Crosswords</div>
+    <div class="section-label">{{ 'TESTS_LIST.CROSSWORDS' | translate }}</div>
     <div class="grid" *ngIf="crosswords.length > 0; else emptyCrosswords">
       <div class="card" *ngFor="let cw of crosswords" (click)="openCrossword(cw.id)">
         <div class="card-body">
@@ -44,14 +44,14 @@
         <div class="context-wrapper" *ngIf="canModify" (click)="stopPropagation($event)">
           <button class="ctx-btn" (click)="toggleMenu($event, 'cw-' + cw.id)">···</button>
           <div class="ctx-menu" *ngIf="openMenuId === 'cw-' + cw.id">
-            <button (click)="editCrossword($event, cw.id)">Edit</button>
-            <button class="danger" (click)="deleteCrossword($event, cw.id)">Delete</button>
+            <button (click)="editCrossword($event, cw.id)">{{ 'SIDEBAR.EDIT' | translate }}</button>
+            <button class="danger" (click)="deleteCrossword($event, cw.id)">{{ 'SIDEBAR.DELETE' | translate }}</button>
           </div>
         </div>
       </div>
     </div>
     <ng-template #emptyCrosswords>
-      <div class="empty-inline">No crosswords assigned to this subject.</div>
+      <div class="empty-inline">{{ 'TESTS_LIST.NO_CROSSWORDS_SUBJECT' | translate }}</div>
     </ng-template>
   </ng-container>
 </div>
@@ -59,32 +59,32 @@
 <!-- Add Test Modal -->
 <div class="modal-overlay" *ngIf="showAddModal" (click)="cancelAdd()">
   <div class="modal" (click)="stopPropagation($event)">
-    <h2 class="modal-title">New Test</h2>
+    <h2 class="modal-title">{{ 'TESTS_LIST.NEW_TEST' | translate }}</h2>
 
     <div class="form-group">
-      <label>Test Name</label>
-      <input type="text" [(ngModel)]="newName" placeholder="Test name" />
+      <label>{{ 'TESTS_LIST.TEST_NAME' | translate }}</label>
+      <input type="text" [(ngModel)]="newName" [placeholder]="'TESTS_LIST.NEW_TITLE' | translate" />
     </div>
 
     <div class="form-row-modal">
       <div class="form-group">
-        <label>Closed Questions</label>
+        <label>{{ 'TESTS_LIST.CLOSED_QUESTIONS' | translate }}</label>
         <input type="number" [(ngModel)]="newClosed" min="0" />
       </div>
       <div class="form-group">
-        <label>Open Questions</label>
+        <label>{{ 'TESTS_LIST.OPEN_QUESTIONS' | translate }}</label>
         <input type="number" [(ngModel)]="newOpen" min="0" />
       </div>
       <div class="form-group">
-        <label>Passing %</label>
+        <label>{{ 'TESTS_LIST.PASSING' | translate }}</label>
         <input type="number" [(ngModel)]="newPassing" min="0" max="100" />
       </div>
     </div>
 
     <div class="modal-actions">
-      <button class="btn-secondary" (click)="cancelAdd()">Cancel</button>
+      <button class="btn-secondary" (click)="cancelAdd()">{{ 'TESTS_LIST.CANCEL' | translate }}</button>
       <button class="btn-primary" (click)="saveAdd()" [disabled]="creating || !newName.trim()">
-        {{ creating ? 'Creating…' : 'Create & Edit' }}
+        {{ creating ? ('TESTS_LIST.CREATING' | translate) : ('TESTS_LIST.CREATE_EDIT' | translate) }}
       </button>
     </div>
   </div>

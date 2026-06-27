@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TestDisplayTypeDto, TestExecutionStateDto, TestModeDto, TestStateResponse, NavigateActionDto } from '../../models/models.d';
 import { TestStateService } from '../../service/test-state.service';
+import { StreakService } from '../../service/streak.service';
+import { ToastService } from '../../service/toast.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-test-summary',
@@ -16,7 +19,10 @@ export class TestSummaryComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private testStateService: TestStateService
+    private testStateService: TestStateService,
+    private streakService: StreakService,
+    private toastService: ToastService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -24,6 +30,12 @@ export class TestSummaryComponent implements OnInit {
     this.testStateService.getTestState(id).subscribe(s => {
       this.testState = s;
       this.loading = false;
+    });
+    this.streakService.getStreak().subscribe(s => {
+      if (s.currentStreak > 0) {
+        const label = this.translate.instant('SIDEBAR.STREAK');
+        this.toastService.show({ icon: '🔥', message: `${s.currentStreak} ${label}` });
+      }
     });
   }
 

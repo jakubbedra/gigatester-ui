@@ -1,7 +1,7 @@
 <div class="page">
   <div class="page-header">
-    <h1 class="page-title">Subject Groups</h1>
-    <button class="btn-add" (click)="openAdd()">+ New Group</button>
+    <h1 class="page-title">{{ 'SUBJECT_GROUPS.TITLE' | translate }}</h1>
+    <button class="btn-add" (click)="openAdd()">+ {{ 'SUBJECT_GROUPS.NEW_GROUP' | translate }}</button>
   </div>
 
   <div class="grid" *ngIf="groups.length > 0; else empty">
@@ -13,14 +13,14 @@
         <div class="context-wrapper" (click)="stopPropagation($event)">
           <button class="ctx-btn" (click)="toggleMenu($event, group.id)">···</button>
           <div class="ctx-menu" *ngIf="openMenuId === group.id">
-            <button (click)="openEdit($event, group)">Edit</button>
-            <button class="danger" (click)="delete($event, group.id)">Delete</button>
+            <button (click)="openEdit($event, group)">{{ 'SIDEBAR.EDIT' | translate }}</button>
+            <button class="danger" (click)="delete($event, group.id)">{{ 'SIDEBAR.DELETE' | translate }}</button>
           </div>
         </div>
       </div>
 
       <div class="subjects-section">
-        <div class="subjects-label">Subjects <span class="subject-count">{{ group.subjects.length }}</span></div>
+        <div class="subjects-label">{{ 'SUBJECT_GROUPS.SUBJECTS' | translate }} <span class="subject-count">{{ group.subjects.length }}</span></div>
         <div class="subjects-list" *ngIf="group.subjects.length > 0; else noSubjects">
           <div class="subject-row" *ngFor="let subject of group.subjects">
             <span class="subject-icon">📚</span>
@@ -28,7 +28,7 @@
           </div>
         </div>
         <ng-template #noSubjects>
-          <div class="no-subjects">No subjects assigned</div>
+          <div class="no-subjects">{{ 'SUBJECT_GROUPS.NO_SUBJECTS' | translate }}</div>
         </ng-template>
       </div>
 
@@ -38,7 +38,7 @@
   <ng-template #empty>
     <div class="empty-state">
       <div class="empty-icon">🗂️</div>
-      <p>No subject groups yet. Add one to get started.</p>
+      <p>{{ 'SUBJECT_GROUPS.EMPTY' | translate }}</p>
     </div>
   </ng-template>
 </div>
@@ -46,17 +46,17 @@
 <!-- Edit Modal -->
 <div class="modal-overlay" *ngIf="showEditModal" (click)="cancelEdit()">
   <div class="modal" (click)="stopPropagation($event)">
-    <h2 class="modal-title">Edit Subject Group</h2>
+    <h2 class="modal-title">{{ 'SUBJECT_GROUPS.EDIT_TITLE' | translate }}</h2>
 
     <div class="form-group">
-      <label>Name</label>
-      <input type="text" [(ngModel)]="editName" placeholder="Group name" />
+      <label>{{ 'SUBJECT_GROUPS.NAME' | translate }}</label>
+      <input type="text" [(ngModel)]="editName" [placeholder]="'SUBJECT_GROUPS.NEW_TITLE' | translate" />
     </div>
 
     <div class="form-group">
-      <label>Assigned Subjects</label>
+      <label>{{ 'SUBJECT_GROUPS.ASSIGNED_SUBJECTS' | translate }}</label>
       <ng-container *ngIf="allSubjects.length > 0; else noSubjectsAvailable">
-        <input class="search-input" type="text" [(ngModel)]="subjectSearch" placeholder="Search subjects…" />
+        <input class="search-input" type="text" [(ngModel)]="subjectSearch" [placeholder]="'SUBJECT_GROUPS.SEARCH_SUBJECTS' | translate" />
         <div class="subject-picker">
           <ng-container *ngFor="let subject of allSubjects">
             <label class="subject-check"
@@ -72,14 +72,14 @@
         </div>
       </ng-container>
       <ng-template #noSubjectsAvailable>
-        <div class="no-subjects-hint">No subjects available. Create some first.</div>
+        <div class="no-subjects-hint">{{ 'SUBJECT_GROUPS.NO_SUBJECTS_AVAILABLE' | translate }}</div>
       </ng-template>
     </div>
 
     <div class="modal-actions">
-      <button class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+      <button class="btn-secondary" (click)="cancelEdit()">{{ 'SUBJECT_GROUPS.CANCEL' | translate }}</button>
       <button class="btn-primary" (click)="saveEdit()" [disabled]="saving || !editName.trim()">
-        {{ saving ? 'Saving…' : 'Save' }}
+        {{ saving ? ('SUBJECT_GROUPS.SAVING' | translate) : ('SUBJECT_GROUPS.SAVE' | translate) }}
       </button>
     </div>
   </div>
@@ -88,15 +88,15 @@
 <!-- Add Modal -->
 <div class="modal-overlay" *ngIf="showAddModal" (click)="cancelAdd()">
   <div class="modal" (click)="stopPropagation($event)">
-    <h2 class="modal-title">New Subject Group</h2>
+    <h2 class="modal-title">{{ 'SUBJECT_GROUPS.NEW_GROUP' | translate }}</h2>
     <div class="form-group">
-      <label>Name</label>
-      <input type="text" [(ngModel)]="newGroupName" placeholder="Group name" />
+      <label>{{ 'SUBJECT_GROUPS.NAME' | translate }}</label>
+      <input type="text" [(ngModel)]="newGroupName" [placeholder]="'SUBJECT_GROUPS.NEW_TITLE' | translate" />
     </div>
     <div class="modal-actions">
-      <button class="btn-secondary" (click)="cancelAdd()">Cancel</button>
+      <button class="btn-secondary" (click)="cancelAdd()">{{ 'SUBJECT_GROUPS.CANCEL' | translate }}</button>
       <button class="btn-primary" (click)="saveAdd()" [disabled]="adding || !newGroupName.trim()">
-        {{ adding ? 'Creating…' : 'Create' }}
+        {{ adding ? ('SUBJECT_GROUPS.CREATING' | translate) : ('SUBJECT_GROUPS.CREATE' | translate) }}
       </button>
     </div>
   </div>

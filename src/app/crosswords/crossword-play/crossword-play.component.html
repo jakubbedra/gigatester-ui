@@ -6,21 +6,21 @@
         {{ winner === 'human' ? '🏆' : winner === 'bot' ? '🤖' : '🤝' }}
       </div>
       <div class="winner-title">
-        {{ winner === 'human' ? 'You win!' : winner === 'bot' ? 'Bot wins!' : 'It\'s a tie!' }}
+        {{ winner === 'human' ? ('CROSSWORD_PLAY.YOU_WIN' | translate) : winner === 'bot' ? ('CROSSWORD_PLAY.BOT_WINS' | translate) : ('CROSSWORD_PLAY.TIE' | translate) }}
       </div>
-      <div class="winner-subtitle">Crossword complete</div>
+      <div class="winner-subtitle">{{ 'CROSSWORD_PLAY.COMPLETE' | translate }}</div>
       <div class="winner-scores">
         <div class="ws-player" [class.ws-winner]="winner === 'human'">
-          <span class="ws-name">You</span>
-          <span class="ws-pts">{{ humanPlayer?.points ?? 0 }} pts</span>
+          <span class="ws-name">{{ 'CROSSWORD_PLAY.YOU' | translate }}</span>
+          <span class="ws-pts">{{ humanPlayer?.points ?? 0 }} {{ 'CROSSWORD_PLAY.PTS' | translate }}</span>
         </div>
-        <div class="ws-vs">vs</div>
+        <div class="ws-vs">{{ 'CROSSWORD_PLAY.VS' | translate }}</div>
         <div class="ws-player" [class.ws-winner]="winner === 'bot'">
-          <span class="ws-name">Bot</span>
-          <span class="ws-pts">{{ botPlayer?.points ?? 0 }} pts</span>
+          <span class="ws-name">{{ 'CROSSWORD_PLAY.BOT' | translate }}</span>
+          <span class="ws-pts">{{ botPlayer?.points ?? 0 }} {{ 'CROSSWORD_PLAY.PTS' | translate }}</span>
         </div>
       </div>
-      <button class="winner-btn" (click)="newCrossword()">Play again</button>
+      <button class="winner-btn" (click)="newCrossword()">{{ 'CROSSWORD_PLAY.PLAY_AGAIN' | translate }}</button>
     </div>
   </div>
 
@@ -34,13 +34,13 @@
         <div class="toast-container">
           <div *ngFor="let toast of wordToasts" class="word-toast">
             <span class="toast-word">{{ toast.word }}</span>
-            <span class="toast-pts">+{{ toast.points }} pts</span>
+            <span class="toast-pts">+{{ toast.points }} {{ 'CROSSWORD_PLAY.PTS' | translate }}</span>
           </div>
         </div>
 
         <div class="zoom-controls">
           <button class="zoom-btn" (click)="zoomOut()">−</button>
-          <span class="zoom-label">Zoom</span>
+          <span class="zoom-label">{{ 'CROSSWORD_PLAY.ZOOM' | translate }}</span>
           <button class="zoom-btn" (click)="zoomIn()">+</button>
         </div>
 
@@ -70,15 +70,15 @@
 
         <div class="hand-card">
           <div class="hand-header">
-            <div class="hand-label">Your hand <span class="hand-hint">— drag onto a cell · tap to take back</span></div>
+            <div class="hand-label">{{ 'CROSSWORD_PLAY.YOUR_HAND' | translate }} <span class="hand-hint">— {{ 'CROSSWORD_PLAY.DRAG_HINT' | translate }}</span></div>
             <button *ngIf="!isComplete" class="submit-btn"
                     [disabled]="isSubmitting"
                     (click)="submit()">
-              {{ isSubmitting ? 'Submitting…' : 'Submit turn' }}
+              {{ isSubmitting ? ('CROSSWORD_PLAY.SUBMITTING' | translate) : ('CROSSWORD_PLAY.SUBMIT_TURN' | translate) }}
             </button>
             <button *ngIf="isComplete" class="submit-btn complete-btn"
                     (click)="newCrossword()">
-              New crossword
+              {{ 'CROSSWORD_PLAY.NEW_CROSSWORD' | translate }}
             </button>
           </div>
           <div class="hand-tiles">
@@ -104,15 +104,15 @@
 
         <!-- Scoreboard -->
         <div class="side-card score-card">
-          <div class="side-title">Score</div>
+          <div class="side-title">{{ 'CROSSWORD_PLAY.SCORE' | translate }}</div>
           <div class="score-row">
             <div class="score-player" [class.current]="humanPlayer?.current">
-              <span class="score-name">You</span>
+              <span class="score-name">{{ 'CROSSWORD_PLAY.YOU' | translate }}</span>
               <span class="score-value">{{ humanPlayer?.points ?? 0 }}</span>
             </div>
-            <div class="score-divider">vs</div>
+            <div class="score-divider">{{ 'CROSSWORD_PLAY.VS' | translate }}</div>
             <div class="score-player" [class.current]="botPlayer?.current">
-              <span class="score-name">Bot</span>
+              <span class="score-name">{{ 'CROSSWORD_PLAY.BOT' | translate }}</span>
               <span class="score-value">{{ botPlayer?.points ?? 0 }}</span>
             </div>
           </div>
@@ -120,12 +120,12 @@
 
         <!-- Tab bar — mobile only -->
         <div class="tab-bar">
-          <button class="tab-btn" [class.active]="activeTab === 'across'" (click)="activeTab = 'across'">↔ Across</button>
-          <button class="tab-btn" [class.active]="activeTab === 'down'"   (click)="activeTab = 'down'">↕ Down</button>
+          <button class="tab-btn" [class.active]="activeTab === 'across'" (click)="activeTab = 'across'">↔ {{ 'CROSSWORD_PLAY.ACROSS' | translate }}</button>
+          <button class="tab-btn" [class.active]="activeTab === 'down'"   (click)="activeTab = 'down'">↕ {{ 'CROSSWORD_PLAY.DOWN' | translate }}</button>
         </div>
 
         <div class="side-card clues-card" [class.hidden-mobile]="activeTab !== 'across'">
-          <div class="side-title">↔ Across</div>
+          <div class="side-title">↔ {{ 'CROSSWORD_PLAY.ACROSS' | translate }}</div>
           <div class="clues-scroll">
             <div *ngFor="let entry of across"
                  class="clue-item"
@@ -139,7 +139,7 @@
         </div>
 
         <div class="side-card clues-card" [class.hidden-mobile]="activeTab !== 'down'">
-          <div class="side-title">↕ Down</div>
+          <div class="side-title">↕ {{ 'CROSSWORD_PLAY.DOWN' | translate }}</div>
           <div class="clues-scroll">
             <div *ngFor="let entry of down"
                  class="clue-item"

@@ -1,6 +1,12 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -28,6 +34,7 @@ import { AccountComponent } from './account/account.component';
 import { HomeComponent } from './home/home.component';
 import { UsersListComponent } from './admin/users-list/users-list.component';
 import { AiGeneratorComponent } from './admin/ai-generator/ai-generator.component';
+import { ToastComponent } from './toast/toast.component';
 import { AuthInterceptor } from './interceptor/auth.interceptor';
 
 @NgModule({
@@ -55,6 +62,7 @@ import { AuthInterceptor } from './interceptor/auth.interceptor';
     UsersListComponent,
     ResetPasswordComponent,
     AiGeneratorComponent,
+    ToastComponent,
   ],
   imports: [
     BrowserModule,
@@ -62,7 +70,11 @@ import { AuthInterceptor } from './interceptor/auth.interceptor';
     DragDropModule,
     HttpClientModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    TranslateModule.forRoot({
+      loader: { provide: TranslateLoader, useFactory: HttpLoaderFactory, deps: [HttpClient] },
+      defaultLanguage: 'en'
+    })
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }

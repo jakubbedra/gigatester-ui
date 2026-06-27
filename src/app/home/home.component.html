@@ -2,10 +2,10 @@
 
   <div class="page-header">
     <div>
-      <h1 class="page-title">Subject Groups</h1>
-      <p class="page-subtitle">Pick a group to explore its subjects and tests.</p>
+      <h1 class="page-title">{{ 'HOME.TITLE' | translate }}</h1>
+      <p class="page-subtitle">{{ 'HOME.SUBTITLE' | translate }}</p>
     </div>
-    <button class="btn-add" *ngIf="canModify" (click)="openAdd()">+ New Group</button>
+    <button class="btn-add" *ngIf="canModify" (click)="openAdd()">+ {{ 'HOME.NEW_GROUP' | translate }}</button>
   </div>
 
   <div class="loading-state" *ngIf="loading">
@@ -27,16 +27,16 @@
           <!-- Admin: requests badge -->
           <button class="requests-btn" *ngIf="isAdmin"
                   (click)="openRequestsModal($event, group)"
-                  title="Pending access requests">
-            Requests
+                  [title]="'HOME.REQUESTS' | translate">
+            {{ 'HOME.REQUESTS' | translate }}
           </button>
 
           <!-- Moderator/Admin: edit context menu -->
           <div class="context-wrapper" *ngIf="canModify" (click)="stopPropagation($event)">
             <button class="ctx-btn" (click)="toggleMenu($event, group.id)">···</button>
             <div class="ctx-menu" *ngIf="openMenuId === group.id">
-              <button (click)="openEdit($event, group)">Edit</button>
-              <button class="danger" (click)="delete($event, group.id)">Delete</button>
+              <button (click)="openEdit($event, group)">{{ 'SIDEBAR.EDIT' | translate }}</button>
+              <button class="danger" (click)="delete($event, group.id)">{{ 'SIDEBAR.DELETE' | translate }}</button>
             </div>
           </div>
         </div>
@@ -50,26 +50,26 @@
             </div>
           </div>
           <div class="no-subjects" *ngIf="group.subjects.length === 0">
-            No subjects assigned yet.
+            {{ 'HOME.NO_SUBJECTS' | translate }}
           </div>
         </ng-container>
 
         <!-- Locked: show access state -->
         <div class="access-section" *ngIf="!canAccessGroup(group)">
           <p class="access-msg" *ngIf="group.accessStatus === null">
-            You don't have access to this group.
+            {{ 'HOME.NO_ACCESS' | translate }}
           </p>
           <p class="access-msg pending" *ngIf="group.accessStatus === 'PENDING'">
-            Access request pending…
+            {{ 'HOME.ACCESS_PENDING' | translate }}
           </p>
           <p class="access-msg denied" *ngIf="group.accessStatus === 'DENIED'">
-            Access request was denied.
+            {{ 'HOME.ACCESS_DENIED' | translate }}
           </p>
           <button class="request-btn"
                   *ngIf="group.accessStatus === null || group.accessStatus === 'DENIED'"
                   [disabled]="requestingGroupId === group.id"
                   (click)="requestAccess($event, group)">
-            {{ requestingGroupId === group.id ? 'Sending…' : 'Request Access' }}
+            {{ requestingGroupId === group.id ? ('HOME.SENDING' | translate) : ('HOME.REQUEST_ACCESS' | translate) }}
           </button>
         </div>
 
@@ -79,9 +79,9 @@
     <ng-template #empty>
       <div class="empty-state">
         <div class="empty-icon">📚</div>
-        <p class="empty-text">No subject groups yet.</p>
-        <p class="empty-hint" *ngIf="!canModify">Ask an admin to set them up.</p>
-        <button class="btn-add" *ngIf="canModify" (click)="openAdd()">+ New Group</button>
+        <p class="empty-text">{{ 'HOME.NO_GROUPS' | translate }}</p>
+        <p class="empty-hint" *ngIf="!canModify">{{ 'HOME.ASK_ADMIN' | translate }}</p>
+        <button class="btn-add" *ngIf="canModify" (click)="openAdd()">+ {{ 'HOME.NEW_GROUP' | translate }}</button>
       </div>
     </ng-template>
 
@@ -92,47 +92,47 @@
 <!-- Access Requests Modal -->
 <div class="modal-overlay" *ngIf="showRequestsModal" (click)="closeRequestsModal()">
   <div class="modal" (click)="stopPropagation($event)">
-    <h2 class="modal-title">Access Requests — {{ requestsGroup?.name }}</h2>
+    <h2 class="modal-title">{{ 'HOME.ACCESS_REQUESTS' | translate }} — {{ requestsGroup?.name }}</h2>
 
     <div class="loading-state" *ngIf="requestsLoading">
       <div class="spinner"></div>
     </div>
 
     <ng-container *ngIf="!requestsLoading">
-      <div class="modal-section-label">Pending Requests</div>
+      <div class="modal-section-label">{{ 'HOME.PENDING_REQUESTS' | translate }}</div>
       <ng-container *ngIf="pendingRequests().length > 0; else noPending">
         <div class="requests-list">
           <div class="request-row" *ngFor="let req of pendingRequests()">
             <span class="req-username">{{ req.username }}</span>
             <div class="req-actions">
-              <button class="btn-approve" (click)="approve(req)">Approve</button>
-              <button class="btn-deny" (click)="deny(req)">Deny</button>
+              <button class="btn-approve" (click)="approve(req)">{{ 'HOME.APPROVE' | translate }}</button>
+              <button class="btn-deny" (click)="deny(req)">{{ 'HOME.DENY' | translate }}</button>
             </div>
           </div>
         </div>
       </ng-container>
       <ng-template #noPending>
-        <p class="no-requests">No pending requests.</p>
+        <p class="no-requests">{{ 'HOME.NO_PENDING' | translate }}</p>
       </ng-template>
 
-      <div class="modal-section-label" style="margin-top: 18px;">Members</div>
+      <div class="modal-section-label" style="margin-top: 18px;">{{ 'HOME.MEMBERS' | translate }}</div>
       <ng-container *ngIf="approvedMembers().length > 0; else noMembers">
         <div class="requests-list">
           <div class="request-row" *ngFor="let req of approvedMembers()">
             <span class="req-username">{{ req.username }}</span>
             <div class="req-actions">
-              <button class="btn-deny" (click)="revoke(req)">Remove</button>
+              <button class="btn-deny" (click)="revoke(req)">{{ 'HOME.REMOVE' | translate }}</button>
             </div>
           </div>
         </div>
       </ng-container>
       <ng-template #noMembers>
-        <p class="no-requests">No members yet.</p>
+        <p class="no-requests">{{ 'HOME.NO_MEMBERS' | translate }}</p>
       </ng-template>
     </ng-container>
 
     <div class="modal-actions">
-      <button class="btn-secondary" (click)="closeRequestsModal()">Close</button>
+      <button class="btn-secondary" (click)="closeRequestsModal()">{{ 'HOME.CLOSE' | translate }}</button>
     </div>
   </div>
 </div>
@@ -140,17 +140,17 @@
 <!-- Edit Modal -->
 <div class="modal-overlay" *ngIf="showEditModal" (click)="cancelEdit()">
   <div class="modal" (click)="stopPropagation($event)">
-    <h2 class="modal-title">Edit Subject Group</h2>
+    <h2 class="modal-title">{{ 'HOME.EDIT_TITLE' | translate }}</h2>
 
     <div class="form-group">
-      <label>Name</label>
-      <input type="text" [(ngModel)]="editName" placeholder="Group name" />
+      <label>{{ 'HOME.NEW_TITLE' | translate }}</label>
+      <input type="text" [(ngModel)]="editName" [placeholder]="'HOME.NEW_TITLE' | translate" />
     </div>
 
     <div class="form-group">
-      <label>Assigned Subjects</label>
+      <label>{{ 'SUBJECT_GROUPS.ASSIGNED_SUBJECTS' | translate }}</label>
       <ng-container *ngIf="allSubjects.length > 0; else noSubjectsAvailable">
-        <input class="search-input" type="text" [(ngModel)]="subjectSearch" placeholder="Search subjects…" />
+        <input class="search-input" type="text" [(ngModel)]="subjectSearch" [placeholder]="'SUBJECT_GROUPS.SEARCH_SUBJECTS' | translate" />
         <div class="subject-picker">
           <ng-container *ngFor="let subject of allSubjects">
             <label class="subject-check"
@@ -166,14 +166,14 @@
         </div>
       </ng-container>
       <ng-template #noSubjectsAvailable>
-        <div class="no-subjects-hint">No subjects available. Create some first.</div>
+        <div class="no-subjects-hint">{{ 'SUBJECT_GROUPS.NO_SUBJECTS_AVAILABLE' | translate }}</div>
       </ng-template>
     </div>
 
     <div class="modal-actions">
-      <button class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+      <button class="btn-secondary" (click)="cancelEdit()">{{ 'SUBJECT_GROUPS.CANCEL' | translate }}</button>
       <button class="btn-primary" (click)="saveEdit()" [disabled]="saving || !editName.trim()">
-        {{ saving ? 'Saving…' : 'Save' }}
+        {{ saving ? ('SUBJECT_GROUPS.SAVING' | translate) : ('SUBJECT_GROUPS.SAVE' | translate) }}
       </button>
     </div>
   </div>
@@ -182,15 +182,15 @@
 <!-- Add Modal -->
 <div class="modal-overlay" *ngIf="showAddModal" (click)="cancelAdd()">
   <div class="modal" (click)="stopPropagation($event)">
-    <h2 class="modal-title">New Subject Group</h2>
+    <h2 class="modal-title">{{ 'HOME.NEW_GROUP' | translate }}</h2>
     <div class="form-group">
-      <label>Name</label>
-      <input type="text" [(ngModel)]="newGroupName" placeholder="Group name" />
+      <label>{{ 'SUBJECT_GROUPS.NAME' | translate }}</label>
+      <input type="text" [(ngModel)]="newGroupName" [placeholder]="'SUBJECT_GROUPS.NAME' | translate" />
     </div>
     <div class="modal-actions">
-      <button class="btn-secondary" (click)="cancelAdd()">Cancel</button>
+      <button class="btn-secondary" (click)="cancelAdd()">{{ 'SUBJECT_GROUPS.CANCEL' | translate }}</button>
       <button class="btn-primary" (click)="saveAdd()" [disabled]="adding || !newGroupName.trim()">
-        {{ adding ? 'Creating…' : 'Create' }}
+        {{ adding ? ('SUBJECT_GROUPS.CREATING' | translate) : ('SUBJECT_GROUPS.CREATE' | translate) }}
       </button>
     </div>
   </div>

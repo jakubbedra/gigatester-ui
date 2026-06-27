@@ -4,6 +4,9 @@ import { CdkDragEnd, CdkDragMove } from '@angular/cdk/drag-drop';
 import { CrosswordStateClueResponse, CrosswordStateResponse } from '../../models/models.d';
 import { CrosswordStateService } from '../../service/crossword-state.service';
 import { CrosswordStateUpdateRequest } from '../../models/models.d';
+import { StreakService } from '../../service/streak.service';
+import { ToastService } from '../../service/toast.service';
+import { TranslateService } from '@ngx-translate/core';
 
 export interface NumberedClue {
   number: number;
@@ -62,7 +65,10 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private crosswordStateService: CrosswordStateService
+    private crosswordStateService: CrosswordStateService,
+    private streakService: StreakService,
+    private toastService: ToastService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -317,8 +323,13 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
           const h = this.humanPlayer?.points ?? 0;
           const b = this.botPlayer?.points ?? 0;
           this.winner = h > b ? 'human' : b > h ? 'bot' : 'tie';
-          // wait for any lingering toasts then show overlay
           setTimeout(() => { this.showWinner = true; }, 1000);
+          this.streakService.getStreak().subscribe(s => {
+            if (s.currentStreak > 0) {
+              const label = this.translate.instant('SIDEBAR.STREAK');
+              this.toastService.show({ icon: '🔥', message: `${s.currentStreak} ${label}` });
+            }
+          });
         }
       }, botDuration);
     }, humanDuration + 500);

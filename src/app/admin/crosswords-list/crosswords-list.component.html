@@ -1,7 +1,7 @@
 <div class="page">
   <div class="page-header">
-    <h1 class="page-title">Crosswords</h1>
-    <button class="btn-add" (click)="openAdd()">+ New Crossword</button>
+    <h1 class="page-title">{{ 'CROSSWORDS_LIST.TITLE' | translate }}</h1>
+    <button class="btn-add" (click)="openAdd()">+ {{ 'CROSSWORDS_LIST.NEW_CROSSWORD' | translate }}</button>
   </div>
 
   <div class="grid" *ngIf="crosswords.length > 0; else empty">
@@ -13,15 +13,15 @@
         <div class="context-wrapper" (click)="stopPropagation($event)">
           <button class="ctx-btn" (click)="toggleMenu($event, cw.id)">···</button>
           <div class="ctx-menu" *ngIf="openMenuId === cw.id">
-            <button (click)="edit(cw.id)">Edit</button>
-            <button class="danger" (click)="delete($event, cw.id)">Delete</button>
+            <button (click)="edit(cw.id)">{{ 'SIDEBAR.EDIT' | translate }}</button>
+            <button class="danger" (click)="delete($event, cw.id)">{{ 'SIDEBAR.DELETE' | translate }}</button>
           </div>
         </div>
       </div>
 
       <div class="card-footer">
         <span class="term-count-label">{{ cw.termCount }} {{ cw.termCount === 1 ? 'term' : 'terms' }}</span>
-        <span class="edit-hint">Click to edit →</span>
+        <span class="edit-hint">{{ 'CROSSWORDS_LIST.CLICK_EDIT' | translate }}</span>
       </div>
 
     </div>
@@ -30,7 +30,7 @@
   <ng-template #empty>
     <div class="empty-state">
       <div class="empty-icon">🔠</div>
-      <p>No crosswords yet. Add one to get started.</p>
+      <p>{{ 'CROSSWORDS_LIST.EMPTY' | translate }}</p>
     </div>
   </ng-template>
 </div>
@@ -38,15 +38,15 @@
 <!-- Add Modal -->
 <div class="modal-overlay" *ngIf="showAddModal" (click)="cancelAdd()">
   <div class="modal" (click)="stopPropagation($event)">
-    <h2 class="modal-title">New Crossword</h2>
+    <h2 class="modal-title">{{ 'CROSSWORDS_LIST.NEW_CROSSWORD' | translate }}</h2>
     <div class="form-group">
-      <label>Name</label>
-      <input type="text" [(ngModel)]="newName" placeholder="Crossword name" />
+      <label>{{ 'CROSSWORD_EDIT.NAME' | translate }}</label>
+      <input type="text" [(ngModel)]="newName" [placeholder]="'CROSSWORDS_LIST.NEW_TITLE' | translate" />
     </div>
     <div class="modal-actions">
-      <button class="btn-secondary" (click)="cancelAdd()">Cancel</button>
+      <button class="btn-secondary" (click)="cancelAdd()">{{ 'TEST_EDIT.CANCEL' | translate }}</button>
       <button class="btn-primary" (click)="saveAdd()" [disabled]="adding || !newName.trim()">
-        {{ adding ? 'Creating…' : 'Create & Edit' }}
+        {{ adding ? ('SUBJECT_GROUPS.CREATING' | translate) : ('CROSSWORDS_LIST.CREATE_EDIT' | translate) }}
       </button>
     </div>
   </div>

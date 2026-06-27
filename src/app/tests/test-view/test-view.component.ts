@@ -22,6 +22,7 @@ export class TestViewComponent implements OnInit {
 
   allTags: TagResponse[] = [];
   selectedTags: TagResponse[] = [];
+  excludeTags = false;
   availableClosed = 0;
   availableOpen = 0;
   availableStatement = 0;
@@ -104,7 +105,7 @@ export class TestViewComponent implements OnInit {
     if (this.form.invalid) return;
     // console.log(this.form.value);
 
-    const state = { ...this.form.value, tagIds: this.selectedTags.map(t => t.id) };
+    const state = { ...this.form.value, tagIds: this.selectedTags.map(t => t.id), excludeTags: this.excludeTags };
     this.testStateService.createTestState(this.testId, state).subscribe({
       next: (response) => {
         const path = state.displayType === TestDisplayTypeDto.ALL_AT_ONCE
@@ -156,9 +157,13 @@ export class TestViewComponent implements OnInit {
     this.refreshCounts();
   }
 
+  onExcludeToggle() {
+    if (this.selectedTags.length > 0) this.refreshCounts();
+  }
+
   private refreshCounts() {
     const tagIds = this.selectedTags.map(t => t.id);
-    this.testService.getQuestionCounts(this.testId, tagIds).subscribe(counts => {
+    this.testService.getQuestionCounts(this.testId, tagIds, this.excludeTags).subscribe(counts => {
       this.availableClosed = counts.closedQuestionsCount;
       this.availableOpen = counts.openQuestionsCount;
       this.availableStatement = counts.statementQuestionsCount;

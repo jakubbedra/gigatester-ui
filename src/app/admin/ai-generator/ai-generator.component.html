@@ -3,15 +3,15 @@
   <!-- STEP 1: INPUT -->
   <ng-container *ngIf="step === 'input'">
     <div class="page-header">
-      <h1 class="page-title">AI Question Generator</h1>
-      <p class="page-sub">Upload a PDF with your notes and generate exam questions using AI.</p>
+      <h1 class="page-title">{{ 'AI_GENERATOR.TITLE' | translate }}</h1>
+      <p class="page-sub">{{ 'AI_GENERATOR.SUBTITLE' | translate }}</p>
     </div>
 
     <div class="card">
       <div class="form-group">
-        <label>PDF File</label>
+        <label>{{ 'AI_GENERATOR.PDF_FILE' | translate }}</label>
         <div class="file-drop" (click)="fileInput.click()">
-          <span *ngIf="!selectedFile">📄 Click to select a PDF</span>
+          <span *ngIf="!selectedFile">📄 {{ 'AI_GENERATOR.CLICK_PDF' | translate }}</span>
           <span *ngIf="selectedFile" class="file-name">📄 {{ selectedFile.name }}</span>
           <input #fileInput type="file" accept=".pdf" (change)="onFileChange($event)" hidden />
         </div>
@@ -19,16 +19,20 @@
 
       <div class="counts-row">
         <div class="form-group">
-          <label>Single-answer questions</label>
+          <label>{{ 'AI_GENERATOR.SINGLE_ANSWER' | translate }}</label>
           <input type="number" [(ngModel)]="closedCount" min="0" max="20" />
         </div>
         <div class="form-group">
-          <label>Multiple-choice questions</label>
+          <label>{{ 'AI_GENERATOR.MULTIPLE_CHOICE' | translate }}</label>
           <input type="number" [(ngModel)]="multipleChoiceCount" min="0" max="20" />
         </div>
         <div class="form-group">
-          <label>Open questions</label>
+          <label>{{ 'AI_GENERATOR.OPEN_QUESTIONS' | translate }}</label>
           <input type="number" [(ngModel)]="openCount" min="0" max="20" />
+        </div>
+        <div class="form-group">
+          <label>{{ 'AI_GENERATOR.ANSWERS_PER_QUESTION' | translate }}</label>
+          <input type="number" [(ngModel)]="answerCount" min="2" max="8" />
         </div>
       </div>
 
@@ -36,9 +40,9 @@
 
       <button class="btn-generate" (click)="generate()"
               [disabled]="!selectedFile || generating || (closedCount + multipleChoiceCount + openCount) === 0">
-        <span *ngIf="!generating">✨ Generate</span>
+        <span *ngIf="!generating">✨ {{ 'AI_GENERATOR.GENERATE' | translate }}</span>
         <span *ngIf="generating" class="spinner-inline"></span>
-        <span *ngIf="generating">Generating…</span>
+        <span *ngIf="generating">{{ 'AI_GENERATOR.GENERATING' | translate }}</span>
       </button>
     </div>
   </ng-container>
@@ -46,8 +50,8 @@
   <!-- STEP 2: REVIEW -->
   <ng-container *ngIf="step === 'review'">
     <div class="page-header">
-      <h1 class="page-title">Review Questions</h1>
-      <p class="page-sub">{{ questions.length }} questions generated. Edit or delete before saving.</p>
+      <h1 class="page-title">{{ 'AI_GENERATOR.REVIEW_TITLE' | translate }}</h1>
+      <p class="page-sub">{{ questions.length }} {{ 'AI_GENERATOR.REVIEW_SUBTITLE' | translate }}</p>
     </div>
 
     <div class="question-card" *ngFor="let q of questions; let i = index">
@@ -56,18 +60,18 @@
               [class.badge-multi]="q.multipleChoice">
           {{ questionLabel(q) }}
         </span>
-        <span class="qcard-num">Question {{ i + 1 }}</span>
+        <span class="qcard-num">{{ 'AI_GENERATOR.QUESTION_LABEL' | translate }} {{ i + 1 }}</span>
         <button class="btn-delete-q" (click)="deleteQuestion(i)" title="Delete">✕</button>
       </div>
 
       <div class="form-group">
-        <label>Question text</label>
+        <label>{{ 'AI_GENERATOR.QUESTION_TEXT' | translate }}</label>
         <textarea [(ngModel)]="q.questionText" rows="3"></textarea>
       </div>
 
       <!-- Closed question answers -->
       <ng-container *ngIf="q.type === 'CLOSED_QUESTION'">
-        <label class="answers-label">Answers</label>
+        <label class="answers-label">{{ 'AI_GENERATOR.ANSWERS' | translate }}</label>
         <div class="answer-row" *ngFor="let a of q.answers; let ai = index">
           <ng-container *ngIf="!q.multipleChoice">
             <input type="radio" [name]="'q' + i" [checked]="a.correct"
@@ -76,39 +80,39 @@
           <ng-container *ngIf="q.multipleChoice">
             <input type="checkbox" [(ngModel)]="a.correct" />
           </ng-container>
-          <input class="answer-text" type="text" [(ngModel)]="a.text" placeholder="Answer text" />
+          <input class="answer-text" type="text" [(ngModel)]="a.text" [placeholder]="'AI_GENERATOR.ANSWERS' | translate" />
           <button class="btn-rm-answer" (click)="removeAnswer(q, ai)" title="Remove">✕</button>
         </div>
-        <button class="btn-add-answer" (click)="addAnswer(q)">+ Add answer</button>
-        <p class="hint" *ngIf="!q.multipleChoice">Select the radio button next to the correct answer.</p>
-        <p class="hint" *ngIf="q.multipleChoice">Check all correct answers.</p>
+        <button class="btn-add-answer" (click)="addAnswer(q)">+ {{ 'AI_GENERATOR.ADD_ANSWER' | translate }}</button>
+        <p class="hint" *ngIf="!q.multipleChoice">{{ 'AI_GENERATOR.RADIO_HINT' | translate }}</p>
+        <p class="hint" *ngIf="q.multipleChoice">{{ 'AI_GENERATOR.CHECKBOX_HINT' | translate }}</p>
       </ng-container>
 
       <!-- Open question answer -->
       <ng-container *ngIf="q.type === 'OPEN_QUESTION'">
         <div class="form-group">
-          <label>Expected answer</label>
+          <label>{{ 'AI_GENERATOR.EXPECTED_ANSWER' | translate }}</label>
           <textarea [(ngModel)]="q.openAnswer" rows="2"></textarea>
         </div>
       </ng-container>
     </div>
 
     <div class="empty-review" *ngIf="questions.length === 0">
-      <p>All questions deleted. Go back and regenerate.</p>
+      <p>{{ 'AI_GENERATOR.ALL_DELETED' | translate }}</p>
     </div>
 
     <div class="review-actions">
-      <button class="btn-back" (click)="step = 'input'">← Back</button>
+      <button class="btn-back" (click)="step = 'input'">← {{ 'AI_GENERATOR.BACK' | translate }}</button>
 
       <div class="save-group">
         <select [(ngModel)]="selectedTestId" class="test-select">
-          <option value="">Select a test to link questions to…</option>
+          <option value="">{{ 'AI_GENERATOR.SELECT_TEST' | translate }}</option>
           <option *ngFor="let t of tests" [value]="t.id">{{ t.name }}</option>
         </select>
         <button class="btn-save" (click)="save()"
                 [disabled]="saving || !selectedTestId || questions.length === 0">
-          <span *ngIf="!saving">💾 Save to database</span>
-          <span *ngIf="saving">Saving…</span>
+          <span *ngIf="!saving">💾 {{ 'AI_GENERATOR.SAVE' | translate }}</span>
+          <span *ngIf="saving">{{ 'AI_GENERATOR.SAVING' | translate }}</span>
         </button>
       </div>
     </div>
@@ -120,9 +124,9 @@
   <ng-container *ngIf="step === 'done'">
     <div class="done-card">
       <div class="done-icon">✅</div>
-      <h2 class="done-title">Questions saved!</h2>
-      <p class="done-sub">{{ questions.length }} questions were added to the selected test and tagged <strong>ai-generated</strong>.</p>
-      <button class="btn-generate" (click)="reset()">Generate more</button>
+      <h2 class="done-title">{{ 'AI_GENERATOR.DONE_TITLE' | translate }}</h2>
+      <p class="done-sub">{{ 'AI_GENERATOR.DONE_SUBTITLE' | translate }}</p>
+      <button class="btn-generate" (click)="reset()">{{ 'AI_GENERATOR.GENERATE_MORE' | translate }}</button>
     </div>
   </ng-container>
 

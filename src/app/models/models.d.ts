@@ -262,6 +262,7 @@ export interface TestStateRequest {
     displayType: TestDisplayTypeDto;
     timeLimitEnabled: boolean;
     tagIds?: string[];
+    excludeTags?: boolean;
 }
 
 export interface TestStateUpdateRequest {

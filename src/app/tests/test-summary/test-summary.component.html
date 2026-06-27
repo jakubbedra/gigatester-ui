@@ -23,17 +23,17 @@
             [class.fail]="isPassing === false"
             *ngIf="isPassing !== null"
           >
-            {{ isPassing ? 'PASSED' : 'FAILED' }}
+            {{ isPassing ? ('TEST_SUMMARY.PASSED' | translate) : ('TEST_SUMMARY.FAILED' | translate) }}
           </span>
         </div>
 
         <div class="meta-row" *ngIf="testState.passingPercentage">
-          Passing threshold: <span class="meta-accent">{{ testState.passingPercentage }}%</span>
+          {{ 'TEST_SUMMARY.PASSING_THRESHOLD' | translate }}: <span class="meta-accent">{{ testState.passingPercentage }}%</span>
         </div>
       </div>
 
       <div class="actions">
-        <button class="btn secondary" (click)="retake()">Retake</button>
+        <button class="btn secondary" (click)="retake()">{{ 'TEST_SUMMARY.RETAKE' | translate }}</button>
       </div>
 
     </ng-container>
@@ -41,12 +41,12 @@
     <!-- LEARNING SUMMARY -->
     <ng-template #learningSummary>
       <div class="learning-box">
-        <div class="learning-title">Finished 🎉</div>
-        <div class="learning-text">You completed all questions in learning mode.</div>
+        <div class="learning-title">{{ 'TEST_SUMMARY.FINISHED' | translate }} 🎉</div>
+        <div class="learning-text">{{ 'TEST_SUMMARY.LEARNING_COMPLETE' | translate }}</div>
       </div>
 
       <div class="actions">
-        <button class="btn secondary" (click)="retake()">Retry Learning</button>
+        <button class="btn secondary" (click)="retake()">{{ 'TEST_SUMMARY.RETRY_LEARNING' | translate }}</button>
       </div>
     </ng-template>
 
@@ -56,7 +56,7 @@
 <ng-template #loadingTpl>
   <div class="summary-wrapper">
     <div class="summary-card">
-      <p style="text-align:center;color:#888">Loading results…</p>
+      <p style="text-align:center;color:#888">{{ 'TEST_SUMMARY.LOADING' | translate }}</p>
     </div>
   </div>
 </ng-template>

@@ -44,7 +44,7 @@
       <aside class="side-pane">
         <h2 class="exam-title">{{ testState!.testName }}</h2>
         <div class="side-card">
-          <div class="side-title">Progress</div>
+          <div class="side-title">{{ 'QUESTION_CARD.PROGRESS' | translate }}</div>
 
           <div class="progress-bar-container">
             <div class="progress-bar" [style.width.%]="progress"></div>
@@ -52,77 +52,77 @@
           </div>
 
           <div class="score-row" *ngIf="questionSubmitted()">
-            <span class="score-label">Score</span>
+            <span class="score-label">{{ 'QUESTION_CARD.SCORE' | translate }}</span>
             <span class="score-value">{{ questionScore() }} / {{ questionMaxScore() }}</span>
           </div>
         </div>
 
         <div class="side-card" *ngIf="isLearningMode()">
-          <div class="side-title">Actions</div>
+          <div class="side-title">{{ 'QUESTION_CARD.ACTIONS' | translate }}</div>
 
           <button
             *ngIf="!allQuestionsAnswered() && !questionSubmitted()"
             class="submit-btn side-btn"
             (click)="submitAnswer()">
-            Submit Answer
+            {{ 'QUESTION_CARD.SUBMIT_ANSWER' | translate }}
           </button>
 
           <button
             *ngIf="!allQuestionsAnswered() && questionSubmitted()"
             class="submit-btn side-btn"
             (click)="nextQuestion()">
-            Next question
+            {{ 'QUESTION_CARD.NEXT_QUESTION' | translate }}
           </button>
 
           <button
             *ngIf="allQuestionsAnswered()"
             class="submit-btn side-btn"
             (click)="finishTest()">
-            Finish test
+            {{ 'QUESTION_CARD.FINISH_TEST' | translate }}
           </button>
         </div>
 
       <div class="side-card tags-card" *ngIf="(question?.tags || []).length > 0">
-        <div class="side-title">Tags</div>
+        <div class="side-title">{{ 'QUESTION_CARD.TAGS' | translate }}</div>
         <div class="question-tags">
           <span class="question-tag" *ngFor="let t of question!.tags">{{ t.key }}</span>
         </div>
       </div>
 
       <div class="review-banner" *ngIf="isInReview()">
-        Review mode — grade open questions, then finish.
+        {{ 'QUESTION_CARD.REVIEW_MODE' | translate }}
       </div>
 
       <div class="side-card" *ngIf="isExamMode()">
-        <div class="side-title">Actions</div>
+        <div class="side-title">{{ 'QUESTION_CARD.ACTIONS' | translate }}</div>
 
         <div class="nav-row">
           <button
             class="submit-btn side-btn"
             [disabled]="testState!.currentQuestionIndex === 0"
             (click)="previousQuestion()">
-            ← Previous
+            ← {{ 'QUESTION_CARD.PREVIOUS' | translate }}
           </button>
 
           <button
             *ngIf="!isLastQuestion()"
             class="submit-btn side-btn"
             (click)="nextQuestion()">
-            Next →
+            {{ 'QUESTION_CARD.NEXT' | translate }} →
           </button>
 
           <button
             *ngIf="isLastQuestion() && !isInReview()"
             class="submit-btn side-btn submit-exam-btn"
             (click)="submitExam()">
-            Submit
+            {{ 'QUESTION_CARD.SUBMIT' | translate }}
           </button>
 
           <button
             *ngIf="isLastQuestion() && isInReview()"
             class="submit-btn side-btn submit-exam-btn"
             (click)="submitExam()">
-            Finish Review
+            {{ 'QUESTION_CARD.FINISH_REVIEW' | translate }}
           </button>
         </div>
       </div>
@@ -134,7 +134,7 @@
   <ng-template #loading>
     <div class="question-wrapper">
       <div class="question-card">
-        <p>Loading question...</p>
+        <p>{{ 'QUESTION_CARD.LOADING' | translate }}</p>
       </div>
     </div>
   </ng-template>

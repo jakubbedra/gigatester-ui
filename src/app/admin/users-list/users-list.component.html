@@ -1,6 +1,6 @@
 <div class="page">
   <div class="page-header">
-    <h1 class="page-title">Users</h1>
+    <h1 class="page-title">{{ 'USERS.TITLE' | translate }}</h1>
   </div>
 
   <div class="loading-state" *ngIf="loading">
@@ -11,9 +11,9 @@
     <table>
       <thead>
         <tr>
-          <th>Username</th>
-          <th>Role</th>
-          <th class="actions-col">Actions</th>
+          <th>{{ 'USERS.USERNAME' | translate }}</th>
+          <th>{{ 'USERS.ROLE' | translate }}</th>
+          <th class="actions-col">{{ 'USERS.ACTIONS' | translate }}</th>
         </tr>
       </thead>
       <tbody>
@@ -21,7 +21,7 @@
           <td class="username-cell">
             <img class="avatar" [src]="user.profilePictureUrl || 'assets/img/avatar.jpg'" alt="" />
             <span>{{ user.username }}</span>
-            <span class="you-badge" *ngIf="isCurrentUser(user)">you</span>
+            <span class="you-badge" *ngIf="isCurrentUser(user)">{{ 'USERS.YOU' | translate }}</span>
           </td>
           <td>
             <span class="role-badge" [class]="'role-' + user.role.toLowerCase()">{{ user.role }}</span>
@@ -31,22 +31,22 @@
               <button class="btn-promote" *ngIf="user.role === 'USER'"
                       [disabled]="actionInProgress === user.id"
                       (click)="promote(user)">
-                Promote
+                {{ 'USERS.PROMOTE' | translate }}
               </button>
               <button class="btn-demote" *ngIf="user.role === 'MODERATOR'"
                       [disabled]="actionInProgress === user.id"
                       (click)="demote(user)">
-                Demote
+                {{ 'USERS.DEMOTE' | translate }}
               </button>
               <button class="btn-reset-link"
                       [disabled]="actionInProgress === user.id"
                       (click)="generateResetLink(user)">
-                Reset Password
+                {{ 'USERS.RESET_PASSWORD' | translate }}
               </button>
               <button class="btn-delete"
                       [disabled]="actionInProgress === user.id"
                       (click)="delete(user)">
-                Delete
+                {{ 'USERS.DELETE' | translate }}
               </button>
             </ng-container>
             <span class="no-actions" *ngIf="user.role === 'ADMIN' || isCurrentUser(user)">—</span>
@@ -60,14 +60,14 @@
 <!-- Reset link modal -->
 <div class="modal-overlay" *ngIf="resetLink" (click)="closeResetLink()">
   <div class="modal" (click)="$event.stopPropagation()">
-    <h2 class="modal-title">Password Reset Link</h2>
-    <p class="modal-subtitle">Share this link with <strong>{{ resetLinkUser }}</strong>. It expires in 24 hours.</p>
+    <h2 class="modal-title">{{ 'USERS.PASSWORD_RESET_LINK' | translate }}</h2>
+    <p class="modal-subtitle">{{ 'USERS.SHARE_LINK' | translate }} <strong>{{ resetLinkUser }}</strong>. {{ 'USERS.LINK_EXPIRES' | translate }}</p>
     <div class="reset-link-box">
       <span class="reset-link-text">{{ resetLink }}</span>
-      <button class="btn-copy" (click)="copyResetLink()">Copy</button>
+      <button class="btn-copy" (click)="copyResetLink()">{{ 'USERS.COPY' | translate }}</button>
     </div>
     <div class="modal-actions">
-      <button class="btn-close" (click)="closeResetLink()">Close</button>
+      <button class="btn-close" (click)="closeResetLink()">{{ 'USERS.CLOSE' | translate }}</button>
     </div>
   </div>
 </div>

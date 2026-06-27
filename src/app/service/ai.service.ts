@@ -31,11 +31,12 @@ export class AiService {
     file: File,
     closedCount: number,
     multipleChoiceCount: number,
-    openCount: number
+    openCount: number,
+    answerCount: number
   ): Observable<AiQuestion[]> {
     const form = new FormData();
     form.append('file', file);
-    const params = { closedCount, multipleChoiceCount, openCount };
+    const params = { closedCount, multipleChoiceCount, openCount, answerCount };
     return this.http.post<AiQuestion[]>(`${this.base}/generate-questions`, form, { params });
   }
 

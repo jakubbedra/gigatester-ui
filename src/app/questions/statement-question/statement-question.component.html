@@ -13,14 +13,14 @@
         {{ s.text }}
       </div>
 
-      <div class="tf-toggle" role="group" aria-label="True/False">
+      <div class="tf-toggle" role="group" [attr.aria-label]="'STATEMENT_QUESTION.TITLE' | translate">
         <button
           type="button"
           class="tf-btn"
           [class.active]="isSelected(i, true)"
           [disabled]="locked"
           (click)="select(i, true)">
-          True
+          {{ 'STATEMENT_QUESTION.TRUE' | translate }}
         </button>
 
         <button
@@ -29,7 +29,7 @@
           [class.active]="isSelected(i, false)"
           [disabled]="locked"
           (click)="select(i, false)">
-          False
+          {{ 'STATEMENT_QUESTION.FALSE' | translate }}
         </button>
       </div>
 
@@ -38,9 +38,9 @@
 
   <!-- Optional helper line -->
   <div class="stmt-hint" *ngIf="!locked">
-    Select True/False for each statement.
+    {{ 'STATEMENT_QUESTION.HINT' | translate }}
     <span class="stmt-hint-badge" [class.ready]="isComplete()">
-      {{ isComplete() ? 'Ready to submit' : 'Incomplete' }}
+      {{ isComplete() ? ('STATEMENT_QUESTION.READY' | translate) : ('STATEMENT_QUESTION.INCOMPLETE' | translate) }}
     </span>
   </div>
 

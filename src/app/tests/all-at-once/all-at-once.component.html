@@ -4,7 +4,7 @@
   <div class="aao-header">
     <div class="aao-meta">
       <h2 class="aao-title">{{ testState!.testName }}</h2>
-      <span class="aao-counter">{{ answeredCount() }} / {{ entries.length }} answered</span>
+      <span class="aao-counter">{{ answeredCount() }} / {{ entries.length }} {{ 'ALL_AT_ONCE.ANSWERED' | translate }}</span>
     </div>
 
     <div class="aao-progress">
@@ -12,7 +12,7 @@
     </div>
 
     <div class="review-banner" *ngIf="isInReview() || (isLearningMode() && learningPhase === 'reviewing')">
-      Review mode — grade open questions, then finish.
+      {{ 'ALL_AT_ONCE.ANSWERED_CHECK' | translate }}
     </div>
   </div>
 
@@ -30,7 +30,7 @@
         <span class="q-score" *ngIf="entry.state?.answered">
           {{ entry.state.score }} / {{ entry.question.points }} pts
         </span>
-        <span class="q-badge answered" *ngIf="entry.state?.answered && !isInReview()">✓ Answered</span>
+        <span class="q-badge answered" *ngIf="entry.state?.answered && !isInReview()">✓ {{ 'ALL_AT_ONCE.ANSWERED' | translate }}</span>
       </div>
 
       <!-- Question content -->
@@ -76,23 +76,23 @@
             class="aao-submit-btn"
             [disabled]="submitting"
             (click)="submitAnswers()">
-      {{ submitting ? 'Submitting…' : 'Submit' }}
+      {{ submitting ? ('ALL_AT_ONCE.SUBMITTING' | translate) : ('ALL_AT_ONCE.SUBMIT' | translate) }}
     </button>
     <button *ngIf="learningPhase === 'reviewing'"
             class="aao-submit-btn"
             [disabled]="submitting"
             (click)="finishLearningReview()">
-      {{ submitting ? 'Finishing…' : 'Finish Review' }}
+      {{ submitting ? ('ALL_AT_ONCE.FINISHING' | translate) : ('ALL_AT_ONCE.FINISH_REVIEW' | translate) }}
     </button>
     <button *ngIf="learningPhase === 'result' && !allCorrect"
             class="aao-submit-btn"
             (click)="startNextRound()">
-      Next Round →
+      {{ 'ALL_AT_ONCE.NEXT_ROUND' | translate }} →
     </button>
     <button *ngIf="learningPhase === 'result' && allCorrect"
             class="aao-submit-btn"
             (click)="finishTest()">
-      Finish Test
+      {{ 'ALL_AT_ONCE.FINISH_TEST' | translate }}
     </button>
   </div>
 
@@ -102,18 +102,18 @@
             class="aao-submit-btn"
             [disabled]="submitting"
             (click)="submitExam()">
-      {{ submitting ? 'Submitting…' : 'Submit Exam' }}
+      {{ submitting ? ('ALL_AT_ONCE.SUBMITTING' | translate) : ('ALL_AT_ONCE.SUBMIT_EXAM' | translate) }}
     </button>
     <button *ngIf="isInReview()"
             class="aao-submit-btn"
             [disabled]="submitting"
             (click)="finishExamReview()">
-      {{ submitting ? 'Finishing…' : 'Finish Review' }}
+      {{ submitting ? ('ALL_AT_ONCE.FINISHING' | translate) : ('ALL_AT_ONCE.FINISH_REVIEW' | translate) }}
     </button>
   </div>
 
 </div>
 
 <ng-template #loadingTpl>
-  <div class="aao-loading">Loading questions…</div>
+  <div class="aao-loading">{{ 'ALL_AT_ONCE.LOADING' | translate }}</div>
 </ng-template>

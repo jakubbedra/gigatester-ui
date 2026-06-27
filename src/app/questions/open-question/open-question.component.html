@@ -5,7 +5,7 @@
     <div class="pane">
 <!--      <div class="pane-title">Your answer</div>-->
       <div class="grade-bar" *ngIf="isManualGrading() && gradingEnabled">
-        <div class="grade-label">Score</div>
+        <div class="grade-label">{{ 'OPEN_QUESTION.SCORE' | translate }}</div>
 
         <div class="grade-input">
           <input
@@ -23,7 +23,7 @@
 
         <button type="button" class="lock-btn" (click)="toggleLock()"
                 *ngIf="!locked" [disabled]="!gradingEnabled">
-          Lock & grade
+          {{ 'OPEN_QUESTION.LOCK_GRADE' | translate }}
         </button>
       </div>
 
@@ -32,13 +32,13 @@
         [(ngModel)]="text"
         (ngModelChange)="emitState()"
         [disabled]="locked"
-        placeholder="Type your answer..."
+        [placeholder]="'OPEN_QUESTION.PLACEHOLDER' | translate"
       ></textarea>
     </div>
 
     <!-- RIGHT -->
     <div class="pane suggested-pane" [class.visible]="locked">
-      <div class="pane-title">Suggested answer</div>
+      <div class="pane-title">{{ 'OPEN_QUESTION.SUGGESTED_ANSWER' | translate }}</div>
 
       <div class="suggested-box">
         <div *ngIf="isAnswerHtml; else answerText" [innerHTML]="suggestedAnswer"></div>

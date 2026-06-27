@@ -1,7 +1,7 @@
 <div class="page">
   <div class="page-header">
-    <h1 class="page-title">Subjects</h1>
-    <button class="btn-add" (click)="openAdd()">+ New Subject</button>
+    <h1 class="page-title">{{ 'SUBJECTS.TITLE' | translate }}</h1>
+    <button class="btn-add" (click)="openAdd()">+ {{ 'SUBJECTS.NEW_SUBJECT' | translate }}</button>
   </div>
 
   <div class="grid" *ngIf="subjects.length > 0; else empty">
@@ -13,14 +13,14 @@
         <div class="context-wrapper" (click)="stopPropagation($event)">
           <button class="ctx-btn" (click)="toggleMenu($event, subject.id)">···</button>
           <div class="ctx-menu" *ngIf="openMenuId === subject.id">
-            <button (click)="openEdit($event, subject)">Edit</button>
-            <button class="danger" (click)="delete($event, subject.id)">Delete</button>
+            <button (click)="openEdit($event, subject)">{{ 'SIDEBAR.EDIT' | translate }}</button>
+            <button class="danger" (click)="delete($event, subject.id)">{{ 'SIDEBAR.DELETE' | translate }}</button>
           </div>
         </div>
       </div>
 
       <div class="tests-section">
-        <div class="tests-label">Tests <span class="test-count">{{ subject.tests.length }}</span></div>
+        <div class="tests-label">{{ 'SUBJECTS.TESTS' | translate }} <span class="test-count">{{ subject.tests.length }}</span></div>
         <div class="tests-list" *ngIf="subject.tests.length > 0; else noTests">
           <div class="test-row" *ngFor="let test of subject.tests" (click)="openTest(test.id)">
             <span class="test-icon">📝</span>
@@ -29,12 +29,12 @@
           </div>
         </div>
         <ng-template #noTests>
-          <div class="no-tests">No tests assigned</div>
+          <div class="no-tests">{{ 'SUBJECTS.NO_TESTS' | translate }}</div>
         </ng-template>
       </div>
 
       <div class="tests-section" *ngIf="subject.crosswords.length > 0">
-        <div class="tests-label">Crosswords <span class="test-count">{{ subject.crosswords.length }}</span></div>
+        <div class="tests-label">{{ 'SUBJECTS.CROSSWORDS' | translate }} <span class="test-count">{{ subject.crosswords.length }}</span></div>
         <div class="tests-list">
           <div class="test-row crossword-row" *ngFor="let cw of subject.crosswords">
             <span class="test-icon">🔠</span>
@@ -49,7 +49,7 @@
   <ng-template #empty>
     <div class="empty-state">
       <div class="empty-icon">📂</div>
-      <p>No subjects yet. Add one to get started.</p>
+      <p>{{ 'SUBJECTS.EMPTY' | translate }}</p>
     </div>
   </ng-template>
 </div>
@@ -57,17 +57,17 @@
 <!-- Edit Modal -->
 <div class="modal-overlay" *ngIf="showEditModal" (click)="cancelEdit()">
   <div class="modal" (click)="stopPropagation($event)">
-    <h2 class="modal-title">Edit Subject</h2>
+    <h2 class="modal-title">{{ 'SUBJECTS.EDIT_TITLE' | translate }}</h2>
 
     <div class="form-group">
-      <label>Name</label>
-      <input type="text" [(ngModel)]="editName" placeholder="Subject name" />
+      <label>{{ 'SUBJECTS.NAME' | translate }}</label>
+      <input type="text" [(ngModel)]="editName" [placeholder]="'SUBJECTS.NEW_TITLE' | translate" />
     </div>
 
     <div class="form-group">
-      <label>Assigned Tests</label>
+      <label>{{ 'SUBJECTS.ASSIGNED_TESTS' | translate }}</label>
       <ng-container *ngIf="allTests.length > 0; else noTestsAvailable">
-        <input class="search-input" type="text" [(ngModel)]="testSearch" placeholder="Search tests…" />
+        <input class="search-input" type="text" [(ngModel)]="testSearch" [placeholder]="'SUBJECTS.SEARCH_TESTS' | translate" />
         <div class="test-picker">
           <ng-container *ngFor="let test of allTests">
             <label class="test-check" *ngIf="!testSearch || test.name.toLowerCase().includes(testSearch.toLowerCase())"
@@ -82,14 +82,14 @@
         </div>
       </ng-container>
       <ng-template #noTestsAvailable>
-        <div class="no-tests-hint">No tests available. Create some first.</div>
+        <div class="no-tests-hint">{{ 'SUBJECTS.NO_TESTS_AVAILABLE' | translate }}</div>
       </ng-template>
     </div>
 
     <div class="form-group">
-      <label>Assigned Crosswords</label>
+      <label>{{ 'SUBJECTS.ASSIGNED_CROSSWORDS' | translate }}</label>
       <ng-container *ngIf="allCrosswords.length > 0; else noCrosswordsAvailable">
-        <input class="search-input" type="text" [(ngModel)]="crosswordSearch" placeholder="Search crosswords…" />
+        <input class="search-input" type="text" [(ngModel)]="crosswordSearch" [placeholder]="'SUBJECTS.SEARCH_CROSSWORDS' | translate" />
         <div class="test-picker">
           <ng-container *ngFor="let cw of allCrosswords">
             <label class="test-check" *ngIf="!crosswordSearch || cw.name.toLowerCase().includes(crosswordSearch.toLowerCase())"
@@ -104,14 +104,14 @@
         </div>
       </ng-container>
       <ng-template #noCrosswordsAvailable>
-        <div class="no-tests-hint">No crosswords available. Create some first.</div>
+        <div class="no-tests-hint">{{ 'SUBJECTS.NO_CROSSWORDS_AVAILABLE' | translate }}</div>
       </ng-template>
     </div>
 
     <div class="modal-actions">
-      <button class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+      <button class="btn-secondary" (click)="cancelEdit()">{{ 'SUBJECTS.CANCEL' | translate }}</button>
       <button class="btn-primary" (click)="saveEdit()" [disabled]="saving || !editName.trim()">
-        {{ saving ? 'Saving…' : 'Save' }}
+        {{ saving ? ('SUBJECTS.SAVING' | translate) : ('SUBJECTS.SAVE' | translate) }}
       </button>
     </div>
   </div>
@@ -120,15 +120,15 @@
 <!-- Add Modal -->
 <div class="modal-overlay" *ngIf="showAddModal" (click)="cancelAdd()">
   <div class="modal" (click)="stopPropagation($event)">
-    <h2 class="modal-title">New Subject</h2>
+    <h2 class="modal-title">{{ 'SUBJECTS.NEW_SUBJECT' | translate }}</h2>
     <div class="form-group">
-      <label>Name</label>
-      <input type="text" [(ngModel)]="newSubjectName" placeholder="Subject name" />
+      <label>{{ 'SUBJECTS.NAME' | translate }}</label>
+      <input type="text" [(ngModel)]="newSubjectName" [placeholder]="'SUBJECTS.NEW_TITLE' | translate" />
     </div>
     <div class="modal-actions">
-      <button class="btn-secondary" (click)="cancelAdd()">Cancel</button>
+      <button class="btn-secondary" (click)="cancelAdd()">{{ 'SUBJECTS.CANCEL' | translate }}</button>
       <button class="btn-primary" (click)="saveAdd()" [disabled]="adding || !newSubjectName.trim()">
-        {{ adding ? 'Creating…' : 'Create' }}
+        {{ adding ? ('SUBJECTS.CREATING' | translate) : ('SUBJECTS.CREATE' | translate) }}
       </button>
     </div>
   </div>

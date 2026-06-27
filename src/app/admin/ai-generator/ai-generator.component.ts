@@ -18,6 +18,7 @@ export class AiGeneratorComponent implements OnInit {
   closedCount = 3;
   multipleChoiceCount = 2;
   openCount = 2;
+  answerCount = 4;
   generating = false;
   generateError: string | null = null;
 
@@ -52,7 +53,8 @@ export class AiGeneratorComponent implements OnInit {
       this.selectedFile,
       this.closedCount,
       this.multipleChoiceCount,
-      this.openCount
+      this.openCount,
+      this.answerCount
     ).subscribe({
       next: qs => {
         this.questions = qs.map(q => ({ ...q, answers: q.answers.map(a => ({ ...a })) }));

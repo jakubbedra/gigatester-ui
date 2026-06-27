@@ -6,35 +6,35 @@
     <!-- Resume banner -->
     <div class="resume-banner" *ngIf="existingState && !showNewForm">
       <div class="resume-info">
-        <span class="resume-label">You have an unfinished game</span>
+        <span class="resume-label">{{ 'CROSSWORD_VIEW.UNFINISHED' | translate }}</span>
         <span class="resume-meta">{{ existingState.crosswordName }}</span>
       </div>
       <div class="resume-actions">
-        <button type="button" class="resume-btn primary" (click)="continueGame()">Continue</button>
-        <button type="button" class="resume-btn secondary" (click)="showNewForm = true">New game</button>
+        <button type="button" class="resume-btn primary" (click)="continueGame()">{{ 'CROSSWORD_VIEW.CONTINUE' | translate }}</button>
+        <button type="button" class="resume-btn secondary" (click)="showNewForm = true">{{ 'CROSSWORD_VIEW.NEW_GAME' | translate }}</button>
       </div>
     </div>
 
     <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="showNewForm">
 
       <div class="field-section">
-        <div class="field-label">Number of words</div>
+        <div class="field-label">{{ 'CROSSWORD_VIEW.WORD_COUNT' | translate }}</div>
         <div class="form-group">
           <label>
-            Words to include
-            <span class="avail">/ {{ termCount }} available</span>
+            {{ 'CROSSWORD_VIEW.WORDS_TO_INCLUDE' | translate }}
+            <span class="avail">/ {{ termCount }} {{ 'CROSSWORD_VIEW.AVAILABLE' | translate }}</span>
           </label>
           <input type="number" formControlName="numberOfWords" min="1" [max]="termCount">
           <span class="field-error" *ngIf="form.get('numberOfWords')?.errors?.['min']">
-            Minimum 1 word required
+            {{ 'CROSSWORD_VIEW.MIN_WORDS' | translate }}
           </span>
           <span class="field-error" *ngIf="form.get('numberOfWords')?.errors?.['max']">
-            Max {{ termCount }} words available
+            {{ 'CROSSWORD_VIEW.MAX' | translate }} {{ termCount }} {{ 'CROSSWORD_VIEW.WORDS_AVAILABLE' | translate }}
           </span>
         </div>
       </div>
 
-      <button type="submit" class="start-btn" [disabled]="form.invalid">Start</button>
+      <button type="submit" class="start-btn" [disabled]="form.invalid">{{ 'CROSSWORD_VIEW.START' | translate }}</button>
 
     </form>
   </div>

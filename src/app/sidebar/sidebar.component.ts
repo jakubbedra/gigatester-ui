@@ -1,6 +1,8 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../service/auth.service';
+import { LanguageService } from '../service/language.service';
+import { StreakService } from '../service/streak.service';
 import { forkJoin, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { TestService } from '../service/test.service';
@@ -37,8 +39,9 @@ interface UniversityYear {
 })
 export class SidebarComponent implements OnInit {
   universityYears: UniversityYear[] = [];
-
   openMenuId: string | null = null;
+  currentStreak = 0;
+  longestStreak = 0;
 
   constructor(
     private testService: TestService,
@@ -47,7 +50,9 @@ export class SidebarComponent implements OnInit {
     private crosswordService: CrosswordService,
     private accessService: SubjectGroupAccessService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private streakService: StreakService,
+    public lang: LanguageService
   ) {}
 
   get isModerator(): boolean {
@@ -75,6 +80,10 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit() {
     this.loadData();
+    this.streakService.getStreak().subscribe(s => {
+      this.currentStreak = s.currentStreak;
+      this.longestStreak = s.longestStreak;
+    });
   }
 
   loadData() {
