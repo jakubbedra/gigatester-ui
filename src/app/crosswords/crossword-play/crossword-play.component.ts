@@ -40,6 +40,7 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
   isDragging = false;
   hoveredCell: string | null = null;
   cellSize = 38;
+  mobileCellSize = 32;
   isSubmitting = false;
 
   flashCorrect = new Set<string>();
@@ -89,10 +90,14 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
     this.resizeObserver?.disconnect();
   }
 
+  zoomIn()  { this.mobileCellSize = Math.min(this.mobileCellSize + 4, 56); this.applyMobileSize(); }
+  zoomOut() { this.mobileCellSize = Math.max(this.mobileCellSize - 4, 16); this.applyMobileSize(); }
+  private applyMobileSize() { if (window.innerWidth <= 768) this.cellSize = this.mobileCellSize; }
+
   private updateCellSize() {
     if (!this.state || !this.gridScrollEl) return;
     if (window.innerWidth <= 768) {
-      this.cellSize = 32;
+      this.cellSize = this.mobileCellSize;
       return;
     }
     const el = this.gridScrollEl.nativeElement;

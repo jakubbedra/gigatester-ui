@@ -1,0 +1,129 @@
+<div class="page">
+
+  <!-- STEP 1: INPUT -->
+  <ng-container *ngIf="step === 'input'">
+    <div class="page-header">
+      <h1 class="page-title">AI Question Generator</h1>
+      <p class="page-sub">Upload a PDF with your notes and generate exam questions using AI.</p>
+    </div>
+
+    <div class="card">
+      <div class="form-group">
+        <label>PDF File</label>
+        <div class="file-drop" (click)="fileInput.click()">
+          <span *ngIf="!selectedFile">📄 Click to select a PDF</span>
+          <span *ngIf="selectedFile" class="file-name">📄 {{ selectedFile.name }}</span>
+          <input #fileInput type="file" accept=".pdf" (change)="onFileChange($event)" hidden />
+        </div>
+      </div>
+
+      <div class="counts-row">
+        <div class="form-group">
+          <label>Single-answer questions</label>
+          <input type="number" [(ngModel)]="closedCount" min="0" max="20" />
+        </div>
+        <div class="form-group">
+          <label>Multiple-choice questions</label>
+          <input type="number" [(ngModel)]="multipleChoiceCount" min="0" max="20" />
+        </div>
+        <div class="form-group">
+          <label>Open questions</label>
+          <input type="number" [(ngModel)]="openCount" min="0" max="20" />
+        </div>
+      </div>
+
+      <div class="error-msg" *ngIf="generateError">{{ generateError }}</div>
+
+      <button class="btn-generate" (click)="generate()"
+              [disabled]="!selectedFile || generating || (closedCount + multipleChoiceCount + openCount) === 0">
+        <span *ngIf="!generating">✨ Generate</span>
+        <span *ngIf="generating" class="spinner-inline"></span>
+        <span *ngIf="generating">Generating…</span>
+      </button>
+    </div>
+  </ng-container>
+
+  <!-- STEP 2: REVIEW -->
+  <ng-container *ngIf="step === 'review'">
+    <div class="page-header">
+      <h1 class="page-title">Review Questions</h1>
+      <p class="page-sub">{{ questions.length }} questions generated. Edit or delete before saving.</p>
+    </div>
+
+    <div class="question-card" *ngFor="let q of questions; let i = index">
+      <div class="qcard-header">
+        <span class="qcard-badge" [class.badge-open]="q.type === 'OPEN_QUESTION'"
+              [class.badge-multi]="q.multipleChoice">
+          {{ questionLabel(q) }}
+        </span>
+        <span class="qcard-num">Question {{ i + 1 }}</span>
+        <button class="btn-delete-q" (click)="deleteQuestion(i)" title="Delete">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label>Question text</label>
+        <textarea [(ngModel)]="q.questionText" rows="3"></textarea>
+      </div>
+
+      <!-- Closed question answers -->
+      <ng-container *ngIf="q.type === 'CLOSED_QUESTION'">
+        <label class="answers-label">Answers</label>
+        <div class="answer-row" *ngFor="let a of q.answers; let ai = index">
+          <ng-container *ngIf="!q.multipleChoice">
+            <input type="radio" [name]="'q' + i" [checked]="a.correct"
+                   (change)="setSingleCorrect(q, ai)" />
+          </ng-container>
+          <ng-container *ngIf="q.multipleChoice">
+            <input type="checkbox" [(ngModel)]="a.correct" />
+          </ng-container>
+          <input class="answer-text" type="text" [(ngModel)]="a.text" placeholder="Answer text" />
+          <button class="btn-rm-answer" (click)="removeAnswer(q, ai)" title="Remove">✕</button>
+        </div>
+        <button class="btn-add-answer" (click)="addAnswer(q)">+ Add answer</button>
+        <p class="hint" *ngIf="!q.multipleChoice">Select the radio button next to the correct answer.</p>
+        <p class="hint" *ngIf="q.multipleChoice">Check all correct answers.</p>
+      </ng-container>
+
+      <!-- Open question answer -->
+      <ng-container *ngIf="q.type === 'OPEN_QUESTION'">
+        <div class="form-group">
+          <label>Expected answer</label>
+          <textarea [(ngModel)]="q.openAnswer" rows="2"></textarea>
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="empty-review" *ngIf="questions.length === 0">
+      <p>All questions deleted. Go back and regenerate.</p>
+    </div>
+
+    <div class="review-actions">
+      <button class="btn-back" (click)="step = 'input'">← Back</button>
+
+      <div class="save-group">
+        <select [(ngModel)]="selectedTestId" class="test-select">
+          <option value="">Select a test to link questions to…</option>
+          <option *ngFor="let t of tests" [value]="t.id">{{ t.name }}</option>
+        </select>
+        <button class="btn-save" (click)="save()"
+                [disabled]="saving || !selectedTestId || questions.length === 0">
+          <span *ngIf="!saving">💾 Save to database</span>
+          <span *ngIf="saving">Saving…</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="error-msg" *ngIf="saveError">{{ saveError }}</div>
+  </ng-container>
+
+  <!-- STEP 3: DONE -->
+  <ng-container *ngIf="step === 'done'">
+    <div class="done-card">
+      <div class="done-icon">✅</div>
+      <h2 class="done-title">Questions saved!</h2>
+      <p class="done-sub">{{ questions.length }} questions were added to the selected test and tagged <strong>ai-generated</strong>.</p>
+      <button class="btn-generate" (click)="reset()">Generate more</button>
+    </div>
+  </ng-container>
+
+</div>

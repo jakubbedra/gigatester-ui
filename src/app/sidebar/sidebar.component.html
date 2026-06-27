@@ -15,6 +15,7 @@
         <span class="admin-link" (click)="navigateToTests()">Tests</span>
         <span class="admin-link" (click)="navigateToCrosswords()">Crosswords</span>
         <span class="admin-link" *ngIf="isAdmin" (click)="navigateToUsers()">Users</span>
+        <span class="admin-link" routerLink="/admin/ai-generator">✨ AI Generator</span>
       </li>
 
       <li *ngFor="let year of universityYears">

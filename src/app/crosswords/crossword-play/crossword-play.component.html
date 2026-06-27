@@ -38,6 +38,12 @@
           </div>
         </div>
 
+        <div class="zoom-controls">
+          <button class="zoom-btn" (click)="zoomOut()">−</button>
+          <span class="zoom-label">Zoom</span>
+          <button class="zoom-btn" (click)="zoomIn()">+</button>
+        </div>
+
         <div class="grid-scroll" #gridScroll>
           <div class="grid" [style.--cols]="state.width" [style.--cell-size.px]="cellSize">
             <ng-container *ngFor="let row of rows(); let r = index">

@@ -213,6 +213,51 @@ td {
   font-size: 14px;
 }
 
+@media (max-width: 600px) {
+  .page {
+    padding: 24px 16px;
+  }
+
+  .table-wrap {
+    max-width: 100%;
+    border-radius: 12px;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tbody tr {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    gap: 10px;
+  }
+
+  td {
+    padding: 0;
+    font-size: 14px;
+  }
+
+  .actions-cell {
+    text-align: left;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .actions-cell button {
+    flex: 1 1 auto;
+    min-width: 80px;
+    margin-right: 0;
+  }
+
+  .modal {
+    width: calc(100vw - 32px);
+    padding: 24px 20px;
+  }
+}
+
 /* Reset link modal */
 .modal-overlay {
   position: fixed;

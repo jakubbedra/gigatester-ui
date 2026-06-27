@@ -27,6 +27,7 @@ import { ResetPasswordComponent } from './auth/reset-password/reset-password.com
 import { AccountComponent } from './account/account.component';
 import { HomeComponent } from './home/home.component';
 import { UsersListComponent } from './admin/users-list/users-list.component';
+import { AiGeneratorComponent } from './admin/ai-generator/ai-generator.component';
 import { AuthInterceptor } from './interceptor/auth.interceptor';
 
 @NgModule({
@@ -53,6 +54,7 @@ import { AuthInterceptor } from './interceptor/auth.interceptor';
     HomeComponent,
     UsersListComponent,
     ResetPasswordComponent,
+    AiGeneratorComponent,
   ],
   imports: [
     BrowserModule,
