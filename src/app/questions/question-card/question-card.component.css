@@ -296,6 +296,39 @@
   margin-top: 0;
 }
 
+.countdown-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(123, 109, 245, 0.1);
+  border: 1px solid rgba(123, 109, 245, 0.3);
+  border-radius: 10px;
+  padding: 8px 14px;
+}
+
+.countdown-card.urgent {
+  background: rgba(220, 60, 60, 0.12);
+  border-color: rgba(220, 60, 60, 0.5);
+  animation: pulse-urgent 1s ease-in-out infinite;
+}
+
+@keyframes pulse-urgent {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
+}
+
+.countdown-icon { font-size: 1rem; }
+
+.countdown-time {
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #c0b0ff;
+  letter-spacing: 0.05em;
+}
+
+.countdown-card.urgent .countdown-time { color: #ff7070; }
+
 .review-banner {
   background: rgba(123, 109, 245, 0.12);
   border: 1px solid rgba(123, 109, 245, 0.35);

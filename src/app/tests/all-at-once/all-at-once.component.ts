@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -33,12 +33,15 @@ type LearningPhase = 'answering' | 'reviewing' | 'result';
   templateUrl: './all-at-once.component.html',
   styleUrls: ['./all-at-once.component.css']
 })
-export class AllAtOnceComponent implements OnInit {
+export class AllAtOnceComponent implements OnInit, OnDestroy {
 
   testState?: TestStateResponse;
   entries: QuestionEntry[] = [];
   loading = true;
   submitting = false;
+
+  remainingMs = 0;
+  private countdownInterval: any;
 
   // LEARNING mode state machine
   learningPhase: LearningPhase = 'answering';
@@ -61,6 +64,7 @@ export class AllAtOnceComponent implements OnInit {
       this.loadEntries(ts).subscribe(entries => {
         this.entries = entries;
         this.loading = false;
+        this.startCountdown();
       });
     });
   }
@@ -205,6 +209,34 @@ export class AllAtOnceComponent implements OnInit {
   private isManualOpen(entry: QuestionEntry): boolean {
     if (entry.stateSummary.questionType !== 'OPEN') return false;
     return (entry.question as OpenQuestionDto).gradingRules?.includes(GradingRule.MANUAL) ?? false;
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.countdownInterval);
+  }
+
+  private startCountdown() {
+    if (!this.testState?.timeLimitEnabled || !this.testState.timeLimitMs) return;
+    const deadline = this.testState.startTime + this.testState.timeLimitMs;
+    this.remainingMs = Math.max(0, deadline - Date.now());
+    this.countdownInterval = setInterval(() => {
+      this.remainingMs = Math.max(0, deadline - Date.now());
+      if (this.remainingMs === 0) {
+        clearInterval(this.countdownInterval);
+        this.submitExam();
+      }
+    }, 1000);
+  }
+
+  get countdownDisplay(): string {
+    const total = Math.ceil(this.remainingMs / 1000);
+    const m = Math.floor(total / 60).toString().padStart(2, '0');
+    const s = (total % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  }
+
+  get countdownUrgent(): boolean {
+    return this.remainingMs > 0 && this.remainingMs < 60000;
   }
 
   isLearningMode()  { return this.testState?.mode === TestModeDto.LEARNING; }

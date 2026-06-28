@@ -93,6 +93,10 @@
     "TAG_FILTER_HINT": "(zostaw puste, aby uwzględnić wszystkie pytania)",
     "TAG_INCLUDE": "Uwzględnij",
     "TAG_EXCLUDE": "Wyklucz",
+    "NO_LIMIT": "Bez limitu",
+    "TIME_LIMIT_ON": "Limit czasu",
+    "MINUTES": "min",
+    "TIME_REMAINING": "Pozostały czas",
     "CONTINUE_TEST": "Kontynuuj test",
     "NEW_TEST": "Nowy test",
     "AVAILABLE": "dostępnych"
@@ -116,8 +120,8 @@
     "FINISH_TEST": "Zakończ test",
     "TAGS": "Tagi",
     "REVIEW_MODE": "Tryb recenzji — oceń pytania otwarte, a następnie zakończ.",
-    "PREVIOUS": "← Poprzednie",
-    "NEXT": "Następne →",
+    "PREVIOUS": "Poprzednie",
+    "NEXT": "Następne",
     "SUBMIT": "Zatwierdź",
     "FINISH_REVIEW": "Zakończ przegląd",
     "LOADING": "Ładowanie pytania..."
@@ -141,7 +145,7 @@
   },
   "ALL_AT_ONCE": {
     "ANSWERED": "odpowiedziano",
-    "ANSWERED_CHECK": "✓ Odpowiedziano",
+    "ANSWERED_CHECK": "Odpowiedziano",
     "SUBMITTING": "Wysyłanie…",
     "SUBMIT": "Wyślij",
     "FINISH_REVIEW": "Zakończ przegląd",
@@ -180,8 +184,8 @@
     "SUBMIT_TURN": "Wyślij ruch",
     "NEW_CROSSWORD": "Nowa krzyżówka",
     "SCORE": "Wynik",
-    "ACROSS": "↔ Poziomo",
-    "DOWN": "↕ Pionowo"
+    "ACROSS": "Poziomo",
+    "DOWN": "Pionowo"
   },
   "SUBJECT_GROUPS": {
     "TITLE": "Grupy przedmiotów",
@@ -241,7 +245,7 @@
     "CREATING": "Tworzenie…"
   },
   "TEST_EDIT": {
-    "BACK": "← Testy",
+    "BACK": "Testy",
     "TITLE": "Edytuj test",
     "TEST_NAME": "Nazwa testu",
     "CLOSED_QUESTIONS": "Pytania zamknięte",
@@ -300,7 +304,7 @@
     "CREATE_EDIT": "Utwórz i edytuj"
   },
   "CROSSWORD_EDIT": {
-    "BACK": "← Krzyżówki",
+    "BACK": "Krzyżówki",
     "TITLE": "Edytuj krzyżówkę",
     "NAME": "Nazwa krzyżówki",
     "SAVE": "Zapisz zmiany",
@@ -349,10 +353,10 @@
     "ANSWERS": "Odpowiedzi",
     "RADIO_HINT": "Zaznacz przycisk opcji przy prawidłowej odpowiedzi.",
     "CHECKBOX_HINT": "Zaznacz wszystkie prawidłowe odpowiedzi.",
-    "ADD_ANSWER": "+ Dodaj odpowiedź",
+    "ADD_ANSWER": "Dodaj odpowiedź",
     "EXPECTED_ANSWER": "Oczekiwana odpowiedź",
     "ALL_DELETED": "Wszystkie pytania usunięte. Wróć i wygeneruj ponownie.",
-    "BACK": "← Wstecz",
+    "BACK": "Wstecz",
     "SELECT_TEST": "Wybierz test, do którego przypisać pytania…",
     "SAVE": "💾 Zapisz do bazy danych",
     "SAVING": "Zapisywanie…",

@@ -55,7 +55,9 @@ export class TestViewComponent implements OnInit {
           openQuestionsCount: [defaults.openQuestionsCount],
           passingPercentage: [defaults.passingPercentage],
           mode: [defaults.mode],
-          displayType: [defaults.displayType]
+          displayType: [defaults.displayType],
+          timeLimitEnabled: [defaults.timeLimitEnabled],
+          timeLimitMinutes: [test.timeLimit > 0 ? Math.round(test.timeLimit / 60000) : 30]
         }, { validators: () => this.examValidatorFn() });
 
         this.testStateService.getTestStateFromTestId(this.testId).subscribe({
@@ -105,7 +107,13 @@ export class TestViewComponent implements OnInit {
     if (this.form.invalid) return;
     // console.log(this.form.value);
 
-    const state = { ...this.form.value, tagIds: this.selectedTags.map(t => t.id), excludeTags: this.excludeTags };
+    const { timeLimitMinutes, ...formVals } = this.form.value;
+    const state = {
+      ...formVals,
+      tagIds: this.selectedTags.map(t => t.id),
+      excludeTags: this.excludeTags,
+      timeLimitMs: formVals.timeLimitEnabled ? timeLimitMinutes * 60000 : 0
+    };
     this.testStateService.createTestState(this.testId, state).subscribe({
       next: (response) => {
         const path = state.displayType === TestDisplayTypeDto.ALL_AT_ONCE

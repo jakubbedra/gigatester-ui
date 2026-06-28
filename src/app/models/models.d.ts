@@ -261,6 +261,7 @@ export interface TestStateRequest {
     mode: TestModeDto;
     displayType: TestDisplayTypeDto;
     timeLimitEnabled: boolean;
+    timeLimitMs?: number;
     tagIds?: string[];
     excludeTags?: boolean;
 }
@@ -298,6 +299,7 @@ export interface TestResponse {
     storedClosedQuestionsCount: number;
     storedOpenQuestionsCount: number;
     passingPercentage: number;
+    timeLimit: number;
 }
 
 export interface TestStateResponse {
@@ -314,6 +316,9 @@ export interface TestStateResponse {
     executionState: TestExecutionStateDto;
     totalScore: number;
     maxScore: number;
+    timeLimitEnabled: boolean;
+    timeLimitMs: number;
+    startTime: number;
 }
 
 export interface QuestionStateSummaryResponse {

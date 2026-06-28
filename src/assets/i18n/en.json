@@ -93,6 +93,10 @@
     "TAG_FILTER_HINT": "(leave empty to include all questions)",
     "TAG_INCLUDE": "Include",
     "TAG_EXCLUDE": "Exclude",
+    "NO_LIMIT": "No limit",
+    "TIME_LIMIT_ON": "Time limit",
+    "MINUTES": "min",
+    "TIME_REMAINING": "Time remaining",
     "CONTINUE_TEST": "Continue test",
     "NEW_TEST": "New test",
     "AVAILABLE": "available"
@@ -116,8 +120,8 @@
     "FINISH_TEST": "Finish test",
     "TAGS": "Tags",
     "REVIEW_MODE": "Review mode — grade open questions, then finish.",
-    "PREVIOUS": "← Previous",
-    "NEXT": "Next →",
+    "PREVIOUS": "Previous",
+    "NEXT": "Next",
     "SUBMIT": "Submit",
     "FINISH_REVIEW": "Finish Review",
     "LOADING": "Loading question..."
@@ -180,8 +184,8 @@
     "SUBMIT_TURN": "Submit turn",
     "NEW_CROSSWORD": "New crossword",
     "SCORE": "Score",
-    "ACROSS": "↔ Across",
-    "DOWN": "↕ Down"
+    "ACROSS": "Across",
+    "DOWN": "Down"
   },
   "SUBJECT_GROUPS": {
     "TITLE": "Subject Groups",
@@ -241,7 +245,7 @@
     "CREATING": "Creating…"
   },
   "TEST_EDIT": {
-    "BACK": "← Tests",
+    "BACK": "Tests",
     "TITLE": "Edit Test",
     "TEST_NAME": "Test Name",
     "CLOSED_QUESTIONS": "Closed Questions",
@@ -249,7 +253,7 @@
     "PASSING": "Passing %",
     "SAVE": "Save Changes",
     "QUESTIONS": "Questions",
-    "ADD_QUESTION": "+ Add Question",
+    "ADD_QUESTION": "Add Question",
     "MULTIPLE_CHOICE": "Multiple choice",
     "SINGLE_CHOICE": "Single choice",
     "EXPECTED_ANSWER": "Expected answer",
@@ -264,7 +268,7 @@
     "CONTENT_AREA": "Content area",
     "ANSWER_AREA": "Answer area",
     "ANSWERS": "Answers",
-    "ADD": "+ Add",
+    "ADD": "Add",
     "ANSWER_VARIATIONS": "Answer Variations",
     "VARIATION": "Variation",
     "GRADING_RULES_LABEL": "Grading Rules",
@@ -300,7 +304,7 @@
     "CREATE_EDIT": "Create & Edit"
   },
   "CROSSWORD_EDIT": {
-    "BACK": "← Crosswords",
+    "BACK": "Crosswords",
     "TITLE": "Edit Crossword",
     "NAME": "Crossword Name",
     "SAVE": "Save Changes",

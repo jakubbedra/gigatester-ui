@@ -43,6 +43,12 @@
 
       <aside class="side-pane">
         <h2 class="exam-title">{{ testState!.testName }}</h2>
+        <div class="countdown-card" *ngIf="testState!.timeLimitEnabled && !isInReview()"
+             [class.urgent]="countdownUrgent">
+          <span class="countdown-icon">⏱</span>
+          <span class="countdown-time">{{ countdownDisplay }}</span>
+        </div>
+
         <div class="side-card">
           <div class="side-title">{{ 'QUESTION_CARD.PROGRESS' | translate }}</div>
 

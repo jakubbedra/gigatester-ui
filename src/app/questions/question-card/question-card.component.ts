@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
   ClosedQuestionDto,
   ClosedQuestionStateRequest,
@@ -27,7 +27,7 @@ import {switchMap} from "rxjs/operators";
   templateUrl: './question-card.component.html',
   styleUrls: ['./question-card.component.css']
 })
-export class QuestionCardComponent implements OnInit {
+export class QuestionCardComponent implements OnInit, OnDestroy {
 
   testState?: TestStateResponse;
 
@@ -39,6 +39,9 @@ export class QuestionCardComponent implements OnInit {
 
   questionState: ClosedQuestionStateResponse | OpenQuestionStateResponse | StatementQuestionStateResponse | null = null;
   childAnswer: ClosedQuestionStateRequest | OpenQuestionStateRequest | StatementQuestionStateRequest | null = null;
+
+  remainingMs = 0;
+  private countdownInterval: any;
 
   @ViewChild('questionTextContainer') questionTextContainer!: ElementRef;
 
@@ -55,6 +58,7 @@ export class QuestionCardComponent implements OnInit {
     this.testStateService.getTestState(testStateId).subscribe(state => {
       this.testState = state;
       this.loadQuestion();
+      this.startCountdown();
     });
   }
 
@@ -238,6 +242,34 @@ export class QuestionCardComponent implements OnInit {
         }
       });
     });
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.countdownInterval);
+  }
+
+  private startCountdown() {
+    if (!this.testState?.timeLimitEnabled || !this.testState.timeLimitMs) return;
+    const deadline = this.testState.startTime + this.testState.timeLimitMs;
+    this.remainingMs = Math.max(0, deadline - Date.now());
+    this.countdownInterval = setInterval(() => {
+      this.remainingMs = Math.max(0, deadline - Date.now());
+      if (this.remainingMs === 0) {
+        clearInterval(this.countdownInterval);
+        this.submitExam();
+      }
+    }, 1000);
+  }
+
+  get countdownDisplay(): string {
+    const total = Math.ceil(this.remainingMs / 1000);
+    const m = Math.floor(total / 60).toString().padStart(2, '0');
+    const s = (total % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  }
+
+  get countdownUrgent(): boolean {
+    return this.remainingMs > 0 && this.remainingMs < 60000;
   }
 
   questionScore(): string {

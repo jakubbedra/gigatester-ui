@@ -14,6 +14,12 @@
     <div class="review-banner" *ngIf="isInReview() || (isLearningMode() && learningPhase === 'reviewing')">
       {{ 'ALL_AT_ONCE.ANSWERED_CHECK' | translate }}
     </div>
+
+    <div class="countdown-card" *ngIf="testState!.timeLimitEnabled && !isInReview()"
+         [class.urgent]="countdownUrgent">
+      <span class="countdown-icon">⏱</span>
+      <span class="countdown-time">{{ countdownDisplay }}</span>
+    </div>
   </div>
 
   <!-- Question list -->

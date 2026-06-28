@@ -255,6 +255,29 @@ input[type="number"] {
   box-shadow: 0 0 10px rgba(123, 109, 245, 0.4);
 }
 
+.time-limit-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.time-limit-input input {
+  width: 80px;
+  background: #2a2a3e;
+  border: 1px solid rgba(123, 109, 245, 0.3);
+  border-radius: 8px;
+  color: #e0e0f0;
+  font-size: 14px;
+  padding: 7px 10px;
+}
+
+.time-limit-input .suffix {
+  position: static;
+  color: #9090b0;
+  font-size: 13px;
+}
+
 .tag-mode-toggle {
   display: flex;
   gap: 0;

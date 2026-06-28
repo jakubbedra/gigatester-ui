@@ -114,6 +114,27 @@
         </div>
       </div>
 
+      <!-- Time limit -->
+      <div class="field-section" *ngIf="isExamMode()">
+        <div class="field-label">{{ 'TEST_VIEW.TIME_LIMIT' | translate }}</div>
+        <div class="toggle-row">
+          <button type="button" class="toggle-btn"
+                  [class.active]="!form.get('timeLimitEnabled')?.value"
+                  (click)="form.get('timeLimitEnabled')?.setValue(false)">
+            {{ 'TEST_VIEW.NO_LIMIT' | translate }}
+          </button>
+          <button type="button" class="toggle-btn"
+                  [class.active]="form.get('timeLimitEnabled')?.value"
+                  (click)="form.get('timeLimitEnabled')?.setValue(true)">
+            {{ 'TEST_VIEW.TIME_LIMIT_ON' | translate }}
+          </button>
+        </div>
+        <div class="time-limit-input" *ngIf="form.get('timeLimitEnabled')?.value">
+          <input type="number" formControlName="timeLimitMinutes" min="1" max="300">
+          <span class="suffix">{{ 'TEST_VIEW.MINUTES' | translate }}</span>
+        </div>
+      </div>
+
       <button type="submit" class="start-btn" [disabled]="form.invalid">{{ 'TEST_VIEW.START_TEST' | translate }}</button>
 
     </form>
