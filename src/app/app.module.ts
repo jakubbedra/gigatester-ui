@@ -36,6 +36,7 @@ import { UsersListComponent } from './admin/users-list/users-list.component';
 import { AiGeneratorComponent } from './admin/ai-generator/ai-generator.component';
 import { ToastComponent } from './toast/toast.component';
 import { AuthInterceptor } from './interceptor/auth.interceptor';
+import { QuillModule } from 'ngx-quill';
 
 @NgModule({
   declarations: [
@@ -74,7 +75,8 @@ import { AuthInterceptor } from './interceptor/auth.interceptor';
     TranslateModule.forRoot({
       loader: { provide: TranslateLoader, useFactory: HttpLoaderFactory, deps: [HttpClient] },
       defaultLanguage: 'en'
-    })
+    }),
+    QuillModule.forRoot()
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }

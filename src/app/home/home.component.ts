@@ -101,7 +101,7 @@ export class HomeComponent implements OnInit {
   }
 
   goToSubject(id: string) {
-    this.router.navigate(['/tests'], { queryParams: { subjectId: id } });
+    this.router.navigate(['/subjects', id]);
   }
 
   requestAccess(event: Event, group: GroupCard) {

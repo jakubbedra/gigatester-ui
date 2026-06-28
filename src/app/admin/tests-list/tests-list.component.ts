@@ -5,8 +5,9 @@ import { switchMap } from 'rxjs/operators';
 import { TestService } from '../../service/test.service';
 import { CrosswordService } from '../../service/crossword.service';
 import { SubjectsService } from '../../service/subject.service';
+import { CommentService } from '../../service/comment.service';
 import { AuthService } from '../../service/auth.service';
-import { TestSummaryResponse, CrosswordSummaryResponse } from '../../models/models.d';
+import { CommentResponse, TestSummaryResponse, CrosswordSummaryResponse } from '../../models/models.d';
 
 @Component({
   selector: 'app-tests-list',
@@ -20,6 +21,33 @@ export class TestsListComponent implements OnInit {
 
   subjectName: string | null = null;
   subjectId: string | null = null;
+  subjectDescription: string | null = null;
+  subjectDifficulty: number = 0;
+  subjectTestIds: string[] = [];
+  subjectCrosswordIds: string[] = [];
+  comments: CommentResponse[] = [];
+
+  editingDescription = false;
+  editDescriptionValue = '';
+  savingDescription = false;
+
+  quillModules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline'],
+      [{ size: ['small', false, 'large', 'huge'] }],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['link'],
+      ['clean']
+    ]
+  };
+
+  newCommentText = '';
+  submittingComment = false;
+
+  replyingTo: string | null = null;
+  replyText = '';
+  submittingReply = false;
 
   showAddModal = false;
   newName = '';
@@ -32,6 +60,7 @@ export class TestsListComponent implements OnInit {
     private testService: TestService,
     private crosswordService: CrosswordService,
     private subjectsService: SubjectsService,
+    private commentService: CommentService,
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute
@@ -43,8 +72,8 @@ export class TestsListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.queryParamMap.subscribe(params => {
-      this.subjectId = params.get('subjectId');
+    this.route.paramMap.subscribe(params => {
+      this.subjectId = params.get('id') ?? this.route.snapshot.queryParamMap.get('subjectId');
       this.load();
     });
   }
@@ -54,6 +83,11 @@ export class TestsListComponent implements OnInit {
       this.subjectsService.getSubject(this.subjectId).pipe(
         switchMap(subject => {
           this.subjectName = subject.name;
+          this.subjectDescription = subject.description;
+          this.subjectDifficulty = subject.difficulty ?? 0;
+          this.subjectTestIds = subject.tests ?? [];
+          this.subjectCrosswordIds = subject.crosswords ?? [];
+          this.comments = subject.comments ?? [];
           const tests$ = subject.tests.length
             ? forkJoin(subject.tests.map(id => this.testService.getTest(id)))
             : of([]);
@@ -68,11 +102,127 @@ export class TestsListComponent implements OnInit {
       });
     } else {
       this.subjectName = null;
+      this.subjectDescription = null;
+      this.subjectDifficulty = 0;
+      this.subjectTestIds = [];
+      this.subjectCrosswordIds = [];
+      this.comments = [];
       this.testService.getTests().subscribe(res => {
         this.tests = res.tests;
         this.crosswords = [];
       });
     }
+  }
+
+  hoverDifficulty: number | null = null;
+  editingDifficulty = false;
+  readonly tenArray = Array.from({ length: 10 }, (_, i) => i + 1);
+
+  get effectiveDifficulty(): number {
+    return this.editingDifficulty && this.hoverDifficulty !== null
+      ? this.hoverDifficulty
+      : this.subjectDifficulty;
+  }
+
+  setDifficulty(value: number) {
+    if (!this.subjectId || !this.subjectName) return;
+    this.subjectDifficulty = value;
+    this.hoverDifficulty = null;
+    this.editingDifficulty = false;
+    this.subjectsService.updateSubject(this.subjectId, {
+      name: this.subjectName,
+      description: this.subjectDescription ?? '',
+      difficulty: value,
+      tests: this.subjectTestIds,
+      crosswords: this.subjectCrosswordIds
+    }).subscribe({ error: () => { this.subjectDifficulty = this.subjectDifficulty; } });
+  }
+
+  difficultyLabelKey(value: number): string {
+    if (value <= 2) return 'SUBJECTS.DIFFICULTY_EASY';
+    if (value <= 4) return 'SUBJECTS.DIFFICULTY_MEDIUM';
+    if (value <= 6) return 'SUBJECTS.DIFFICULTY_HARD';
+    if (value <= 8) return 'SUBJECTS.DIFFICULTY_VERY_HARD';
+    return 'SUBJECTS.DIFFICULTY_EXPERT';
+  }
+
+  submitComment() {
+    if (!this.subjectId || !this.newCommentText.trim()) return;
+    this.submittingComment = true;
+    this.commentService.addComment(this.subjectId, this.newCommentText.trim()).subscribe({
+      next: (c) => {
+        this.comments = [c, ...this.comments];
+        this.newCommentText = '';
+        this.submittingComment = false;
+      },
+      error: () => { this.submittingComment = false; }
+    });
+  }
+
+  startReply(commentId: string) {
+    this.replyingTo = commentId;
+    this.replyText = '';
+  }
+
+  cancelReply() {
+    this.replyingTo = null;
+    this.replyText = '';
+  }
+
+  submitReply(comment: CommentResponse) {
+    if (!this.subjectId || !this.replyText.trim()) return;
+    this.submittingReply = true;
+    this.commentService.addReply(this.subjectId, comment.id, this.replyText.trim()).subscribe({
+      next: (r) => {
+        comment.responses = [...(comment.responses ?? []), r];
+        this.replyingTo = null;
+        this.replyText = '';
+        this.submittingReply = false;
+      },
+      error: () => { this.submittingReply = false; }
+    });
+  }
+
+  like(comment: CommentResponse) {
+    if (!this.subjectId) return;
+    this.commentService.like(this.subjectId, comment.id).subscribe(() => {
+      if (comment.likedByMe) {
+        comment.likes--;
+        comment.likedByMe = false;
+      } else {
+        comment.likes++;
+        comment.likedByMe = true;
+        if (comment.dislikedByMe) { comment.dislikes--; comment.dislikedByMe = false; }
+      }
+    });
+  }
+
+  dislike(comment: CommentResponse) {
+    if (!this.subjectId) return;
+    this.commentService.dislike(this.subjectId, comment.id).subscribe(() => {
+      if (comment.dislikedByMe) {
+        comment.dislikes--;
+        comment.dislikedByMe = false;
+      } else {
+        comment.dislikes++;
+        comment.dislikedByMe = true;
+        if (comment.likedByMe) { comment.likes--; comment.likedByMe = false; }
+      }
+    });
+  }
+
+  timeAgo(dateStr: string): string {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return 'just now';
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h ago`;
+    return `${Math.floor(h / 24)}d ago`;
+  }
+
+  avatarFallback(username: string): string {
+    return username?.charAt(0).toUpperCase() ?? '?';
   }
 
   toggleMenu(event: Event, id: string) {
@@ -154,6 +304,53 @@ export class TestsListComponent implements OnInit {
     if (confirm('Are you sure you want to delete this crossword?')) {
       this.crosswordService.deleteCrossword(id).subscribe(() => this.load());
     }
+  }
+
+  canDeleteComment(comment: CommentResponse): boolean {
+    if (this.canModify) return true;
+    const user = this.authService.getUser();
+    return !!user && user.username === comment.authorUsername;
+  }
+
+  deleteComment(comment: CommentResponse) {
+    if (!this.subjectId) return;
+    this.commentService.deleteComment(this.subjectId, comment.id).subscribe(() => {
+      this.comments = this.comments.filter(c => c.id !== comment.id);
+    });
+  }
+
+  startEditDescription() {
+    this.editDescriptionValue = this.subjectDescription ?? '';
+    this.editingDescription = true;
+  }
+
+  onEditorCreated(quill: any) {
+    if (this.editDescriptionValue) {
+      quill.clipboard.dangerouslyPasteHTML(0, this.editDescriptionValue);
+    }
+  }
+
+  cancelEditDescription() {
+    this.editingDescription = false;
+  }
+
+  saveDescription() {
+    if (!this.subjectId || !this.subjectName) return;
+    this.savingDescription = true;
+    this.subjectsService.updateSubject(this.subjectId, {
+      name: this.subjectName,
+      description: this.editDescriptionValue,
+      difficulty: this.subjectDifficulty,
+      tests: this.subjectTestIds,
+      crosswords: this.subjectCrosswordIds
+    }).subscribe({
+      next: () => {
+        this.subjectDescription = this.editDescriptionValue;
+        this.editingDescription = false;
+        this.savingDescription = false;
+      },
+      error: () => { this.savingDescription = false; }
+    });
   }
 
   goBack() {

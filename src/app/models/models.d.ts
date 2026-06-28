@@ -203,15 +203,33 @@ export interface SubjectGroupSummaryResponse {
 
 export interface SubjectRequest {
     name: string;
+    description?: string;
+    difficulty?: number;
     tests: string[];
     crosswords: string[];
+}
+
+export interface CommentResponse {
+    id: string;
+    authorUsername: string;
+    authorAvatarUrl: string | null;
+    content: string;
+    createdAt: string;
+    likes: number;
+    dislikes: number;
+    likedByMe: boolean;
+    dislikedByMe: boolean;
+    responses: CommentResponse[];
 }
 
 export interface SubjectResponse {
     id: string;
     name: string;
+    description: string | null;
+    difficulty: number;
     tests: string[];
     crosswords: string[];
+    comments: CommentResponse[];
 }
 
 export interface SubjectsResponse {

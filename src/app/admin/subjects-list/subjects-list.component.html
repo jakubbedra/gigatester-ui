@@ -5,7 +5,7 @@
   </div>
 
   <div class="grid" *ngIf="subjects.length > 0; else empty">
-    <div class="card" *ngFor="let subject of subjects">
+    <div class="card" *ngFor="let subject of subjects" (click)="openSubject(subject.id)">
 
       <div class="card-header">
         <div class="card-icon">📚</div>
@@ -62,6 +62,19 @@
     <div class="form-group">
       <label>{{ 'SUBJECTS.NAME' | translate }}</label>
       <input type="text" [(ngModel)]="editName" [placeholder]="'SUBJECTS.NEW_TITLE' | translate" />
+    </div>
+
+    <div class="form-group">
+      <label>{{ 'SUBJECTS.DIFFICULTY' | translate }}</label>
+      <div class="difficulty-slider-row">
+        <input type="range" min="0" max="10" step="0.5" [(ngModel)]="editDifficulty" class="difficulty-slider" />
+        <span class="difficulty-value">{{ editDifficulty }}/10</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>{{ 'SUBJECTS.DESCRIPTION' | translate }}</label>
+      <quill-editor [(ngModel)]="editDescription" [modules]="quillModules" class="quill-editor"></quill-editor>
     </div>
 
     <div class="form-group">

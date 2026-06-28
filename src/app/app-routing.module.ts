@@ -35,6 +35,7 @@ const routes: Routes = [
   { path: 'admin/crosswords', component: CrosswordsListComponent, canActivate: [AuthGuard, ModeratorGuard] },
   { path: 'admin/crosswords/:id/edit', component: CrosswordEditComponent, canActivate: [AuthGuard, ModeratorGuard] },
   { path: 'admin/users', component: UsersListComponent, canActivate: [AuthGuard, AdminGuard] },
+  { path: 'subjects/:id', component: TestsListComponent, canActivate: [AuthGuard] },
   { path: 'tests', component: TestsListComponent, canActivate: [AuthGuard] },
   { path: 'admin/tests', component: TestsListComponent, canActivate: [AuthGuard, ModeratorGuard] },
   { path: 'admin/tests/:id/edit', component: TestEditComponent, canActivate: [AuthGuard, ModeratorGuard] },

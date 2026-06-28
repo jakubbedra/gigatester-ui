@@ -29,11 +29,24 @@ export class SubjectsListComponent implements OnInit {
   showEditModal = false;
   editingSubject: SubjectResponse | null = null;
   editName = '';
+  editDescription = '';
+  editDifficulty = 0;
   editTestIds: string[] = [];
   editCrosswordIds: string[] = [];
   saving = false;
   testSearch = '';
   crosswordSearch = '';
+
+  quillModules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline'],
+      [{ size: ['small', false, 'large', 'huge'] }],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['link'],
+      ['clean']
+    ]
+  };
 
   // Add modal
   showAddModal = false;
@@ -91,6 +104,8 @@ export class SubjectsListComponent implements OnInit {
     this.subjectsService.getSubject(subject.id).subscribe(detail => {
       this.editingSubject = detail;
       this.editName = detail.name;
+      this.editDescription = detail.description ?? '';
+      this.editDifficulty = detail.difficulty ?? 0;
       this.editTestIds = [...detail.tests];
       this.editCrosswordIds = [...(detail.crosswords ?? [])];
       this.testSearch = '';
@@ -124,6 +139,8 @@ export class SubjectsListComponent implements OnInit {
     this.saving = true;
     this.subjectsService.updateSubject(this.editingSubject.id, {
       name: this.editName.trim(),
+      description: this.editDescription,
+      difficulty: this.editDifficulty,
       tests: this.editTestIds,
       crosswords: this.editCrosswordIds
     }).subscribe({
@@ -169,6 +186,10 @@ export class SubjectsListComponent implements OnInit {
 
   cancelAdd() {
     this.showAddModal = false;
+  }
+
+  openSubject(subjectId: string) {
+    this.router.navigate(['/subjects', subjectId]);
   }
 
   openTest(testId: string) {

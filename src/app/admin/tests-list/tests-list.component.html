@@ -7,6 +7,59 @@
     <button class="btn-add" *ngIf="canModify && !subjectId" (click)="openAdd()">+ {{ 'TESTS_LIST.NEW_TEST' | translate }}</button>
   </div>
 
+  <!-- Description + difficulty -->
+  <div class="subject-info-card" *ngIf="subjectId">
+
+    <!-- Stars row -->
+    <div class="stars-row">
+      <div class="star-rating" [class.editable]="editingDifficulty" (mouseleave)="hoverDifficulty = null">
+        <span class="star-slot" *ngFor="let i of tenArray">
+          <span class="s-bg">★</span>
+          <span class="s-fill s-left"  *ngIf="effectiveDifficulty >= i - 0.5">★</span>
+          <span class="s-fill s-right" *ngIf="effectiveDifficulty >= i">★</span>
+          <ng-container *ngIf="editingDifficulty">
+            <span class="s-hit s-left"  (mouseenter)="hoverDifficulty = i - 0.5" (click)="setDifficulty(i - 0.5)"></span>
+            <span class="s-hit s-right" (mouseenter)="hoverDifficulty = i"       (click)="setDifficulty(i)"></span>
+          </ng-container>
+        </span>
+      </div>
+      <button *ngIf="canModify && !editingDifficulty" class="desc-edit-btn" (click)="editingDifficulty = true">✎ Edit</button>
+      <button *ngIf="editingDifficulty" class="desc-edit-btn active" (click)="editingDifficulty = false; hoverDifficulty = null">✕ Done</button>
+      <span class="difficulty-label" *ngIf="!editingDifficulty">{{ effectiveDifficulty }}/10 — {{ difficultyLabelKey(effectiveDifficulty) | translate }}</span>
+      <span class="difficulty-label editing" *ngIf="editingDifficulty">{{ effectiveDifficulty }}/10 — {{ difficultyLabelKey(effectiveDifficulty) | translate }}</span>
+    </div>
+
+    <!-- View mode -->
+    <ng-container *ngIf="!editingDescription">
+      <div class="desc-body" *ngIf="subjectDescription; else noDescription">
+        <div class="desc-text" [innerHTML]="subjectDescription"></div>
+        <button *ngIf="canModify" class="desc-edit-btn" (click)="startEditDescription()" title="Edit description">✎ Edit</button>
+      </div>
+      <ng-template #noDescription>
+        <button *ngIf="canModify" class="desc-add-btn" (click)="startEditDescription()">+ Add description</button>
+        <p *ngIf="!canModify" class="desc-empty">No description.</p>
+      </ng-template>
+    </ng-container>
+
+    <!-- Edit mode -->
+    <div class="desc-editor-wrap" *ngIf="editingDescription">
+      <quill-editor
+        [(ngModel)]="editDescriptionValue"
+        [modules]="quillModules"
+        [format]="'html'"
+        (onEditorCreated)="onEditorCreated($event)"
+        class="desc-quill">
+      </quill-editor>
+      <div class="desc-editor-actions">
+        <button class="btn-secondary-sm" (click)="cancelEditDescription()">Cancel</button>
+        <button class="btn-primary-sm" (click)="saveDescription()" [disabled]="savingDescription">
+          {{ savingDescription ? 'Saving…' : 'Save' }}
+        </button>
+      </div>
+    </div>
+
+  </div>
+
   <!-- Tests -->
   <div class="section-label" *ngIf="subjectId">{{ 'TESTS_LIST.TITLE' | translate }}</div>
   <div class="grid" *ngIf="tests.length > 0; else emptyTests">
@@ -53,6 +106,86 @@
     <ng-template #emptyCrosswords>
       <div class="empty-inline">{{ 'TESTS_LIST.NO_CROSSWORDS_SUBJECT' | translate }}</div>
     </ng-template>
+  </ng-container>
+
+  <!-- Comments (subject view only) -->
+  <ng-container *ngIf="subjectId">
+    <div class="section-label comments-label">{{ 'TESTS_LIST.COMMENTS' | translate }}</div>
+
+    <div class="comments-wrap">
+      <!-- New comment -->
+      <div class="comment-compose">
+        <textarea class="comment-input" [(ngModel)]="newCommentText" placeholder="{{ 'TESTS_LIST.COMMENT_PLACEHOLDER' | translate }}" rows="3"></textarea>
+        <button class="btn-comment-submit" (click)="submitComment()" [disabled]="submittingComment || !newCommentText.trim()">
+          {{ 'TESTS_LIST.POST_COMMENT' | translate }}
+        </button>
+      </div>
+
+      <!-- Comment list -->
+      <div class="comment-list">
+        <div class="comment-card" *ngFor="let comment of comments">
+          <div class="comment-avatar">
+            <img *ngIf="comment.authorAvatarUrl" [src]="comment.authorAvatarUrl" alt="avatar" class="avatar-img" />
+            <div *ngIf="!comment.authorAvatarUrl" class="avatar-fallback">{{ avatarFallback(comment.authorUsername) }}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-header">
+              <span class="comment-author">{{ comment.authorUsername }}</span>
+              <span class="comment-time">{{ timeAgo(comment.createdAt) }}</span>
+              <button class="delete-btn" *ngIf="canDeleteComment(comment)" (click)="deleteComment(comment)" title="Delete">✕</button>
+            </div>
+            <div class="comment-content">{{ comment.content }}</div>
+            <div class="comment-actions">
+              <button class="vote-btn" [class.active]="comment.likedByMe" (click)="like(comment)">
+                <span class="vote-icon">👍</span> {{ comment.likes }}
+              </button>
+              <button class="vote-btn" [class.active]="comment.dislikedByMe" (click)="dislike(comment)">
+                <span class="vote-icon">👎</span> {{ comment.dislikes }}
+              </button>
+              <button class="reply-btn" (click)="startReply(comment.id)">↩ {{ 'TESTS_LIST.REPLY' | translate }}</button>
+            </div>
+
+            <!-- Reply compose -->
+            <div class="reply-compose" *ngIf="replyingTo === comment.id">
+              <textarea class="comment-input reply-input" [(ngModel)]="replyText" placeholder="{{ 'TESTS_LIST.REPLY_PLACEHOLDER' | translate }}" rows="2"></textarea>
+              <div class="reply-actions">
+                <button class="btn-secondary-sm" (click)="cancelReply()">{{ 'TESTS_LIST.CANCEL' | translate }}</button>
+                <button class="btn-comment-submit sm" (click)="submitReply(comment)" [disabled]="submittingReply || !replyText.trim()">
+                  {{ 'TESTS_LIST.POST_REPLY' | translate }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Replies -->
+            <div class="replies" *ngIf="comment.responses?.length">
+              <div class="reply-item" *ngFor="let reply of comment.responses">
+                <div class="comment-avatar">
+                  <img *ngIf="reply.authorAvatarUrl" [src]="reply.authorAvatarUrl" alt="avatar" class="avatar-img sm" />
+                  <div *ngIf="!reply.authorAvatarUrl" class="avatar-fallback sm">{{ avatarFallback(reply.authorUsername) }}</div>
+                </div>
+                <div class="comment-body">
+                  <div class="comment-header">
+                    <span class="comment-author">{{ reply.authorUsername }}</span>
+                    <span class="comment-time">{{ timeAgo(reply.createdAt) }}</span>
+                  </div>
+                  <div class="comment-content">{{ reply.content }}</div>
+                  <div class="comment-actions">
+                    <button class="vote-btn" [class.active]="reply.likedByMe" (click)="like(reply)">
+                      <span class="vote-icon">👍</span> {{ reply.likes }}
+                    </button>
+                    <button class="vote-btn" [class.active]="reply.dislikedByMe" (click)="dislike(reply)">
+                      <span class="vote-icon">👎</span> {{ reply.dislikes }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="comment-empty" *ngIf="comments.length === 0">{{ 'TESTS_LIST.NO_COMMENTS' | translate }}</div>
+      </div>
+    </div>
   </ng-container>
 </div>
 
