@@ -25,6 +25,10 @@
         <span class="admin-link" (click)="navigateToCrosswords()">{{ 'SIDEBAR.CROSSWORDS' | translate }}</span>
         <span class="admin-link" *ngIf="isAdmin" (click)="navigateToUsers()">{{ 'SIDEBAR.USERS' | translate }}</span>
         <span class="admin-link" routerLink="/admin/ai-generator">✨ {{ 'SIDEBAR.AI_GENERATOR' | translate }}</span>
+        <span class="admin-link inbox-link" routerLink="/admin/inbox">
+          📬 {{ 'SIDEBAR.INBOX' | translate }}
+          <span class="inbox-badge" *ngIf="pendingCount > 0">{{ pendingCount }}</span>
+        </span>
       </li>
 
       <li *ngFor="let year of universityYears">

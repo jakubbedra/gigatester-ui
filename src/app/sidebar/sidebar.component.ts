@@ -4,13 +4,14 @@ import { AuthService } from '../service/auth.service';
 import { LanguageService } from '../service/language.service';
 import { StreakService } from '../service/streak.service';
 import { forkJoin, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, map } from 'rxjs/operators';
 import { TestService } from '../service/test.service';
 import { SubjectsService } from '../service/subject.service';
 import { SubjectGroupService } from '../service/subject-group.service';
 import { CrosswordService } from '../service/crossword.service';
 import { SubjectGroupAccessService } from '../service/subject-group-access.service';
 import { CrosswordSummaryResponse, TestSummaryResponse } from '../models/models.d';
+import { InboxRequest } from '../admin/inbox/inbox.component';
 
 interface Item {
   name: string;
@@ -42,6 +43,12 @@ export class SidebarComponent implements OnInit {
   openMenuId: string | null = null;
   currentStreak = 0;
   longestStreak = 0;
+  inboxRequests: InboxRequest[] = [];
+  inboxLoading = false;
+
+  get pendingCount(): number {
+    return this.inboxRequests.length;
+  }
 
   constructor(
     private testService: TestService,
@@ -92,7 +99,34 @@ export class SidebarComponent implements OnInit {
       this.currentStreak = s.currentStreak;
       this.longestStreak = s.longestStreak;
     });
+    if (this.isModerator) {
+      this.loadInbox();
+    }
   }
+
+  loadInbox() {
+    this.inboxLoading = true;
+    this.subjectGroupService.getSubjectGroups().pipe(
+      switchMap(res => {
+        const groups = res.subjectGroups;
+        if (groups.length === 0) return of([] as InboxRequest[]);
+        return forkJoin(
+          groups.map(g =>
+            this.accessService.getAccessRequests(g.id).pipe(
+              map(reqs => reqs
+                .filter(r => r.status === 'PENDING')
+                .map(r => ({ ...r, groupName: g.name }))
+              )
+            )
+          )
+        ).pipe(map(nested => ([] as InboxRequest[]).concat(...nested)));
+      })
+    ).subscribe({
+      next: reqs => { this.inboxRequests = reqs; this.inboxLoading = false; },
+      error: () => { this.inboxLoading = false; }
+    });
+  }
+
 
   loadData() {
     const canSeeAll = this.isModerator;

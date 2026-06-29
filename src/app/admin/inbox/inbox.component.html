@@ -1,0 +1,49 @@
+<div class="page">
+  <div class="page-header">
+    <h1 class="page-title">📬 {{ 'INBOX.TITLE' | translate }}</h1>
+    <p class="page-subtitle">{{ 'INBOX.SUBTITLE' | translate }}</p>
+  </div>
+
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <div class="empty-state" *ngIf="requests.length === 0">
+      <span class="empty-icon">✅</span>
+      <p>{{ 'INBOX.EMPTY' | translate }}</p>
+    </div>
+
+    <div class="table-wrap" *ngIf="requests.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'INBOX.USER' | translate }}</th>
+            <th>{{ 'INBOX.GROUP' | translate }}</th>
+            <th class="actions-col">{{ 'INBOX.ACTIONS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let req of requests">
+            <td class="username-cell">{{ req.username }}</td>
+            <td>
+              <span class="group-badge">{{ req.groupName }}</span>
+            </td>
+            <td class="actions-cell">
+              <button class="btn-approve"
+                      [disabled]="actionInProgress === req.id"
+                      (click)="approve(req)">
+                {{ 'INBOX.APPROVE' | translate }}
+              </button>
+              <button class="btn-deny"
+                      [disabled]="actionInProgress === req.id"
+                      (click)="deny(req)">
+                {{ 'INBOX.DENY' | translate }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>

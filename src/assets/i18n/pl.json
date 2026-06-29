@@ -16,7 +16,9 @@
     "EDIT": "Edytuj",
     "DELETE": "Usuń",
     "STREAK": "dni z rzędu",
-    "METRICS": "Postępy"
+    "METRICS": "Postępy",
+    "INBOX": "Skrzynka",
+    "INBOX_EMPTY": "Brak oczekujących próśb."
   },
   "LOGIN": {
     "SIGN_IN": "Zaloguj się",
@@ -354,12 +356,12 @@
     "TITLE": "Generator pytań AI",
     "SUBTITLE": "Prześlij PDF ze swoimi notatkami i wygeneruj pytania egzaminacyjne za pomocą AI.",
     "PDF_FILE": "Plik PDF",
-    "CLICK_PDF": "📄 Kliknij, aby wybrać PDF",
+    "CLICK_PDF": "Kliknij, aby wybrać PDF",
     "SINGLE_ANSWER": "Pytania jednokrotnego wyboru",
     "MULTIPLE_CHOICE": "Pytania wielokrotnego wyboru",
     "OPEN_QUESTIONS": "Pytania otwarte",
     "ANSWERS_PER_QUESTION": "Odpowiedzi na pytanie zamknięte",
-    "GENERATE": "✨ Generuj",
+    "GENERATE": "Generuj",
     "GENERATING": "Generowanie…",
     "REVIEW_TITLE": "Przeglądaj pytania",
     "REVIEW_SUBTITLE": "pytań wygenerowanych. Edytuj lub usuń przed zapisaniem.",
@@ -373,7 +375,7 @@
     "ALL_DELETED": "Wszystkie pytania usunięte. Wróć i wygeneruj ponownie.",
     "BACK": "Wstecz",
     "SELECT_TEST": "Wybierz test, do którego przypisać pytania…",
-    "SAVE": "💾 Zapisz do bazy danych",
+    "SAVE": "Zapisz do bazy danych",
     "SAVING": "Zapisywanie…",
     "DONE_TITLE": "Pytania zapisane!",
     "DONE_SUBTITLE": "pytań zostało dodanych do wybranego testu i oznaczonych jako ai-generated.",
@@ -384,11 +386,21 @@
     "EN": "English",
     "PL": "Polski"
   },
+  "INBOX": {
+    "TITLE": "Prośby o dostęp",
+    "SUBTITLE": "Przeglądaj i obsługuj oczekujące prośby o dostęp do grup.",
+    "EMPTY": "Wszystko gotowe — brak oczekujących próśb.",
+    "USER": "Użytkownik",
+    "GROUP": "Grupa",
+    "ACTIONS": "Akcje",
+    "APPROVE": "Zatwierdź",
+    "DENY": "Odrzuć"
+  },
   "METRICS": {
     "TITLE": "Moje postępy",
     "TAB_PROGRESS": "Postępy",
     "TAB_RANKING": "Ranking",
-    "TESTS_TAKEN": "Testy zaliczone",
+    "TESTS_TAKEN": "Testy podjęte",
     "TESTS_PASSED": "Testy zdane",
     "PASS_RATE": "Skuteczność",
     "ACCURACY": "Dokładność",

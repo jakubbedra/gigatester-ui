@@ -16,7 +16,9 @@
     "EDIT": "Edit",
     "DELETE": "Delete",
     "STREAK": "day streak",
-    "METRICS": "Progress"
+    "METRICS": "Progress",
+    "INBOX": "Inbox",
+    "INBOX_EMPTY": "No pending requests."
   },
   "LOGIN": {
     "SIGN_IN": "Sign in",
@@ -354,12 +356,12 @@
     "TITLE": "AI Question Generator",
     "SUBTITLE": "Upload a PDF with your notes and generate exam questions using AI.",
     "PDF_FILE": "PDF File",
-    "CLICK_PDF": "📄 Click to select a PDF",
+    "CLICK_PDF": "Click to select a PDF",
     "SINGLE_ANSWER": "Single-answer questions",
     "MULTIPLE_CHOICE": "Multiple-choice questions",
     "OPEN_QUESTIONS": "Open questions",
     "ANSWERS_PER_QUESTION": "Answers per closed question",
-    "GENERATE": "✨ Generate",
+    "GENERATE": "Generate",
     "GENERATING": "Generating…",
     "REVIEW_TITLE": "Review Questions",
     "REVIEW_SUBTITLE": "questions generated. Edit or delete before saving.",
@@ -371,9 +373,9 @@
     "ADD_ANSWER": "+ Add answer",
     "EXPECTED_ANSWER": "Expected answer",
     "ALL_DELETED": "All questions deleted. Go back and regenerate.",
-    "BACK": "← Back",
+    "BACK": "Back",
     "SELECT_TEST": "Select a test to link questions to…",
-    "SAVE": "💾 Save to database",
+    "SAVE": "Save to database",
     "SAVING": "Saving…",
     "DONE_TITLE": "Questions saved!",
     "DONE_SUBTITLE": "questions were added to the selected test and tagged ai-generated.",
@@ -383,6 +385,16 @@
     "SWITCH": "Language",
     "EN": "English",
     "PL": "Polski"
+  },
+  "INBOX": {
+    "TITLE": "Access Requests",
+    "SUBTITLE": "Review and action pending group access requests from users.",
+    "EMPTY": "All caught up — no pending requests.",
+    "USER": "User",
+    "GROUP": "Group",
+    "ACTIONS": "Actions",
+    "APPROVE": "Approve",
+    "DENY": "Deny"
   },
   "METRICS": {
     "TITLE": "My Progress",
