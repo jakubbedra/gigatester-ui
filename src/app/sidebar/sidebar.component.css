@@ -82,9 +82,25 @@
   transition: transform 0.25s, box-shadow 0.25s;
 }
 
+.user-profile .avatar {
+  cursor: pointer;
+}
+
 .user-profile .avatar:hover {
   transform: scale(1.07);
   box-shadow: 0 0 26px rgba(123, 109, 245, 0.55);
+}
+
+.avatar-initial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2e2960;
+  color: #c0b0ff;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  user-select: none;
 }
 
 .user-profile h3 {

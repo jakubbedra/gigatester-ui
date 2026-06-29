@@ -1,6 +1,7 @@
 <aside class="sidebar">
   <div class="user-profile">
-    <img [src]="avatarUrl" class="avatar" alt="User Avatar" (click)="goToAccount()" style="cursor:pointer" />
+    <img *ngIf="avatarUrl" [src]="avatarUrl" class="avatar" alt="User Avatar" (click)="goToAccount()" />
+    <div *ngIf="!avatarUrl" class="avatar avatar-initial" (click)="goToAccount()">{{ avatarInitial }}</div>
     <h3>{{ displayName }}</h3>
     <div class="streak-display">
       <span class="streak-fire">🔥</span>

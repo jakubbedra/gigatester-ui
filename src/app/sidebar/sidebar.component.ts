@@ -70,8 +70,16 @@ export class SidebarComponent implements OnInit {
     return user.username === 'admin' ? 'Janusz Pawlacz' : user.username;
   }
 
-  get avatarUrl(): string {
-    return this.authService.getUser()?.profilePictureUrl ?? 'assets/img/avatar.jpg';
+  get avatarUrl(): string | null {
+    const user = this.authService.getUser();
+    if (user?.profilePictureUrl) return user.profilePictureUrl;
+    if (user?.role === 'ADMIN') return 'assets/img/avatar.jpg';
+    return null;
+  }
+
+  get avatarInitial(): string {
+    const name = this.authService.getUser()?.username ?? '?';
+    return name.charAt(0).toUpperCase();
   }
 
   goToAccount(): void {
