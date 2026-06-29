@@ -35,6 +35,7 @@ import { HomeComponent } from './home/home.component';
 import { UsersListComponent } from './admin/users-list/users-list.component';
 import { AiGeneratorComponent } from './admin/ai-generator/ai-generator.component';
 import { ToastComponent } from './toast/toast.component';
+import { MetricsComponent } from './metrics/metrics.component';
 import { AuthInterceptor } from './interceptor/auth.interceptor';
 import { QuillModule } from 'ngx-quill';
 
@@ -64,6 +65,7 @@ import { QuillModule } from 'ngx-quill';
     ResetPasswordComponent,
     AiGeneratorComponent,
     ToastComponent,
+    MetricsComponent,
   ],
   imports: [
     BrowserModule,

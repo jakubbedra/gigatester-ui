@@ -15,7 +15,8 @@
     "AI_GENERATOR": "AI Generator",
     "EDIT": "Edit",
     "DELETE": "Delete",
-    "STREAK": "day streak"
+    "STREAK": "day streak",
+    "METRICS": "Progress"
   },
   "LOGIN": {
     "SIGN_IN": "Sign in",
@@ -382,5 +383,21 @@
     "SWITCH": "Language",
     "EN": "English",
     "PL": "Polski"
+  },
+  "METRICS": {
+    "TITLE": "My Progress",
+    "TAB_PROGRESS": "Progress",
+    "TAB_RANKING": "Ranking",
+    "TESTS_TAKEN": "Tests Taken",
+    "TESTS_PASSED": "Tests Passed",
+    "PASS_RATE": "Pass Rate",
+    "ACCURACY": "Accuracy",
+    "QUESTIONS_CORRECT": "Questions Correct",
+    "DAILY_CHART": "Tests per Day (last 30 days)",
+    "PASSED": "Passed",
+    "FAILED": "Failed",
+    "YOUR_RANK": "Your Rank",
+    "USERNAME": "Username",
+    "NO_DATA": "No test data yet. Complete a test to see your stats."
   }
 }

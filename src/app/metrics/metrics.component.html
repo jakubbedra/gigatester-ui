@@ -1,0 +1,96 @@
+<div class="metrics-page">
+  <h1 class="page-title">{{ 'METRICS.TITLE' | translate }}</h1>
+
+  <div class="tab-bar">
+    <button class="tab-btn" [class.active]="activeTab === 'progress'" (click)="activeTab = 'progress'">
+      {{ 'METRICS.TAB_PROGRESS' | translate }}
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'ranking'" (click)="activeTab = 'ranking'">
+      {{ 'METRICS.TAB_RANKING' | translate }}
+    </button>
+  </div>
+
+  <!-- PROGRESS TAB -->
+  <div *ngIf="activeTab === 'progress'">
+    <div class="stat-cards" *ngIf="progress">
+      <div class="stat-card">
+        <div class="stat-value">{{ progress.totalTestsTaken }}</div>
+        <div class="stat-label">{{ 'METRICS.TESTS_TAKEN' | translate }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ progress.totalTestsPassed }}</div>
+        <div class="stat-label">{{ 'METRICS.TESTS_PASSED' | translate }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ passRate }}%</div>
+        <div class="stat-label">{{ 'METRICS.PASS_RATE' | translate }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ accuracy }}%</div>
+        <div class="stat-label">{{ 'METRICS.ACCURACY' | translate }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ progress.totalQuestionsCorrect }}</div>
+        <div class="stat-label">{{ 'METRICS.QUESTIONS_CORRECT' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="chart-card" *ngIf="progress && chartDays.length > 0">
+      <h2 class="chart-title">{{ 'METRICS.DAILY_CHART' | translate }}</h2>
+      <div class="chart-area">
+        <div class="bar-group" *ngFor="let day of chartDays">
+          <div class="bar-wrap">
+            <div class="bar bar-passed" [style.height.px]="barHeight(day.testsPassed)" title="{{ day.testsPassed }} passed"></div>
+            <div class="bar bar-taken" [style.height.px]="barHeight(day.testsTaken - day.testsPassed)" title="{{ day.testsTaken - day.testsPassed }} failed"></div>
+          </div>
+          <div class="bar-label">{{ day.date | slice:5 }}</div>
+        </div>
+      </div>
+      <div class="chart-legend">
+        <span class="legend-dot passed"></span> {{ 'METRICS.PASSED' | translate }}
+        <span class="legend-dot failed"></span> {{ 'METRICS.FAILED' | translate }}
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="progress && progress.totalTestsTaken === 0">
+      <p>{{ 'METRICS.NO_DATA' | translate }}</p>
+    </div>
+  </div>
+
+  <!-- RANKING TAB -->
+  <div *ngIf="activeTab === 'ranking'">
+    <div class="my-rank" *ngIf="myRank() > 0">
+      {{ 'METRICS.YOUR_RANK' | translate }}: <strong>#{{ myRank() }}</strong>
+    </div>
+    <table class="ranking-table" *ngIf="ranking.length > 0">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>{{ 'METRICS.USERNAME' | translate }}</th>
+          <th>{{ 'METRICS.TESTS_TAKEN' | translate }}</th>
+          <th>{{ 'METRICS.TESTS_PASSED' | translate }}</th>
+          <th>{{ 'METRICS.PASS_RATE' | translate }}</th>
+          <th>{{ 'METRICS.QUESTIONS_CORRECT' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let entry of ranking" [class.me]="entry.username === currentUsername">
+          <td class="rank-cell">
+            <span *ngIf="entry.rank === 1">🥇</span>
+            <span *ngIf="entry.rank === 2">🥈</span>
+            <span *ngIf="entry.rank === 3">🥉</span>
+            <span *ngIf="entry.rank > 3">{{ entry.rank }}</span>
+          </td>
+          <td>{{ entry.username }}</td>
+          <td>{{ entry.totalTestsTaken }}</td>
+          <td>{{ entry.totalTestsPassed }}</td>
+          <td>{{ entry.passRate | number:'1.0-1' }}%</td>
+          <td>{{ entry.totalQuestionsCorrect }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="empty-state" *ngIf="ranking.length === 0">
+      <p>{{ 'METRICS.NO_DATA' | translate }}</p>
+    </div>
+  </div>
+</div>

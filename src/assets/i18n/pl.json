@@ -15,7 +15,8 @@
     "AI_GENERATOR": "Generator AI",
     "EDIT": "Edytuj",
     "DELETE": "Usuń",
-    "STREAK": "dni z rzędu"
+    "STREAK": "dni z rzędu",
+    "METRICS": "Postępy"
   },
   "LOGIN": {
     "SIGN_IN": "Zaloguj się",
@@ -382,5 +383,21 @@
     "SWITCH": "Język",
     "EN": "English",
     "PL": "Polski"
+  },
+  "METRICS": {
+    "TITLE": "Moje postępy",
+    "TAB_PROGRESS": "Postępy",
+    "TAB_RANKING": "Ranking",
+    "TESTS_TAKEN": "Testy zaliczone",
+    "TESTS_PASSED": "Testy zdane",
+    "PASS_RATE": "Skuteczność",
+    "ACCURACY": "Dokładność",
+    "QUESTIONS_CORRECT": "Poprawne odpowiedzi",
+    "DAILY_CHART": "Testy dziennie (ostatnie 30 dni)",
+    "PASSED": "Zdane",
+    "FAILED": "Niezdane",
+    "YOUR_RANK": "Twoja pozycja",
+    "USERNAME": "Użytkownik",
+    "NO_DATA": "Brak danych. Ukończ test, aby zobaczyć statystyki."
   }
 }

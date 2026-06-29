@@ -1,0 +1,224 @@
+.metrics-page {
+  padding: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+  color: #c8c8e8;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #e0e0f5;
+  margin: 0 0 24px;
+}
+
+/* ── Tabs ── */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.tab-btn {
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: 1px solid rgba(123, 109, 245, 0.25);
+  background: transparent;
+  color: #9090b0;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn.active,
+.tab-btn:hover {
+  background: rgba(123, 109, 245, 0.15);
+  border-color: rgba(123, 109, 245, 0.5);
+  color: #c0b0ff;
+}
+
+/* ── Summary cards ── */
+.stat-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 120px;
+  background: #1a1a2e;
+  border: 1px solid rgba(123, 109, 245, 0.2);
+  border-radius: 14px;
+  padding: 20px 16px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #c0b0ff;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.stat-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6a6a9a;
+}
+
+/* ── Chart ── */
+.chart-card {
+  background: #1a1a2e;
+  border: 1px solid rgba(123, 109, 245, 0.2);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.chart-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #9090b0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 20px;
+}
+
+.chart-area {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 140px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  min-width: 28px;
+}
+
+.bar-wrap {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 1px;
+  height: 120px;
+  justify-content: flex-start;
+}
+
+.bar {
+  width: 18px;
+  border-radius: 3px 3px 0 0;
+  transition: opacity 0.2s;
+  min-height: 2px;
+}
+
+.bar-passed {
+  background: #7b6df5;
+}
+
+.bar-taken {
+  background: rgba(123, 109, 245, 0.25);
+  border-radius: 0;
+}
+
+.bar-label {
+  font-size: 9px;
+  color: #555577;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  height: 36px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  font-size: 11px;
+  color: #6a6a9a;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.legend-dot.passed { background: #7b6df5; }
+.legend-dot.failed { background: rgba(123, 109, 245, 0.25); }
+
+/* ── My rank banner ── */
+.my-rank {
+  background: rgba(123, 109, 245, 0.1);
+  border: 1px solid rgba(123, 109, 245, 0.25);
+  border-radius: 10px;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #c0b0ff;
+}
+
+.my-rank strong {
+  font-size: 18px;
+}
+
+/* ── Ranking table ── */
+.ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ranking-table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #555577;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ranking-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: #c8c8e8;
+}
+
+.ranking-table tr:hover td {
+  background: rgba(123, 109, 245, 0.05);
+}
+
+.ranking-table tr.me td {
+  color: #c0b0ff;
+  font-weight: 600;
+  background: rgba(123, 109, 245, 0.08);
+}
+
+.rank-cell {
+  font-size: 18px;
+  width: 40px;
+}
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center;
+  color: #555577;
+  padding: 48px 0;
+  font-size: 14px;
+}

@@ -17,6 +17,7 @@ import { AccountComponent } from './account/account.component';
 import { HomeComponent } from './home/home.component';
 import { UsersListComponent } from './admin/users-list/users-list.component';
 import { AiGeneratorComponent } from './admin/ai-generator/ai-generator.component';
+import { MetricsComponent } from './metrics/metrics.component';
 import { AdminGuard } from './guard/admin.guard';
 import { AuthGuard } from './guard/auth.guard';
 import { ModeratorGuard } from './guard/moderator.guard';
@@ -26,6 +27,7 @@ const routes: Routes = [
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'account', component: AccountComponent, canActivate: [AuthGuard] },
+  { path: 'metrics', component: MetricsComponent, canActivate: [AuthGuard] },
   { path: 'tests/:id', component: TestViewComponent, canActivate: [AuthGuard] },
   { path: 'tests/:id/executions', component: QuestionCardComponent, canActivate: [AuthGuard] },
   { path: 'tests/:id/executions/all', component: AllAtOnceComponent, canActivate: [AuthGuard] },

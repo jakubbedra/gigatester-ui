@@ -15,6 +15,9 @@
       <li class="home-link-item">
         <a routerLink="/home" class="home-link">🏠 {{ 'SIDEBAR.HOME' | translate }}</a>
       </li>
+      <li class="home-link-item">
+        <a routerLink="/metrics" class="home-link">📊 {{ 'SIDEBAR.METRICS' | translate }}</a>
+      </li>
       <li class="admin-links" *ngIf="isModerator">
         <span class="admin-link" (click)="navigateToSubjectGroups($event)">{{ 'SIDEBAR.GROUPS' | translate }}</span>
         <span class="admin-link" (click)="navigateToAdminSubjects()">{{ 'SIDEBAR.SUBJECTS' | translate }}</span>
