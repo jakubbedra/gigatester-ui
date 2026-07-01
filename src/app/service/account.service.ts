@@ -9,6 +9,7 @@ export interface UserResponse {
   username: string;
   role: string;
   profilePictureUrl: string | null;
+  bio: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -32,5 +33,13 @@ export class AccountService {
     return this.http.post<UserResponse>(`${this.baseUrl}/me/profile-picture`, form).pipe(
       tap(res => this.authService.updateStoredUser(res))
     );
+  }
+
+  updateBio(bio: string): Observable<UserResponse> {
+    return this.http.put<UserResponse>(`${this.baseUrl}/me/bio`, { bio });
+  }
+
+  getUserById(id: string): Observable<UserResponse> {
+    return this.http.get<UserResponse>(`${this.baseUrl}/${id}`);
   }
 }

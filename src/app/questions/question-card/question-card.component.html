@@ -7,8 +7,7 @@
       <div class="main-pane">
         <div class="card-scroll-area" [style.flex]="getContentProportions">
           <div class="question-text" #questionTextContainer>
-            <div *ngIf="isQuestionHtml" [innerHTML]="question.content.text"></div>
-            <div *ngIf="isQuestionText">{{ question.content.text }}</div>
+            <div [innerHTML]="question.content.text | latex"></div>
           </div>
         </div>
 

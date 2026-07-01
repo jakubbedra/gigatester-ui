@@ -239,6 +239,12 @@ export class SidebarComponent implements OnInit {
     }
   }
 
+  editCrossword(event: Event, crosswordId: string) {
+    event.stopPropagation();
+    this.openMenuId = null;
+    this.router.navigate(['/admin/crosswords', crosswordId, 'edit']);
+  }
+
   navigateToCrosswords() {
     this.router.navigate(['/admin/crosswords']);
   }

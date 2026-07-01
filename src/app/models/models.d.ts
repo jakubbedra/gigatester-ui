@@ -87,6 +87,7 @@ export interface CrosswordTermRequest {
     term: string;
     clue: string;
     clueType: ClueType;
+    tagIds?: string[];
 }
 
 export interface CrosswordRequest {
@@ -99,6 +100,7 @@ export interface CrosswordTermResponse {
     term: string;
     clue: string;
     clueType: ClueType;
+    tags: TagResponse[];
 }
 
 export interface CrosswordResponse {
@@ -120,6 +122,7 @@ export interface CrosswordSummaryResponse {
 export interface CrosswordStateRequest {
     crosswordId: string;
     numberOfWords: number;
+    tagFilter?: string[];
 }
 
 export interface CrosswordLetterRequest {
@@ -211,6 +214,7 @@ export interface SubjectRequest {
 
 export interface CommentResponse {
     id: string;
+    authorId: string;
     authorUsername: string;
     authorAvatarUrl: string | null;
     content: string;
@@ -222,6 +226,14 @@ export interface CommentResponse {
     responses: CommentResponse[];
 }
 
+export interface SubjectAuthor {
+    id: string;
+    username: string;
+    role: string;
+    profilePictureUrl: string | null;
+    bio: string | null;
+}
+
 export interface SubjectResponse {
     id: string;
     name: string;
@@ -230,6 +242,7 @@ export interface SubjectResponse {
     tests: string[];
     crosswords: string[];
     comments: CommentResponse[];
+    authors: SubjectAuthor[];
 }
 
 export interface SubjectsResponse {

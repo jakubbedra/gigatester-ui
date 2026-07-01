@@ -1,0 +1,20 @@
+<div class="profile-page">
+  <div *ngIf="loading" class="loading">Loading…</div>
+  <div *ngIf="notFound && !loading" class="not-found">User not found.</div>
+
+  <ng-container *ngIf="user && !loading">
+    <button class="back-btn" (click)="goBack()">← Back</button>
+
+    <div class="profile-card">
+      <div class="avatar-wrap">
+        <img [src]="user.profilePictureUrl || 'assets/img/avatar.jpg'" class="avatar" alt="avatar" />
+      </div>
+      <div class="profile-info">
+        <div class="profile-name">{{ displayName }}</div>
+        <div class="profile-role">{{ user.role }}</div>
+        <p class="profile-bio" *ngIf="user.bio">{{ user.bio }}</p>
+        <p class="profile-bio empty" *ngIf="!user.bio">This user has no bio yet.</p>
+      </div>
+    </div>
+  </ng-container>
+</div>

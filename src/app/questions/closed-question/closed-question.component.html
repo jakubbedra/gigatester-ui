@@ -18,7 +18,7 @@
         [class.radio]="!question?.multipleChoice">
       </span>
 
-      <span class="answer-text">{{ a.text }}</span>
+      <span class="answer-text" [innerHTML]="a.text | latex"></span>
     </button>
   </div>
 

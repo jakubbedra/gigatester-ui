@@ -21,6 +21,10 @@ export class AccountComponent implements OnInit {
   pictureError = '';
   pictureLoading = false;
 
+  editingBio = false;
+  bioValue = '';
+  bioLoading = false;
+
   constructor(private accountService: AccountService, private authService: AuthService) {}
 
   ngOnInit(): void {
@@ -60,6 +64,27 @@ export class AccountComponent implements OnInit {
         this.passwordError = 'Current password is incorrect.';
         this.passwordLoading = false;
       }
+    });
+  }
+
+  startEditBio(): void {
+    this.bioValue = this.user?.bio ?? '';
+    this.editingBio = true;
+  }
+
+  cancelEditBio(): void {
+    this.editingBio = false;
+  }
+
+  saveBio(): void {
+    this.bioLoading = true;
+    this.accountService.updateBio(this.bioValue).subscribe({
+      next: (res) => {
+        this.user = res;
+        this.editingBio = false;
+        this.bioLoading = false;
+      },
+      error: () => { this.bioLoading = false; }
     });
   }
 

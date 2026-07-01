@@ -72,6 +72,12 @@
               <li *ngFor="let cw of subject.crosswords">
                 <div class="menu-row test-row">
                   <a [routerLink]="['/crosswords', cw.id]" class="tests crossword-link">🔠 {{ cw.name }}</a>
+                  <div class="context-wrapper" *ngIf="isModerator">
+                    <button class="ctx-btn" (click)="toggleMenu($event, 'cw-' + cw.id)">···</button>
+                    <div class="ctx-menu" *ngIf="openMenuId === 'cw-' + cw.id">
+                      <button (click)="editCrossword($event, cw.id)">{{ 'SIDEBAR.EDIT' | translate }}</button>
+                    </div>
+                  </div>
                 </div>
               </li>
             </ul>

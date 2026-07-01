@@ -31,4 +31,12 @@ export class SubjectsService {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
+  addAuthor(subjectId: string, userId: string): Observable<SubjectResponse> {
+    return this.http.post<SubjectResponse>(`${this.baseUrl}/${subjectId}/authors/${userId}`, {});
+  }
+
+  removeAuthor(subjectId: string, userId: string): Observable<SubjectResponse> {
+    return this.http.delete<SubjectResponse>(`${this.baseUrl}/${subjectId}/authors/${userId}`);
+  }
+
 }

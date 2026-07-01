@@ -58,6 +58,27 @@
       </div>
     </div>
 
+    <!-- Authors -->
+    <div class="authors-section">
+      <div class="authors-label">Authors</div>
+      <div class="authors-list" *ngIf="subjectAuthors.length > 0">
+        <div class="author-chip" *ngFor="let author of subjectAuthors" (click)="openUserProfile(author.id)">
+          <img *ngIf="author.profilePictureUrl" [src]="author.profilePictureUrl" class="author-avatar" alt="avatar" />
+          <div *ngIf="!author.profilePictureUrl" class="author-avatar-fallback">{{ avatarFallback(author.username) }}</div>
+          <span class="author-name">{{ author.username }}</span>
+          <button *ngIf="canModify" class="author-remove" (click)="$event.stopPropagation(); removeAuthor(author.id)" title="Remove">✕</button>
+        </div>
+      </div>
+      <p class="authors-empty" *ngIf="subjectAuthors.length === 0">No authors assigned.</p>
+      <div *ngIf="canModify" class="add-author-row">
+        <input class="add-author-input" [(ngModel)]="addAuthorInput" placeholder="User ID…" (keyup.enter)="addAuthor()" />
+        <button class="btn-primary-sm" (click)="addAuthor()" [disabled]="addAuthorLoading || !addAuthorInput.trim()">
+          {{ addAuthorLoading ? 'Adding…' : 'Add' }}
+        </button>
+      </div>
+      <p class="add-author-error" *ngIf="addAuthorError">{{ addAuthorError }}</p>
+    </div>
+
   </div>
 
   <!-- Tests -->
@@ -130,7 +151,7 @@
           </div>
           <div class="comment-body">
             <div class="comment-header">
-              <span class="comment-author">{{ comment.authorUsername }}</span>
+              <span class="comment-author clickable" (click)="openUserProfile(comment.authorId)">{{ comment.authorUsername }}</span>
               <span class="comment-time">{{ timeAgo(comment.createdAt) }}</span>
               <button class="delete-btn" *ngIf="canDeleteComment(comment)" (click)="deleteComment(comment)" title="Delete">✕</button>
             </div>
@@ -157,29 +178,34 @@
             </div>
 
             <!-- Replies -->
-            <div class="replies" *ngIf="comment.responses?.length">
-              <div class="reply-item" *ngFor="let reply of comment.responses">
-                <div class="comment-avatar">
-                  <img *ngIf="reply.authorAvatarUrl" [src]="reply.authorAvatarUrl" alt="avatar" class="avatar-img sm" />
-                  <div *ngIf="!reply.authorAvatarUrl" class="avatar-fallback sm">{{ avatarFallback(reply.authorUsername) }}</div>
-                </div>
-                <div class="comment-body">
-                  <div class="comment-header">
-                    <span class="comment-author">{{ reply.authorUsername }}</span>
-                    <span class="comment-time">{{ timeAgo(reply.createdAt) }}</span>
+            <ng-container *ngIf="comment.responses?.length">
+              <button class="show-replies-btn" (click)="toggleReplies(comment.id)">
+                {{ repliesExpanded(comment.id) ? 'Hide replies' : 'Show ' + comment.responses.length + ' repl' + (comment.responses.length === 1 ? 'y' : 'ies') }}
+              </button>
+              <div class="replies" *ngIf="repliesExpanded(comment.id)">
+                <div class="reply-item" *ngFor="let reply of comment.responses">
+                  <div class="comment-avatar">
+                    <img *ngIf="reply.authorAvatarUrl" [src]="reply.authorAvatarUrl" alt="avatar" class="avatar-img sm" />
+                    <div *ngIf="!reply.authorAvatarUrl" class="avatar-fallback sm">{{ avatarFallback(reply.authorUsername) }}</div>
                   </div>
-                  <div class="comment-content">{{ reply.content }}</div>
-                  <div class="comment-actions">
-                    <button class="vote-btn" [class.active]="reply.likedByMe" (click)="like(reply)">
-                      <span class="vote-icon">👍</span> {{ reply.likes }}
-                    </button>
-                    <button class="vote-btn" [class.active]="reply.dislikedByMe" (click)="dislike(reply)">
-                      <span class="vote-icon">👎</span> {{ reply.dislikes }}
-                    </button>
+                  <div class="comment-body">
+                    <div class="comment-header">
+                      <span class="comment-author clickable" (click)="openUserProfile(reply.authorId)">{{ reply.authorUsername }}</span>
+                      <span class="comment-time">{{ timeAgo(reply.createdAt) }}</span>
+                    </div>
+                    <div class="comment-content">{{ reply.content }}</div>
+                    <div class="comment-actions">
+                      <button class="vote-btn" [class.active]="reply.likedByMe" (click)="like(reply)">
+                        <span class="vote-icon">👍</span> {{ reply.likes }}
+                      </button>
+                      <button class="vote-btn" [class.active]="reply.dislikedByMe" (click)="dislike(reply)">
+                        <span class="vote-icon">👎</span> {{ reply.dislikes }}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </ng-container>
           </div>
         </div>
 

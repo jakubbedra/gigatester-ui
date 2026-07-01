@@ -168,7 +168,9 @@
     "MIN_WORDS": "Minimum 1 word required",
     "MAX": "Max",
     "WORDS_AVAILABLE": "words available",
-    "START": "Start"
+    "START": "Start",
+    "FILTER_BY_TAG": "Filter by tag",
+    "TAG_HINT": "No filter — all terms will be used"
   },
   "CROSSWORD_PLAY": {
     "YOU_WIN": "You win!",
@@ -327,14 +329,16 @@
     "SAVE": "Save Changes",
     "SAVING": "Saving…",
     "TERMS": "Terms",
-    "ADD_TERM": "+ Add Term",
+    "ADD_TERM": "Add Term",
     "TERM": "Term",
     "CLUE": "Clue",
     "TYPE": "Type",
     "EDIT": "Edit",
     "REMOVE": "Remove",
     "EMPTY": "No terms yet. Click + Add Term to begin.",
-    "LOADING": "Loading…"
+    "LOADING": "Loading…",
+    "TAGS": "Tags",
+    "TAG_PLACEHOLDER": "Add tag, press Enter"
   },
   "USERS": {
     "TITLE": "Users",
@@ -370,7 +374,7 @@
     "ANSWERS": "Answers",
     "RADIO_HINT": "Select the radio button next to the correct answer.",
     "CHECKBOX_HINT": "Check all correct answers.",
-    "ADD_ANSWER": "+ Add answer",
+    "ADD_ANSWER": "Add answer",
     "EXPECTED_ANSWER": "Expected answer",
     "ALL_DELETED": "All questions deleted. Go back and regenerate.",
     "BACK": "Back",

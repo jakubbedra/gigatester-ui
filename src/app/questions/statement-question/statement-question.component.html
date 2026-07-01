@@ -9,9 +9,7 @@
 
       <div class="stmt-index">{{ i + 1 }}.</div>
 
-      <div class="stmt-text">
-        {{ s.text }}
-      </div>
+      <div class="stmt-text" [innerHTML]="s.text | latex"></div>
 
       <div class="tf-toggle" role="group" [attr.aria-label]="'STATEMENT_QUESTION.TITLE' | translate">
         <button

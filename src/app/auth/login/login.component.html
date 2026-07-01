@@ -1,9 +1,19 @@
 <div class="login-page">
   <div class="login-card">
 
-    <div class="brand">
-      <span class="brand-icon">🧠</span>
-      <span class="brand-name">Gigatester</span>
+    <div class="login-top-bar">
+      <div class="brand">
+        <span class="brand-icon">🧠</span>
+        <span class="brand-name">Gigatester</span>
+      </div>
+      <div class="lang-switcher">
+        <button class="flag-btn" [class.active]="lang.current() === 'en'" (click)="lang.use('en')" title="English">
+          <img src="assets/img/flag-en.svg" alt="EN" class="flag-img" />
+        </button>
+        <button class="flag-btn" [class.active]="lang.current() === 'pl'" (click)="lang.use('pl')" title="Polski">
+          <img src="assets/img/flag-pl.svg" alt="PL" class="flag-img" />
+        </button>
+      </div>
     </div>
 
     <div class="tab-row">

@@ -18,12 +18,45 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
 }
 
+.login-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
 .brand {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
-  margin-bottom: 28px;
+}
+
+.lang-switcher {
+  display: flex;
+  gap: 4px;
+}
+
+.flag-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 3px 5px;
+  cursor: pointer;
+  opacity: 0.45;
+  transition: opacity 0.15s, border-color 0.15s;
+}
+
+.flag-btn:hover { opacity: 0.8; }
+
+.flag-btn.active {
+  opacity: 1;
+  border-color: rgba(123, 109, 245, 0.5);
+}
+
+.flag-img {
+  width: 22px;
+  height: auto;
+  display: block;
 }
 
 .brand-icon {

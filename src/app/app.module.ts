@@ -39,6 +39,8 @@ import { ToastComponent } from './toast/toast.component';
 import { MetricsComponent } from './metrics/metrics.component';
 import { AuthInterceptor } from './interceptor/auth.interceptor';
 import { QuillModule } from 'ngx-quill';
+import { LatexPipe } from './pipes/latex.pipe';
+import { UserProfileComponent } from './user-profile/user-profile.component';
 
 @NgModule({
   declarations: [
@@ -68,6 +70,8 @@ import { QuillModule } from 'ngx-quill';
     InboxComponent,
     ToastComponent,
     MetricsComponent,
+    LatexPipe,
+    UserProfileComponent,
   ],
   imports: [
     BrowserModule,

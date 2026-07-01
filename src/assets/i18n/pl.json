@@ -168,7 +168,9 @@
     "MIN_WORDS": "Wymagane co najmniej 1 słowo",
     "MAX": "Maks.",
     "WORDS_AVAILABLE": "słów dostępnych",
-    "START": "Start"
+    "START": "Start",
+    "FILTER_BY_TAG": "Filtruj po tagu",
+    "TAG_HINT": "Brak filtru — zostaną użyte wszystkie terminy"
   },
   "CROSSWORD_PLAY": {
     "YOU_WIN": "Wygrałeś!",
@@ -270,7 +272,7 @@
     "PASSING": "Próg %",
     "SAVE": "Zapisz zmiany",
     "QUESTIONS": "Pytania",
-    "ADD_QUESTION": "+ Dodaj pytanie",
+    "ADD_QUESTION": "Dodaj pytanie",
     "MULTIPLE_CHOICE": "Wielokrotny wybór",
     "SINGLE_CHOICE": "Jednokrotny wybór",
     "EXPECTED_ANSWER": "Oczekiwana odpowiedź",
@@ -285,7 +287,7 @@
     "CONTENT_AREA": "Obszar treści",
     "ANSWER_AREA": "Obszar odpowiedzi",
     "ANSWERS": "Odpowiedzi",
-    "ADD": "+ Dodaj",
+    "ADD": "Dodaj",
     "ANSWER_VARIATIONS": "Warianty odpowiedzi",
     "VARIATION": "Wariant",
     "GRADING_RULES_LABEL": "Zasady oceniania",
@@ -327,14 +329,16 @@
     "SAVE": "Zapisz zmiany",
     "SAVING": "Zapisywanie…",
     "TERMS": "Hasła",
-    "ADD_TERM": "+ Dodaj hasło",
+    "ADD_TERM": "Dodaj hasło",
     "TERM": "Hasło",
     "CLUE": "Wskazówka",
     "TYPE": "Typ",
     "EDIT": "Edytuj",
     "REMOVE": "Usuń",
     "EMPTY": "Brak haseł. Kliknij + Dodaj hasło, aby zacząć.",
-    "LOADING": "Ładowanie…"
+    "LOADING": "Ładowanie…",
+    "TAGS": "Tagi",
+    "TAG_PLACEHOLDER": "Dodaj tag, naciśnij Enter"
   },
   "USERS": {
     "TITLE": "Użytkownicy",

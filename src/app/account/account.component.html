@@ -25,6 +25,25 @@
     </div>
   </div>
 
+  <!-- Bio -->
+  <div class="card">
+    <div class="card-title">About me</div>
+    <ng-container *ngIf="!editingBio">
+      <p class="bio-text" *ngIf="user.bio">{{ user.bio }}</p>
+      <p class="bio-empty" *ngIf="!user.bio">No bio yet.</p>
+      <button class="submit-btn" style="align-self:flex-start;padding:8px 18px;font-size:13px" (click)="startEditBio()">✎ Edit bio</button>
+    </ng-container>
+    <ng-container *ngIf="editingBio">
+      <textarea class="bio-textarea" [(ngModel)]="bioValue" rows="4" placeholder="Write something about yourself..."></textarea>
+      <div class="bio-actions">
+        <button class="btn-cancel" (click)="cancelEditBio()">Cancel</button>
+        <button class="submit-btn" style="padding:8px 18px;font-size:13px" (click)="saveBio()" [disabled]="bioLoading">
+          {{ bioLoading ? 'Saving…' : 'Save' }}
+        </button>
+      </div>
+    </ng-container>
+  </div>
+
   <!-- Change password -->
   <div class="card" *ngIf="user.username !== 'admin'">
     <div class="card-title">{{ 'ACCOUNT.CHANGE_PASSWORD' | translate }}</div>

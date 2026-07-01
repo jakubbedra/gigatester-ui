@@ -18,53 +18,134 @@
   </div>
 
   <div class="section-header">
-    <h2 class="section-title">{{ 'CROSSWORD_EDIT.TERMS' | translate }} <span class="count">{{ terms.length }}</span></h2>
-    <button class="btn-add-term" (click)="addTerm()">+ {{ 'CROSSWORD_EDIT.ADD_TERM' | translate }}</button>
+    <h2 class="section-title">
+      <label class="custom-checkbox" title="Select all">
+        <input type="checkbox"
+               [checked]="terms.length > 0 && selectedIndices.size === terms.length"
+               [indeterminate]="selectedIndices.size > 0 && selectedIndices.size < terms.length"
+               (change)="toggleSelectAll()" />
+        <span class="checkbox-box"></span>
+      </label>
+      {{ 'CROSSWORD_EDIT.TERMS' | translate }} <span class="count">{{ terms.length }}</span>
+    </h2>
+    <div class="section-actions">
+      <ng-container *ngIf="selectedIndices.size > 0">
+        <ng-container *ngIf="!confirmBulkDelete">
+          <button class="btn-bulk-delete" (click)="requestBulkDelete()">
+            🗑 Delete selected ({{ selectedIndices.size }})
+          </button>
+        </ng-container>
+        <ng-container *ngIf="confirmBulkDelete">
+          <span class="bulk-confirm-label">Delete {{ selectedIndices.size }} terms?</span>
+          <button class="btn-danger-sm" (click)="confirmBulkDeleteAction()">Yes, delete</button>
+          <button class="btn-ghost-sm" (click)="cancelBulkDelete()">Cancel</button>
+        </ng-container>
+      </ng-container>
+      <button class="btn-add-term" (click)="addTerm()">+ {{ 'CROSSWORD_EDIT.ADD_TERM' | translate }}</button>
+    </div>
   </div>
 
   <div class="terms-list" *ngIf="terms.length > 0; else noTerms">
-    <div class="term-item" *ngFor="let t of terms; let i = index"
-         [class.editing]="editingIndex === i">
+    <div class="term-item" *ngFor="let t of pagedTerms; let i = index"
+         [class.editing]="editingIndex === pagedOffset + i"
+         [class.selected]="selectedIndices.has(pagedOffset + i)"
+         [class.confirm-delete]="confirmDeleteIndex === pagedOffset + i">
 
       <!-- View mode -->
-      <ng-container *ngIf="editingIndex !== i">
-        <div class="term-index">{{ i + 1 }}</div>
+      <ng-container *ngIf="editingIndex !== pagedOffset + i && confirmDeleteIndex !== pagedOffset + i">
+        <label class="custom-checkbox">
+          <input type="checkbox" [checked]="selectedIndices.has(pagedOffset + i)" (change)="toggleSelect(pagedOffset + i)" />
+          <span class="checkbox-box"></span>
+        </label>
+        <div class="term-index">{{ pagedOffset + i + 1 }}</div>
         <div class="term-content">
           <div class="term-word">{{ t.term || '—' }}</div>
-          <div class="term-clue">{{ t.clue || '—' }}</div>
+          <div class="term-clue" [innerHTML]="(t.clue || '—') | latex"></div>
+          <div class="term-tags" *ngIf="t.tags && t.tags.length > 0">
+            <span class="tag-chip" *ngFor="let tag of t.tags">{{ tag.key }}</span>
+          </div>
         </div>
         <span class="clue-badge" [class.url]="t.clueType === 'URL'">{{ t.clueType }}</span>
         <div class="row-actions">
-          <button class="btn-edit" (click)="openEdit(i)" [title]="'CROSSWORD_EDIT.EDIT' | translate">✎</button>
-          <button class="btn-remove" (click)="removeTerm(i)" [title]="'CROSSWORD_EDIT.REMOVE' | translate">✕</button>
+          <button class="btn-edit" (click)="openEdit(pagedOffset + i)" [title]="'CROSSWORD_EDIT.EDIT' | translate">✎</button>
+          <button class="btn-remove" (click)="requestDelete(pagedOffset + i)" [title]="'CROSSWORD_EDIT.REMOVE' | translate">🗑</button>
+        </div>
+      </ng-container>
+
+      <!-- Confirm delete -->
+      <ng-container *ngIf="confirmDeleteIndex === pagedOffset + i">
+        <div class="delete-confirm-row">
+          <span class="delete-confirm-msg">Delete <strong>{{ t.term || 'this term' }}</strong>?</span>
+          <div class="delete-confirm-actions">
+            <button class="btn-danger-sm" (click)="confirmDelete()">Yes, delete</button>
+            <button class="btn-ghost-sm" (click)="cancelDelete()">Cancel</button>
+          </div>
         </div>
       </ng-container>
 
       <!-- Edit mode -->
-      <ng-container *ngIf="editingIndex === i && editDraft">
-        <div class="term-index">{{ i + 1 }}</div>
-        <div class="term-edit-fields">
-          <div class="edit-field-group">
-            <label>{{ 'CROSSWORD_EDIT.TERM' | translate }}</label>
-            <input type="text" [(ngModel)]="editDraft.term" placeholder="Term (e.g. Paris)" autofocus />
+      <ng-container *ngIf="editingIndex === pagedOffset + i && editDraft">
+        <div class="edit-card">
+          <div class="edit-row-top">
+            <div class="edit-index-badge">{{ pagedOffset + i + 1 }}</div>
+            <div class="edit-field-group">
+              <label>{{ 'CROSSWORD_EDIT.TERM' | translate }}</label>
+              <input type="text" [(ngModel)]="editDraft.term" placeholder="e.g. PARIS" autofocus />
+            </div>
+            <div class="edit-field-group edit-clue-group">
+              <label>{{ 'CROSSWORD_EDIT.CLUE' | translate }}</label>
+              <input type="text" [(ngModel)]="editDraft.clue" placeholder="Clue / hint — supports $LaTeX$" />
+            </div>
+            <div class="edit-field-group edit-type-group">
+              <label>{{ 'CROSSWORD_EDIT.TYPE' | translate }}</label>
+              <select [(ngModel)]="editDraft.clueType">
+                <option *ngFor="let ct of clueTypes" [value]="ct">{{ ct }}</option>
+              </select>
+            </div>
           </div>
-          <div class="edit-field-group clue-group">
-            <label>{{ 'CROSSWORD_EDIT.CLUE' | translate }}</label>
-            <input type="text" [(ngModel)]="editDraft.clue" placeholder="Clue / hint" />
-          </div>
-          <div class="edit-field-group type-group">
-            <label>{{ 'CROSSWORD_EDIT.TYPE' | translate }}</label>
-            <select [(ngModel)]="editDraft.clueType">
-              <option *ngFor="let ct of clueTypes" [value]="ct">{{ ct }}</option>
-            </select>
-          </div>
-          <div class="edit-inline-actions">
-            <button class="btn-confirm" (click)="confirmEdit()">✓</button>
-            <button class="btn-cancel-edit" (click)="cancelEdit()">✕</button>
+          <div class="edit-row-bottom">
+            <div class="edit-field-group edit-tags-full">
+              <label>{{ 'CROSSWORD_EDIT.TAGS' | translate }}</label>
+              <div class="tag-input-wrap">
+                <span class="tag-chip removable" *ngFor="let tag of editDraft.tags">
+                  {{ tag.key }}<button class="tag-remove" (click)="removeTag(tag.id)">×</button>
+                </span>
+                <input class="tag-text-input" type="text" [(ngModel)]="tagSearch"
+                  placeholder="{{ 'CROSSWORD_EDIT.TAG_PLACEHOLDER' | translate }}" />
+              </div>
+              <div class="tag-suggestions" *ngIf="tagSuggestions.length > 0">
+                <button type="button" class="tag-suggestion" *ngFor="let tag of tagSuggestions"
+                  (click)="addTag(tag)">{{ tag.key }}</button>
+              </div>
+            </div>
+            <div class="edit-bottom-actions">
+              <button class="btn-confirm" (click)="confirmEdit()" [disabled]="saving">
+                {{ saving ? '…' : ('✓ ' + ('CROSSWORD_EDIT.SAVE' | translate)) }}
+              </button>
+              <button class="btn-cancel-edit" (click)="cancelEdit()">✕</button>
+            </div>
           </div>
         </div>
       </ng-container>
 
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-bar" *ngIf="terms.length > 0">
+    <div class="page-size-select">
+      <span class="page-size-label">Per page:</span>
+      <button *ngFor="let s of pageSizes"
+              class="page-size-btn"
+              [class.active]="pageSize === s"
+              (click)="setPageSize(s)">{{ s }}</button>
+    </div>
+    <div class="page-nav">
+      <button class="page-btn" (click)="setPage(0)" [disabled]="currentPage === 0">«</button>
+      <button class="page-btn" (click)="setPage(currentPage - 1)" [disabled]="currentPage === 0">‹</button>
+      <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
+      <button class="page-btn" (click)="setPage(currentPage + 1)" [disabled]="currentPage >= totalPages - 1">›</button>
+      <button class="page-btn" (click)="setPage(totalPages - 1)" [disabled]="currentPage >= totalPages - 1">»</button>
     </div>
   </div>
 

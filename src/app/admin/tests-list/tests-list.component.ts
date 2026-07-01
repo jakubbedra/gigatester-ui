@@ -7,7 +7,7 @@ import { CrosswordService } from '../../service/crossword.service';
 import { SubjectsService } from '../../service/subject.service';
 import { CommentService } from '../../service/comment.service';
 import { AuthService } from '../../service/auth.service';
-import { CommentResponse, TestSummaryResponse, CrosswordSummaryResponse } from '../../models/models.d';
+import { CommentResponse, TestSummaryResponse, CrosswordSummaryResponse, SubjectAuthor } from '../../models/models.d';
 
 @Component({
   selector: 'app-tests-list',
@@ -26,6 +26,12 @@ export class TestsListComponent implements OnInit {
   subjectTestIds: string[] = [];
   subjectCrosswordIds: string[] = [];
   comments: CommentResponse[] = [];
+  subjectAuthors: SubjectAuthor[] = [];
+  expandedReplies = new Set<string>();
+
+  addAuthorInput = '';
+  addAuthorLoading = false;
+  addAuthorError = '';
 
   editingDescription = false;
   editDescriptionValue = '';
@@ -88,6 +94,7 @@ export class TestsListComponent implements OnInit {
           this.subjectTestIds = subject.tests ?? [];
           this.subjectCrosswordIds = subject.crosswords ?? [];
           this.comments = subject.comments ?? [];
+          this.subjectAuthors = subject.authors ?? [];
           const tests$ = subject.tests.length
             ? forkJoin(subject.tests.map(id => this.testService.getTest(id)))
             : of([]);
@@ -107,6 +114,7 @@ export class TestsListComponent implements OnInit {
       this.subjectTestIds = [];
       this.subjectCrosswordIds = [];
       this.comments = [];
+      this.subjectAuthors = [];
       this.testService.getTests().subscribe(res => {
         this.tests = res.tests;
         this.crosswords = [];
@@ -350,6 +358,43 @@ export class TestsListComponent implements OnInit {
         this.savingDescription = false;
       },
       error: () => { this.savingDescription = false; }
+    });
+  }
+
+  toggleReplies(commentId: string): void {
+    if (this.expandedReplies.has(commentId)) {
+      this.expandedReplies.delete(commentId);
+    } else {
+      this.expandedReplies.add(commentId);
+    }
+  }
+
+  repliesExpanded(commentId: string): boolean {
+    return this.expandedReplies.has(commentId);
+  }
+
+  openUserProfile(userId: string): void {
+    this.router.navigate(['/users', userId]);
+  }
+
+  addAuthor(): void {
+    if (!this.subjectId || !this.addAuthorInput.trim()) return;
+    this.addAuthorLoading = true;
+    this.addAuthorError = '';
+    this.subjectsService.addAuthor(this.subjectId, this.addAuthorInput.trim()).subscribe({
+      next: (subject) => {
+        this.subjectAuthors = subject.authors ?? [];
+        this.addAuthorInput = '';
+        this.addAuthorLoading = false;
+      },
+      error: () => { this.addAuthorError = 'User not found or invalid ID.'; this.addAuthorLoading = false; }
+    });
+  }
+
+  removeAuthor(userId: string): void {
+    if (!this.subjectId) return;
+    this.subjectsService.removeAuthor(this.subjectId, userId).subscribe({
+      next: (subject) => { this.subjectAuthors = subject.authors ?? []; }
     });
   }
 

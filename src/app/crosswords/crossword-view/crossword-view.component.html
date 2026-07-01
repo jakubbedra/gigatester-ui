@@ -17,6 +17,21 @@
 
     <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="showNewForm">
 
+      <div class="field-section" *ngIf="allTags.length > 0">
+        <div class="field-label">{{ 'CROSSWORD_VIEW.FILTER_BY_TAG' | translate }}</div>
+        <div class="tag-filter-row">
+          <button type="button" class="tag-filter-chip"
+                  [class.active]="selectedTagIds.has(tag.id)"
+                  *ngFor="let tag of allTags"
+                  (click)="toggleTag(tag.id)">
+            {{ tag.key }}
+          </button>
+        </div>
+        <div class="tag-filter-hint" *ngIf="selectedTagIds.size === 0">
+          {{ 'CROSSWORD_VIEW.TAG_HINT' | translate }}
+        </div>
+      </div>
+
       <div class="field-section">
         <div class="field-label">{{ 'CROSSWORD_VIEW.WORD_COUNT' | translate }}</div>
         <div class="form-group">
@@ -34,7 +49,21 @@
         </div>
       </div>
 
-      <button type="submit" class="start-btn" [disabled]="form.invalid">{{ 'CROSSWORD_VIEW.START' | translate }}</button>
+      <div class="generating-block" *ngIf="generating">
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" [style.width.%]="generatingProgress"></div>
+        </div>
+        <div class="generating-footer">
+          <div class="generating-label">Generating crossword…</div>
+          <button type="button" class="cancel-gen-btn" (click)="cancelGeneration()">Cancel</button>
+        </div>
+      </div>
+
+      <p class="gen-error" *ngIf="generatingError">{{ generatingError }}</p>
+
+      <button type="submit" class="start-btn" [disabled]="form.invalid || generating">
+        {{ generating ? '…' : ('CROSSWORD_VIEW.START' | translate) }}
+      </button>
 
     </form>
   </div>

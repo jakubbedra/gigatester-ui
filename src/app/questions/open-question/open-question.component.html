@@ -41,8 +41,7 @@
       <div class="pane-title">{{ 'OPEN_QUESTION.SUGGESTED_ANSWER' | translate }}</div>
 
       <div class="suggested-box">
-        <div *ngIf="isAnswerHtml; else answerText" [innerHTML]="suggestedAnswer"></div>
-        <ng-template #answerText>{{ suggestedAnswer }}</ng-template>
+        <div [innerHTML]="suggestedAnswer | latex"></div>
       </div>
     </div>
 

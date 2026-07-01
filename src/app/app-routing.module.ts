@@ -19,6 +19,7 @@ import { UsersListComponent } from './admin/users-list/users-list.component';
 import { AiGeneratorComponent } from './admin/ai-generator/ai-generator.component';
 import { InboxComponent } from './admin/inbox/inbox.component';
 import { MetricsComponent } from './metrics/metrics.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
 import { AdminGuard } from './guard/admin.guard';
 import { AuthGuard } from './guard/auth.guard';
 import { ModeratorGuard } from './guard/moderator.guard';
@@ -46,6 +47,7 @@ const routes: Routes = [
   { path: 'admin/inbox', component: InboxComponent, canActivate: [AuthGuard, ModeratorGuard] },
   { path: 'crosswords/states/:id', component: CrosswordPlayComponent, canActivate: [AuthGuard] },
   { path: 'crosswords/:id', component: CrosswordViewComponent, canActivate: [AuthGuard] },
+  { path: 'users/:id', component: UserProfileComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: '**', redirectTo: 'home' },
 ];
