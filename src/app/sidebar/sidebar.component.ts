@@ -78,10 +78,7 @@ export class SidebarComponent implements OnInit {
   }
 
   get avatarUrl(): string | null {
-    const user = this.authService.getUser();
-    if (user?.profilePictureUrl) return user.profilePictureUrl;
-    if (user?.role === 'ADMIN') return 'assets/img/avatar.jpg';
-    return null;
+    return this.authService.getUser()?.profilePictureUrl ?? null;
   }
 
   get avatarInitial(): string {

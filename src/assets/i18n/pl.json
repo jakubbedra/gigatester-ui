@@ -102,14 +102,15 @@
     "TIME_REMAINING": "Pozostały czas",
     "CONTINUE_TEST": "Kontynuuj test",
     "NEW_TEST": "Nowy test",
-    "AVAILABLE": "dostępnych"
+    "AVAILABLE": "dostępnych",
+    "YOUR_STATS": "Twoje statystyki"
   },
   "TEST_SUMMARY": {
     "PASSED": "ZALICZONO",
     "FAILED": "NIEZALICZONO",
     "PASSING_THRESHOLD": "Próg zaliczenia:",
     "RETAKE": "Powtórz",
-    "FINISHED": "Ukończono 🎉",
+    "FINISHED": "Ukończono",
     "LEARNING_COMPLETE": "Ukończyłeś wszystkie pytania w trybie nauki.",
     "RETRY_LEARNING": "Powtórz naukę",
     "LOADING": "Ładowanie wyników…"
@@ -152,7 +153,7 @@
     "SUBMITTING": "Wysyłanie…",
     "SUBMIT": "Wyślij",
     "FINISH_REVIEW": "Zakończ przegląd",
-    "NEXT_ROUND": "Następna runda →",
+    "NEXT_ROUND": "Następna runda",
     "FINISH_TEST": "Zakończ test",
     "SUBMIT_EXAM": "Wyślij egzamin",
     "FINISHING": "Kończenie…",
@@ -411,9 +412,17 @@
     "QUESTIONS_CORRECT": "Poprawne odpowiedzi",
     "DAILY_CHART": "Testy dziennie (ostatnie 30 dni)",
     "PASSED": "Zdane",
+    "TAKEN": "Podjęte",
     "FAILED": "Niezdane",
     "YOUR_RANK": "Twoja pozycja",
     "USERNAME": "Użytkownik",
-    "NO_DATA": "Brak danych. Ukończ test, aby zobaczyć statystyki."
+    "NO_DATA": "Brak danych. Ukończ test, aby zobaczyć statystyki.",
+    "FILTER_TEST": "Filtruj po teście",
+    "ALL_TESTS": "Wszystkie testy",
+    "TAG_ACCURACY": "Dokładność wg tagu",
+    "SORT_BY": "Sortuj wg",
+    "SORT_ACCURACY": "Skuteczność",
+    "SORT_STREAK": "Seria 🔥",
+    "SORT_POINTS": "Punkty"
   }
 }

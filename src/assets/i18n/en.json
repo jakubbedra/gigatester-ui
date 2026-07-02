@@ -102,14 +102,15 @@
     "TIME_REMAINING": "Time remaining",
     "CONTINUE_TEST": "Continue test",
     "NEW_TEST": "New test",
-    "AVAILABLE": "available"
+    "AVAILABLE": "available",
+    "YOUR_STATS": "Your Stats"
   },
   "TEST_SUMMARY": {
     "PASSED": "PASSED",
     "FAILED": "FAILED",
     "PASSING_THRESHOLD": "Passing threshold:",
     "RETAKE": "Retake",
-    "FINISHED": "Finished 🎉",
+    "FINISHED": "Finished",
     "LEARNING_COMPLETE": "You completed all questions in learning mode.",
     "RETRY_LEARNING": "Retry Learning",
     "LOADING": "Loading results…"
@@ -152,7 +153,7 @@
     "SUBMITTING": "Submitting…",
     "SUBMIT": "Submit",
     "FINISH_REVIEW": "Finish Review",
-    "NEXT_ROUND": "Next Round →",
+    "NEXT_ROUND": "Next Round",
     "FINISH_TEST": "Finish Test",
     "SUBMIT_EXAM": "Submit Exam",
     "FINISHING": "Finishing…",
@@ -411,9 +412,17 @@
     "QUESTIONS_CORRECT": "Questions Correct",
     "DAILY_CHART": "Tests per Day (last 30 days)",
     "PASSED": "Passed",
+    "TAKEN": "Taken",
     "FAILED": "Failed",
     "YOUR_RANK": "Your Rank",
     "USERNAME": "Username",
-    "NO_DATA": "No test data yet. Complete a test to see your stats."
+    "NO_DATA": "No test data yet. Complete a test to see your stats.",
+    "FILTER_TEST": "Filter by test",
+    "ALL_TESTS": "All tests",
+    "TAG_ACCURACY": "Accuracy by tag",
+    "SORT_BY": "Sort by",
+    "SORT_ACCURACY": "Accuracy",
+    "SORT_STREAK": "Streak 🔥",
+    "SORT_POINTS": "Points"
   }
 }

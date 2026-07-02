@@ -1,6 +1,15 @@
 <div class="metrics-page">
   <h1 class="page-title">{{ 'METRICS.TITLE' | translate }}</h1>
 
+  <!-- Test filter -->
+  <div class="test-filter" *ngIf="myTests.length > 0">
+    <label class="filter-label">{{ 'METRICS.FILTER_TEST' | translate }}</label>
+    <select class="filter-select" [(ngModel)]="selectedTestId" (change)="onTestFilterChange()">
+      <option value="">{{ 'METRICS.ALL_TESTS' | translate }}</option>
+      <option *ngFor="let t of myTests" [value]="t.id">{{ t.name }}</option>
+    </select>
+  </div>
+
   <div class="tab-bar">
     <button class="tab-btn" [class.active]="activeTab === 'progress'" (click)="activeTab = 'progress'">
       {{ 'METRICS.TAB_PROGRESS' | translate }}
@@ -35,20 +44,47 @@
       </div>
     </div>
 
+    <!-- SVG Line chart -->
     <div class="chart-card" *ngIf="progress && chartDays.length > 0">
       <h2 class="chart-title">{{ 'METRICS.DAILY_CHART' | translate }}</h2>
-      <div class="chart-area">
-        <div class="bar-group" *ngFor="let day of chartDays">
-          <div class="bar-wrap">
-            <div class="bar bar-passed" [style.height.px]="barHeight(day.testsPassed)" title="{{ day.testsPassed }} passed"></div>
-            <div class="bar bar-taken" [style.height.px]="barHeight(day.testsTaken - day.testsPassed)" title="{{ day.testsTaken - day.testsPassed }} failed"></div>
-          </div>
-          <div class="bar-label">{{ day.date | slice:5 }}</div>
-        </div>
-      </div>
+      <svg class="line-chart" [attr.viewBox]="'0 0 ' + SVG_W + ' ' + SVG_H" preserveAspectRatio="none">
+        <!-- Grid lines -->
+        <line x1="8" [attr.x2]="SVG_W - 8" [attr.y1]="SVG_H - 20" [attr.y2]="SVG_H - 20" class="grid-line"/>
+        <line x1="8" [attr.x2]="SVG_W - 8" [attr.y1]="(SVG_H - 20 + 10) / 2" [attr.y2]="(SVG_H - 20 + 10) / 2" class="grid-line"/>
+        <!-- Total taken line -->
+        <polyline *ngIf="chartPoints.taken.length > 1"
+          [attr.points]="polyline(chartPoints.taken)"
+          class="line line-taken"/>
+        <!-- Passed line -->
+        <polyline *ngIf="chartPoints.passed.length > 1"
+          [attr.points]="polyline(chartPoints.passed)"
+          class="line line-passed"/>
+        <!-- Dots on passed -->
+        <circle *ngFor="let p of chartPoints.passed"
+          [attr.cx]="p.x" [attr.cy]="p.y" r="3" class="dot dot-passed">
+          <title>{{ p.label }}: {{ p.value }} passed</title>
+        </circle>
+        <!-- X axis labels -->
+        <text *ngFor="let lbl of xLabels()"
+          [attr.x]="lbl.x" [attr.y]="SVG_H - 4"
+          class="x-label" text-anchor="middle">{{ lbl.label }}</text>
+      </svg>
       <div class="chart-legend">
-        <span class="legend-dot passed"></span> {{ 'METRICS.PASSED' | translate }}
-        <span class="legend-dot failed"></span> {{ 'METRICS.FAILED' | translate }}
+        <span class="legend-line taken"></span> {{ 'METRICS.TAKEN' | translate }}
+        <span class="legend-line passed"></span> {{ 'METRICS.PASSED' | translate }}
+      </div>
+    </div>
+
+    <!-- Tag accuracy (only when test is selected) -->
+    <div class="tag-stats-card" *ngIf="tagStats.length > 0">
+      <h2 class="chart-title">{{ 'METRICS.TAG_ACCURACY' | translate }}</h2>
+      <div class="tag-row" *ngFor="let t of tagStats">
+        <span class="tag-key">{{ t.tagKey }}</span>
+        <div class="tag-bar-bg">
+          <div class="tag-bar-fill" [style.width.%]="t.accuracy"></div>
+        </div>
+        <span class="tag-pct">{{ t.accuracy | number:'1.0-1' }}%</span>
+        <span class="tag-count">({{ t.timesCorrect }}/{{ t.timesAnswered }})</span>
       </div>
     </div>
 
@@ -59,6 +95,19 @@
 
   <!-- RANKING TAB -->
   <div *ngIf="activeTab === 'ranking'">
+    <div class="sort-row">
+      <span class="sort-label">{{ 'METRICS.SORT_BY' | translate }}</span>
+      <button class="sort-btn" [class.active]="rankingSortBy === 'accuracy'" (click)="onSortChange('accuracy')">
+        {{ 'METRICS.SORT_ACCURACY' | translate }}
+      </button>
+      <button class="sort-btn" [class.active]="rankingSortBy === 'streak'" (click)="onSortChange('streak')">
+        {{ 'METRICS.SORT_STREAK' | translate }}
+      </button>
+      <button class="sort-btn" [class.active]="rankingSortBy === 'points'" (click)="onSortChange('points')">
+        {{ 'METRICS.SORT_POINTS' | translate }}
+      </button>
+    </div>
+
     <div class="my-rank" *ngIf="myRank() > 0">
       {{ 'METRICS.YOUR_RANK' | translate }}: <strong>#{{ myRank() }}</strong>
     </div>
@@ -71,6 +120,7 @@
           <th>{{ 'METRICS.TESTS_PASSED' | translate }}</th>
           <th>{{ 'METRICS.PASS_RATE' | translate }}</th>
           <th>{{ 'METRICS.QUESTIONS_CORRECT' | translate }}</th>
+          <th>🔥</th>
         </tr>
       </thead>
       <tbody>
@@ -86,6 +136,7 @@
           <td>{{ entry.totalTestsPassed }}</td>
           <td>{{ entry.passRate | number:'1.0-1' }}%</td>
           <td>{{ entry.totalQuestionsCorrect }}</td>
+          <td>{{ entry.currentStreak }}</td>
         </tr>
       </tbody>
     </table>

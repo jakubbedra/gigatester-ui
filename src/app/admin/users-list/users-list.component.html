@@ -19,7 +19,8 @@
       <tbody>
         <tr *ngFor="let user of users" [class.current-user]="isCurrentUser(user)">
           <td class="username-cell">
-            <img class="avatar" [src]="user.profilePictureUrl || 'assets/img/avatar.jpg'" alt="" />
+            <img *ngIf="user.profilePictureUrl" class="avatar" [src]="user.profilePictureUrl" alt="" />
+            <div *ngIf="!user.profilePictureUrl" class="avatar avatar-initial">{{ user.username.charAt(0).toUpperCase() }}</div>
             <span>{{ user.username }}</span>
             <span class="you-badge" *ngIf="isCurrentUser(user)">{{ 'USERS.YOU' | translate }}</span>
           </td>

@@ -38,10 +38,15 @@
           </div>
         </div>
 
-        <div class="zoom-controls">
-          <button class="zoom-btn" (click)="zoomOut()">−</button>
-          <span class="zoom-label">{{ 'CROSSWORD_PLAY.ZOOM' | translate }}</span>
-          <button class="zoom-btn" (click)="zoomIn()">+</button>
+        <div class="top-controls">
+          <div class="zoom-controls">
+            <button class="zoom-btn" (click)="zoomOut()">−</button>
+            <span class="zoom-label">{{ 'CROSSWORD_PLAY.ZOOM' | translate }}</span>
+            <button class="zoom-btn" (click)="zoomIn()">+</button>
+          </div>
+          <button class="mute-btn" (click)="sound.toggleMute()" [title]="sound.muted ? 'Unmute sounds' : 'Mute sounds'">
+            {{ sound.muted ? '🔇' : '🔊' }}
+          </button>
         </div>
 
         <div class="grid-scroll" #gridScroll>
@@ -50,6 +55,7 @@
               <div *ngFor="let cell of row; let c = index"
                    class="cell"
                    [class.inactive]="cell.char === '#'"
+                   [class.space-cell]="cell.char === ' '"
                    [class.highlighted]="cell.highlighted && cell.char !== '#'"
                    [class.placed]="cell.placed"
                    [class.drop-zone]="isDragging && isEmptyForDrop(r, c)"

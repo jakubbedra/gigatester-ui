@@ -5,6 +5,8 @@ import {TestService} from "../../service/test.service";
 import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn} from "@angular/forms";
 import {TestStateService} from "../../service/test-state.service";
 import {TagService} from "../../service/tag.service";
+import {AuthService} from "../../service/auth.service";
+import {MetricsService, ProgressResponse, RankingEntryDto, TagAccuracyDto} from "../../service/metrics.service";
 
 @Component({
   selector: 'app-test-view',
@@ -20,6 +22,12 @@ export class TestViewComponent implements OnInit {
   existingState: TestStateResponse | null = null;
   showNewForm = false;
 
+  activeTab: 'start' | 'stats' = 'start';
+  statsProgress: ProgressResponse | null = null;
+  statsRanking: RankingEntryDto[] = [];
+  statsSortBy = 'accuracy';
+  statsLoaded = false;
+
   allTags: TagResponse[] = [];
   selectedTags: TagResponse[] = [];
   excludeTags = false;
@@ -33,8 +41,55 @@ export class TestViewComponent implements OnInit {
     private router: Router,
     private testService: TestService,
     private testStateService: TestStateService,
-    private tagService: TagService
+    private tagService: TagService,
+    private authService: AuthService,
+    private metricsService: MetricsService
   ) { }
+
+  openStatsTab() {
+    this.activeTab = 'stats';
+    if (!this.statsLoaded) {
+      this.statsLoaded = true;
+      this.loadStats();
+    }
+  }
+
+  loadStats() {
+    this.metricsService.getProgress(this.testId).subscribe(p => this.statsProgress = p);
+    this.metricsService.getRanking(this.testId, this.statsSortBy).subscribe(r => this.statsRanking = r);
+  }
+
+  changeSortBy(sortBy: string) {
+    this.statsSortBy = sortBy;
+    this.metricsService.getRanking(this.testId, sortBy).subscribe(r => this.statsRanking = r);
+  }
+
+  get statsTagStats(): TagAccuracyDto[] {
+    return this.statsProgress?.tagStats ?? [];
+  }
+
+  get statsAccuracy(): number {
+    if (!this.statsProgress || this.statsProgress.totalQuestionsAnswered === 0) return 0;
+    return Math.round(this.statsProgress.totalQuestionsCorrect / this.statsProgress.totalQuestionsAnswered * 100);
+  }
+
+  get statsPassRate(): number {
+    if (!this.statsProgress || this.statsProgress.totalTestsTaken === 0) return 0;
+    return Math.round(this.statsProgress.totalTestsPassed / this.statsProgress.totalTestsTaken * 100);
+  }
+
+  get currentUsername(): string {
+    return this.authService.getUser()?.username ?? '';
+  }
+
+  get canModify(): boolean {
+    const role = this.authService.getUser()?.role;
+    return role === 'MODERATOR' || role === 'ADMIN';
+  }
+
+  editTest(): void {
+    this.router.navigate(['/admin/tests', this.testId, 'edit']);
+  }
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {

@@ -89,6 +89,11 @@
   border-color: #111;
 }
 
+.cell.space-cell {
+  background: #1a1a1a;
+  border-color: #2a2a2a;
+}
+
 .cell.highlighted {
   background: #2a2060;
   border-color: #5b4fd4;
@@ -360,6 +365,35 @@
 /* Zoom controls — hidden on desktop */
 .zoom-controls { display: none; }
 
+/* Top controls row (zoom + mute) */
+.top-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+}
+
+.mute-btn {
+  background: transparent;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  color: #e0e0e0;
+  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+
+.mute-btn:hover {
+  background: #2a2a2a;
+  border-color: #555;
+}
+
 .side-card {
   background: #191919;
   border: 1px solid #2f2f2f;
@@ -554,12 +588,16 @@
 
   .hidden-mobile { display: none; }
 
+  .top-controls {
+    justify-content: space-between;
+  }
+
   .zoom-controls {
     display: flex;
     align-items: center;
     gap: 12px;
     justify-content: center;
-    margin-bottom: 4px;
+    margin-bottom: 0;
   }
 
   .zoom-btn {
@@ -805,11 +843,11 @@
 }
 
 .cell.flash-correct {
-  animation: flash-correct 1.8s ease-out forwards;
+  animation: flash-correct 2.5s ease-out forwards;
 }
 
 .cell.flash-wrong {
-  animation: flash-wrong 1.8s ease-out forwards;
+  animation: flash-wrong 2.5s ease-out forwards;
 }
 
 .cell.flash-bot {

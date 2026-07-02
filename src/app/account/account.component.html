@@ -9,7 +9,8 @@
     <div class="card-title">{{ 'ACCOUNT.PROFILE_PICTURE' | translate }}</div>
     <div class="avatar-row">
       <div class="avatar-wrap">
-        <img [src]="avatarUrl || 'assets/img/avatar.jpg'" class="avatar" [attr.alt]="'ACCOUNT.PROFILE_PICTURE' | translate" />
+        <img *ngIf="avatarUrl" [src]="avatarUrl" class="avatar" [attr.alt]="'ACCOUNT.PROFILE_PICTURE' | translate" />
+        <div *ngIf="!avatarUrl" class="avatar avatar-initial">{{ displayName.charAt(0).toUpperCase() }}</div>
         <label class="avatar-overlay" [class.loading]="pictureLoading">
           <span *ngIf="!pictureLoading">{{ 'ACCOUNT.CHANGE' | translate }}</span>
           <span *ngIf="pictureLoading">{{ 'ACCOUNT.UPLOADING' | translate }}</span>

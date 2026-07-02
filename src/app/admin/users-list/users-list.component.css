@@ -106,6 +106,17 @@ td {
   background: #333;
 }
 
+.avatar-initial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2e2a4a;
+  color: #a89cf5;
+  font-size: 14px;
+  font-weight: 700;
+  user-select: none;
+}
+
 .you-badge {
   font-size: 10px;
   font-weight: 700;

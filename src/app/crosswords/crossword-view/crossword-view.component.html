@@ -1,7 +1,10 @@
 <div class="test-wrapper" *ngIf="crossword && form">
   <div class="test-card">
 
-    <h1 class="test-title">{{ crossword.name }}</h1>
+    <div class="title-row">
+      <h1 class="test-title">{{ crossword.name }}</h1>
+      <button *ngIf="canModify" type="button" class="edit-btn" (click)="editCrossword()">✎ Edit</button>
+    </div>
 
     <!-- Resume banner -->
     <div class="resume-banner" *ngIf="existingState && !showNewForm">

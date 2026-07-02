@@ -9,7 +9,34 @@
   font-size: 22px;
   font-weight: 700;
   color: #e0e0f5;
-  margin: 0 0 24px;
+  margin: 0 0 20px;
+}
+
+/* ── Test filter ── */
+.test-filter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.filter-label {
+  font-size: 12px;
+  color: #6a6a9a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.filter-select {
+  background: #1a1a2e;
+  border: 1px solid rgba(123, 109, 245, 0.3);
+  border-radius: 8px;
+  color: #c8c8e8;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  min-width: 200px;
 }
 
 /* ── Tabs ── */
@@ -71,12 +98,13 @@
   color: #6a6a9a;
 }
 
-/* ── Chart ── */
+/* ── Line chart ── */
 .chart-card {
   background: #1a1a2e;
   border: 1px solid rgba(123, 109, 245, 0.2);
   border-radius: 14px;
   padding: 24px;
+  margin-bottom: 24px;
 }
 
 .chart-title {
@@ -85,82 +113,161 @@
   color: #9090b0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin: 0 0 20px;
+  margin: 0 0 16px;
 }
 
-.chart-area {
-  display: flex;
-  align-items: flex-end;
-  gap: 6px;
-  height: 140px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-}
-
-.bar-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-  min-width: 28px;
-}
-
-.bar-wrap {
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  gap: 1px;
+.line-chart {
+  width: 100%;
   height: 120px;
-  justify-content: flex-start;
+  overflow: visible;
 }
 
-.bar {
-  width: 18px;
-  border-radius: 3px 3px 0 0;
-  transition: opacity 0.2s;
-  min-height: 2px;
+.grid-line {
+  stroke: rgba(255,255,255,0.05);
+  stroke-width: 1;
 }
 
-.bar-passed {
-  background: #7b6df5;
+.line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
 }
 
-.bar-taken {
-  background: rgba(123, 109, 245, 0.25);
-  border-radius: 0;
+.line-taken {
+  stroke: rgba(123, 109, 245, 0.35);
+  stroke-dasharray: 4 3;
 }
 
-.bar-label {
+.line-passed {
+  stroke: #7b6df5;
+}
+
+.dot-passed {
+  fill: #7b6df5;
+  stroke: #1a1a2e;
+  stroke-width: 1.5;
+}
+
+.x-label {
+  fill: #444466;
   font-size: 9px;
-  color: #555577;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  transform: rotate(180deg);
-  height: 36px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .chart-legend {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 12px;
+  gap: 16px;
+  margin-top: 10px;
   font-size: 11px;
   color: #6a6a9a;
 }
 
-.legend-dot {
+.legend-line {
   display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
+  width: 24px;
+  height: 2px;
+  border-radius: 1px;
+  vertical-align: middle;
 }
 
-.legend-dot.passed { background: #7b6df5; }
-.legend-dot.failed { background: rgba(123, 109, 245, 0.25); }
+.legend-line.taken {
+  background: rgba(123, 109, 245, 0.35);
+  border-top: 2px dashed rgba(123, 109, 245, 0.35);
+  height: 0;
+}
+
+.legend-line.passed {
+  background: #7b6df5;
+}
+
+/* ── Tag accuracy ── */
+.tag-stats-card {
+  background: #1a1a2e;
+  border: 1px solid rgba(123, 109, 245, 0.2);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.tag-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.tag-key {
+  font-size: 12px;
+  color: #c0b0ff;
+  min-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tag-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: rgba(123, 109, 245, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.tag-bar-fill {
+  height: 100%;
+  background: #7b6df5;
+  border-radius: 4px;
+  transition: width 0.4s;
+}
+
+.tag-pct {
+  font-size: 12px;
+  color: #c0b0ff;
+  width: 42px;
+  text-align: right;
+}
+
+.tag-count {
+  font-size: 11px;
+  color: #555577;
+  width: 70px;
+}
+
+/* ── Sort row ── */
+.sort-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.sort-label {
+  font-size: 12px;
+  color: #6a6a9a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 4px;
+}
+
+.sort-btn {
+  padding: 5px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(123, 109, 245, 0.25);
+  background: transparent;
+  color: #9090b0;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sort-btn.active,
+.sort-btn:hover {
+  background: rgba(123, 109, 245, 0.15);
+  border-color: rgba(123, 109, 245, 0.5);
+  color: #c0b0ff;
+}
 
 /* ── My rank banner ── */
 .my-rank {

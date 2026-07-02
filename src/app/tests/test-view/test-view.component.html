@@ -1,7 +1,22 @@
 <div class="test-wrapper" *ngIf="test && form">
   <div class="test-card">
 
-    <h1 class="test-title">{{ test.name }}</h1>
+    <div class="title-row">
+      <h1 class="test-title">{{ test.name }}</h1>
+      <button *ngIf="canModify" type="button" class="edit-btn" (click)="editTest()">✎ Edit</button>
+    </div>
+
+    <div class="view-tabs">
+      <button class="view-tab" [class.active]="activeTab === 'start'" (click)="activeTab = 'start'">
+        {{ 'TEST_VIEW.START_TEST' | translate }}
+      </button>
+      <button class="view-tab" [class.active]="activeTab === 'stats'" (click)="openStatsTab()">
+        {{ 'TEST_VIEW.YOUR_STATS' | translate }}
+      </button>
+    </div>
+
+    <!-- START TAB -->
+    <div *ngIf="activeTab === 'start'">
 
     <!-- In-progress state banner -->
     <div class="resume-banner" *ngIf="existingState && !showNewForm">
@@ -138,5 +153,78 @@
       <button type="submit" class="start-btn" [disabled]="form.invalid">{{ 'TEST_VIEW.START_TEST' | translate }}</button>
 
     </form>
+    </div> <!-- end START TAB -->
+
+    <!-- STATS TAB -->
+    <div *ngIf="activeTab === 'stats'" class="stats-tab">
+      <div *ngIf="statsProgress">
+        <div class="stats-cards">
+          <div class="stats-card">
+            <div class="stats-value">{{ statsProgress.totalTestsTaken }}</div>
+            <div class="stats-label">Tests taken</div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-value">{{ statsPassRate }}%</div>
+            <div class="stats-label">Pass rate</div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-value">{{ statsAccuracy }}%</div>
+            <div class="stats-label">Accuracy</div>
+          </div>
+        </div>
+
+        <!-- Tag accuracy for this test -->
+        <div class="stats-section" *ngIf="statsTagStats.length > 0">
+          <div class="stats-section-title">Accuracy by tag</div>
+          <div class="tag-row" *ngFor="let t of statsTagStats">
+            <span class="tag-key">{{ t.tagKey }}</span>
+            <div class="tag-bar-bg">
+              <div class="tag-bar-fill" [style.width.%]="t.accuracy"></div>
+            </div>
+            <span class="tag-pct">{{ t.accuracy | number:'1.0-1' }}%</span>
+            <span class="tag-count">({{ t.timesCorrect }}/{{ t.timesAnswered }})</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top users ranking for this test -->
+      <div class="stats-section">
+        <div class="stats-section-title">Top users</div>
+        <div class="sort-row">
+          <button class="sort-btn" [class.active]="statsSortBy === 'accuracy'" (click)="changeSortBy('accuracy')">Accuracy</button>
+          <button class="sort-btn" [class.active]="statsSortBy === 'streak'" (click)="changeSortBy('streak')">Streak 🔥</button>
+          <button class="sort-btn" [class.active]="statsSortBy === 'points'" (click)="changeSortBy('points')">Points</button>
+        </div>
+        <table class="ranking-table" *ngIf="statsRanking.length > 0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>User</th>
+              <th>Taken</th>
+              <th>Pass rate</th>
+              <th>Points</th>
+              <th>🔥</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let entry of statsRanking" [class.me]="entry.username === currentUsername">
+              <td class="rank-cell">
+                <span *ngIf="entry.rank === 1">🥇</span>
+                <span *ngIf="entry.rank === 2">🥈</span>
+                <span *ngIf="entry.rank === 3">🥉</span>
+                <span *ngIf="entry.rank > 3">{{ entry.rank }}</span>
+              </td>
+              <td>{{ entry.username }}</td>
+              <td>{{ entry.totalTestsTaken }}</td>
+              <td>{{ entry.passRate | number:'1.0-1' }}%</td>
+              <td>{{ entry.totalQuestionsCorrect }}</td>
+              <td>{{ entry.currentStreak }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="empty-state" *ngIf="statsRanking.length === 0">No data yet.</div>
+      </div>
+    </div> <!-- end STATS TAB -->
+
   </div>
 </div>

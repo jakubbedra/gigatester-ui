@@ -7,6 +7,7 @@ import { CrosswordStateUpdateRequest } from '../../models/models.d';
 import { StreakService } from '../../service/streak.service';
 import { ToastService } from '../../service/toast.service';
 import { TranslateService } from '@ngx-translate/core';
+import { CrosswordSoundService } from '../../service/crossword-sound.service';
 
 export interface NumberedClue {
   number: number;
@@ -68,7 +69,8 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
     private crosswordStateService: CrosswordStateService,
     private streakService: StreakService,
     private toastService: ToastService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public sound: CrosswordSoundService
   ) {}
 
   ngOnInit() {
@@ -284,14 +286,14 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
       for (const r of turn.humanResults) {
         const key = `${r.row},${r.column}`;
         if (r.correct) correct.add(key); else wrong.add(key);
-        delays.set(key, humanIdx * 300);
+        delays.set(key, humanIdx * 500);
         humanIdx++;
       }
       let botIdx = 0;
       for (const r of turn.botPlacements) {
         const key = `${r.row},${r.column}`;
         bot.add(key);
-        delays.set(key, botIdx * 300);
+        delays.set(key, botIdx * 500);
         botIdx++;
       }
     }
@@ -300,12 +302,18 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
     this.flashCorrect = correct;
     this.flashWrong = wrong;
 
+    // Schedule all letter sounds at once using the Web Audio API timeline
+    if (turn?.humanResults?.length) {
+      this.sound.playResultSequence(turn.humanResults, 0.5);
+    }
+
     const humanCount = correct.size + wrong.size;
-    const humanDuration = 1800 + Math.max(0, humanCount - 1) * 300;
+    const humanDuration = 2500 + Math.max(0, humanCount - 1) * 500;
 
     if (turn?.humanCompletedWords?.length) {
       setTimeout(() => {
         this.wordToasts = turn.humanCompletedWords.map(w => ({ word: w.word, points: w.points }));
+        this.sound.playWordComplete();
         setTimeout(() => { this.wordToasts = []; }, 2500);
       }, humanDuration);
     }
@@ -315,7 +323,7 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
       this.flashWrong = new Set();
       this.flashBot = bot;
 
-      const botDuration = 3000 + (bot.size - 1) * 300;
+      const botDuration = 3000 + (bot.size - 1) * 500;
       setTimeout(() => {
         this.flashBot = new Set();
         this.flashDelay = new Map();
@@ -323,7 +331,12 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
           const h = this.humanPlayer?.points ?? 0;
           const b = this.botPlayer?.points ?? 0;
           this.winner = h > b ? 'human' : b > h ? 'bot' : 'tie';
-          setTimeout(() => { this.showWinner = true; }, 1000);
+          setTimeout(() => {
+            this.showWinner = true;
+            if (this.winner === 'human') this.sound.playWin();
+            else if (this.winner === 'bot') this.sound.playLose();
+            else this.sound.playWordComplete();
+          }, 1000);
           this.streakService.getStreak().subscribe(s => {
             if (s.currentStreak > 0) {
               const label = this.translate.instant('SIDEBAR.STREAK');

@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CrosswordResponse, CrosswordStateResponse, TagResponse } from '../../models/models.d';
 import { CrosswordService } from '../../service/crossword.service';
 import { CrosswordStateService } from '../../service/crossword-state.service';
+import { AuthService } from '../../service/auth.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -39,8 +40,18 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private crosswordService: CrosswordService,
-    private crosswordStateService: CrosswordStateService
+    private crosswordStateService: CrosswordStateService,
+    private authService: AuthService
   ) {}
+
+  get canModify(): boolean {
+    const role = this.authService.getUser()?.role;
+    return role === 'MODERATOR' || role === 'ADMIN';
+  }
+
+  editCrossword(): void {
+    this.router.navigate(['/admin/crosswords', this.crosswordId, 'edit']);
+  }
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
