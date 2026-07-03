@@ -23,6 +23,7 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
 
   allTags: TagResponse[] = [];
   selectedTagIds: Set<string> = new Set();
+  excludeTags = false;
 
   generating = false;
   generatingProgress = 0;
@@ -97,9 +98,10 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
   get termCount(): number {
     if (!this.crossword) return 0;
     if (this.selectedTagIds.size === 0) return this.crossword.terms.length;
-    return this.crossword.terms.filter(t =>
-      (t.tags ?? []).some(tag => this.selectedTagIds.has(tag.id))
-    ).length;
+    return this.crossword.terms.filter(t => {
+      const hasTag = (t.tags ?? []).some(tag => this.selectedTagIds.has(tag.id));
+      return this.excludeTags ? !hasTag : hasTag;
+    }).length;
   }
 
   toggleTag(tagId: string) {
@@ -108,6 +110,14 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
     } else {
       this.selectedTagIds.add(tagId);
     }
+    this.updateWordCount();
+  }
+
+  onExcludeToggle() {
+    this.updateWordCount();
+  }
+
+  private updateWordCount() {
     const max = this.termCount;
     this.form.get('numberOfWords')?.setValidators([Validators.required, Validators.min(1), Validators.max(max)]);
     this.form.get('numberOfWords')?.setValue(max);
@@ -131,7 +141,8 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
     this.crosswordStateService.startGeneration({
       crosswordId: this.crosswordId,
       numberOfWords: Number(this.form.value.numberOfWords),
-      tagFilter: this.selectedTagIds.size > 0 ? Array.from(this.selectedTagIds) : undefined
+      tagFilter: this.selectedTagIds.size > 0 ? Array.from(this.selectedTagIds) : undefined,
+      tagFilterMode: this.excludeTags ? 'EXCLUDE' : 'INCLUDE'
     }).subscribe({
       next: ({ jobId }) => {
         this.currentJobId = jobId;

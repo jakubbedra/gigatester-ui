@@ -354,6 +354,7 @@
     "DEMOTE": "Demote",
     "RESET_PASSWORD": "Reset Password",
     "DELETE": "Delete",
+    "DELETE_CONFIRM": "This action cannot be undone.",
     "PASSWORD_RESET_LINK": "Password Reset Link",
     "SHARE_LINK": "Share this link with",
     "LINK_EXPIRES": "It expires in 24 hours.",

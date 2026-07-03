@@ -107,6 +107,7 @@ export interface CrosswordResponse {
     id: string;
     name: string;
     terms: CrosswordTermResponse[];
+    authors: SubjectAuthor[];
 }
 
 export interface CrosswordsResponse {
@@ -122,6 +123,7 @@ export interface CrosswordSummaryResponse {
 export interface CrosswordStateRequest {
     crosswordId: string;
     numberOfWords: number;
+    tagFilterMode?: string;
     tagFilter?: string[];
 }
 
@@ -331,6 +333,7 @@ export interface TestResponse {
     storedOpenQuestionsCount: number;
     passingPercentage: number;
     timeLimit: number;
+    authors: SubjectAuthor[];
 }
 
 export interface TestStateResponse {

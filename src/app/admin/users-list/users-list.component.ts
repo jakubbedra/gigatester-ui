@@ -13,6 +13,7 @@ export class UsersListComponent implements OnInit {
   actionInProgress: string | null = null;
   resetLink: string | null = null;
   resetLinkUser: string | null = null;
+  userToDelete: UserResponse | null = null;
 
   constructor(private userService: UserService, private authService: AuthService) {}
 
@@ -54,7 +55,13 @@ export class UsersListComponent implements OnInit {
   }
 
   delete(user: UserResponse) {
-    if (!confirm(`Delete user "${user.username}"? This cannot be undone.`)) return;
+    this.userToDelete = user;
+  }
+
+  confirmDelete() {
+    if (!this.userToDelete) return;
+    const user = this.userToDelete;
+    this.userToDelete = null;
     this.actionInProgress = user.id;
     this.userService.delete(user.id).subscribe({
       next: () => {
@@ -63,6 +70,10 @@ export class UsersListComponent implements OnInit {
       },
       error: () => { this.actionInProgress = null; }
     });
+  }
+
+  cancelDelete() {
+    this.userToDelete = null;
   }
 
   isCurrentUser(user: UserResponse): boolean {

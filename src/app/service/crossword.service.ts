@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CrosswordRequest, CrosswordResponse, CrosswordsResponse } from '../models/models.d';
 import { Environment } from "../../../environment";
+import { AuthorCandidate } from './subject.service';
 
 @Injectable({ providedIn: 'root' })
 export class CrosswordService {
@@ -29,6 +30,18 @@ export class CrosswordService {
 
   deleteCrossword(id: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
+  getAuthorCandidates(crosswordId: string): Observable<AuthorCandidate[]> {
+    return this.http.get<AuthorCandidate[]>(`${this.baseUrl}/${crosswordId}/author-candidates`);
+  }
+
+  addAuthor(crosswordId: string, userId: string): Observable<CrosswordResponse> {
+    return this.http.put<CrosswordResponse>(`${this.baseUrl}/${crosswordId}/authors/${userId}`, null);
+  }
+
+  removeAuthor(crosswordId: string, userId: string): Observable<CrosswordResponse> {
+    return this.http.delete<CrosswordResponse>(`${this.baseUrl}/${crosswordId}/authors/${userId}`);
   }
 
 }

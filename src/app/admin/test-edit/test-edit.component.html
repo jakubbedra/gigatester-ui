@@ -31,6 +31,40 @@
     </div>
   </div>
 
+  <!-- Authors -->
+  <div class="authors-section" *ngIf="canModify">
+    <div class="authors-label">{{ 'TESTS_LIST.AUTHORS' | translate }}</div>
+    <div class="authors-list" *ngIf="testAuthors.length > 0">
+      <div class="author-chip" *ngFor="let author of testAuthors">
+        <img *ngIf="author.profilePictureUrl" [src]="author.profilePictureUrl" class="author-avatar" alt="avatar" />
+        <div *ngIf="!author.profilePictureUrl" class="author-avatar-fallback">{{ avatarFallback(author.username) }}</div>
+        <span class="author-name">{{ author.username }}</span>
+        <button class="author-remove" (click)="removeAuthor(author.id)" title="Remove">✕</button>
+      </div>
+    </div>
+    <p class="authors-empty" *ngIf="testAuthors.length === 0">{{ 'TESTS_LIST.NO_AUTHORS' | translate }}</p>
+    <button class="btn-add-author" (click)="openAuthorPopup()">+ {{ 'TESTS_LIST.ADD_AUTHOR' | translate }}</button>
+    <div class="author-popup-overlay" *ngIf="showAuthorPopup" (click)="closeAuthorPopup()">
+      <div class="author-popup" (click)="$event.stopPropagation()">
+        <div class="author-popup-header">
+          <span class="author-popup-title">{{ 'TESTS_LIST.ADD_AUTHOR' | translate }}</span>
+          <button class="author-popup-close" (click)="closeAuthorPopup()">✕</button>
+        </div>
+        <input class="author-popup-search" [(ngModel)]="authorSearch" placeholder="Search by username…" autofocus />
+        <div class="author-popup-list" *ngIf="!authorCandidatesLoading">
+          <div class="author-candidate" *ngFor="let c of filteredAuthorCandidates" (click)="selectAuthor(c)">
+            <img *ngIf="c.profilePictureUrl" [src]="c.profilePictureUrl" class="candidate-avatar" alt="avatar" />
+            <div *ngIf="!c.profilePictureUrl" class="candidate-avatar-fallback">{{ avatarFallback(c.username) }}</div>
+            <span class="candidate-name">{{ c.username }}</span>
+            <span class="candidate-role">{{ c.role }}</span>
+          </div>
+          <p class="candidate-empty" *ngIf="filteredAuthorCandidates.length === 0">No users found.</p>
+        </div>
+        <div class="author-popup-loading" *ngIf="authorCandidatesLoading">Loading…</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Section header -->
   <div class="section-header">
     <h2 class="section-title">{{ 'TEST_EDIT.QUESTIONS' | translate }} <span class="count">{{ questions.length }}</span></h2>

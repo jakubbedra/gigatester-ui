@@ -279,6 +279,36 @@
   }
 }
 
+@media (max-width: 600px) {
+  .page {
+    padding: 20px 14px;
+  }
+
+  .subject-info-card {
+    padding: 16px 14px;
+  }
+
+  .stars-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .star-slot {
+    font-size: 18px;
+  }
+
+  .difficulty-label {
+    width: 100%;
+    font-size: 11px;
+    order: 3;
+  }
+
+  .desc-edit-btn {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
+
 .modal-actions {
   display: flex;
   gap: 12px;

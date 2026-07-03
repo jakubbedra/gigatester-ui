@@ -321,3 +321,24 @@ input[type="number"] {
   font-size: 11px;
   color: #555577;
 }
+
+.tag-mode-toggle {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.tag-mode-btn {
+  padding: 5px 14px;
+  border-radius: 8px;
+  border: 1px solid #2e2e4a;
+  background: transparent;
+  color: #666;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.tag-mode-btn:hover { border-color: #7b6df5; color: #c0b0ff; }
+.tag-mode-btn.active { background: rgba(123,109,245,0.15); border-color: #7b6df5; color: #c0b0ff; }

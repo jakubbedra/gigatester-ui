@@ -356,3 +356,39 @@ td {
 }
 
 .btn-close:hover { background: #333; color: #fff; }
+
+.danger-modal {
+  border-color: rgba(220, 60, 60, 0.3);
+  text-align: center;
+  align-items: center;
+  max-width: 380px;
+}
+
+.danger-icon {
+  font-size: 40px;
+  line-height: 1;
+}
+
+.danger-subtitle {
+  color: #e07070;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn-delete-confirm {
+  background: #c0392b;
+  border: none;
+  color: #fff;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-delete-confirm:hover { background: #e74c3c; }

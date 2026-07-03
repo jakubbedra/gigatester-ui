@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {TestRequest, TestResponse, TestsResponse} from '../models/models.d';
 import {Environment} from "../../../environment";
+import { AuthorCandidate } from './subject.service';
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +41,18 @@ export class TestService {
       params['excludeTags'] = excludeTags;
     }
     return this.http.get<any>(`${this.baseUrl}/${testId}/question-counts`, { params });
+  }
+
+  getAuthorCandidates(testId: string): Observable<AuthorCandidate[]> {
+    return this.http.get<AuthorCandidate[]>(`${this.baseUrl}/${testId}/author-candidates`);
+  }
+
+  addAuthor(testId: string, userId: string): Observable<TestResponse> {
+    return this.http.put<TestResponse>(`${this.baseUrl}/${testId}/authors/${userId}`, null);
+  }
+
+  removeAuthor(testId: string, userId: string): Observable<TestResponse> {
+    return this.http.delete<TestResponse>(`${this.baseUrl}/${testId}/authors/${userId}`);
   }
 
 }

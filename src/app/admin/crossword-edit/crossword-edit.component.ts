@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CrosswordService } from '../../service/crossword.service';
 import { TagService } from '../../service/tag.service';
-import { ClueType, CrosswordTermResponse, TagResponse } from '../../models/models.d';
+import { AuthService } from '../../service/auth.service';
+import { ClueType, CrosswordTermResponse, TagResponse, SubjectAuthor } from '../../models/models.d';
+import { AuthorCandidate } from '../../service/subject.service';
 
 interface TermRow extends CrosswordTermResponse {
   isNew?: boolean;
@@ -28,6 +30,12 @@ export class CrosswordEditComponent implements OnInit {
   confirmDeleteIndex: number | null = null;
   selectedIndices: Set<number> = new Set();
   confirmBulkDelete = false;
+
+  crosswordAuthors: SubjectAuthor[] = [];
+  showAuthorPopup = false;
+  authorCandidates: AuthorCandidate[] = [];
+  authorCandidatesLoading = false;
+  authorSearch = '';
 
   pageSize = 20;
   currentPage = 0;
@@ -59,7 +67,8 @@ export class CrosswordEditComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private crosswordService: CrosswordService,
-    private tagService: TagService
+    private tagService: TagService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -68,6 +77,7 @@ export class CrosswordEditComponent implements OnInit {
     this.crosswordService.getCrossword(this.id).subscribe(cw => {
       this.crosswordName = cw.name;
       this.terms = cw.terms.map(t => ({ ...t, tags: t.tags ?? [] }));
+      this.crosswordAuthors = cw.authors ?? [];
       this.loading = false;
     });
   }
@@ -166,6 +176,48 @@ export class CrosswordEditComponent implements OnInit {
   removeTag(tagId: string) {
     if (!this.editDraft) return;
     this.editDraft.tags = this.editDraft.tags.filter(t => t.id !== tagId);
+  }
+
+  get canModify(): boolean {
+    const role = this.authService.getUser()?.role;
+    return role === 'MODERATOR' || role === 'ADMIN';
+  }
+
+  avatarFallback(username: string): string {
+    return username?.charAt(0).toUpperCase() ?? '?';
+  }
+
+  openAuthorPopup(): void {
+    this.showAuthorPopup = true;
+    this.authorSearch = '';
+    this.authorCandidatesLoading = true;
+    this.crosswordService.getAuthorCandidates(this.id).subscribe({
+      next: (list) => { this.authorCandidates = list; this.authorCandidatesLoading = false; },
+      error: () => { this.authorCandidatesLoading = false; }
+    });
+  }
+
+  closeAuthorPopup(): void { this.showAuthorPopup = false; }
+
+  get filteredAuthorCandidates(): AuthorCandidate[] {
+    const q = this.authorSearch.trim().toLowerCase();
+    if (!q) return this.authorCandidates;
+    return this.authorCandidates.filter(c => c.username.toLowerCase().includes(q));
+  }
+
+  selectAuthor(candidate: AuthorCandidate): void {
+    this.crosswordService.addAuthor(this.id, candidate.id).subscribe({
+      next: (cw) => {
+        this.crosswordAuthors = cw.authors ?? [];
+        this.authorCandidates = this.authorCandidates.filter(c => c.id !== candidate.id);
+      }
+    });
+  }
+
+  removeAuthor(userId: string): void {
+    this.crosswordService.removeAuthor(this.id, userId).subscribe({
+      next: (cw) => { this.crosswordAuthors = cw.authors ?? []; }
+    });
   }
 
   addTerm() {

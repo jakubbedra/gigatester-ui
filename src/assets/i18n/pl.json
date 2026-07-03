@@ -354,6 +354,7 @@
     "DEMOTE": "Degraduj",
     "RESET_PASSWORD": "Resetuj hasło",
     "DELETE": "Usuń",
+    "DELETE_CONFIRM": "Tej operacji nie można cofnąć.",
     "PASSWORD_RESET_LINK": "Link do resetowania hasła",
     "SHARE_LINK": "Udostępnij ten link",
     "LINK_EXPIRES": "Wygasa za 24 godziny.",

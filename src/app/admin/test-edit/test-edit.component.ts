@@ -7,6 +7,7 @@ import { TestService } from '../../service/test.service';
 import { QuestionsService } from '../../service/question.service';
 import { ImageService } from '../../service/image.service';
 import { TagService } from '../../service/tag.service';
+import { AuthService } from '../../service/auth.service';
 import {
   TestResponse,
   ClosedQuestionDto,
@@ -15,7 +16,9 @@ import {
   QuestionDtoUnion,
   GradingRule,
   TagResponse,
+  SubjectAuthor,
 } from '../../models/models.d';
+import { AuthorCandidate } from '../../service/subject.service';
 
 @Component({
   selector: 'app-test-edit',
@@ -55,6 +58,13 @@ export class TestEditComponent implements OnInit {
     return q.length > 0 && !this.allTags.some(t => t.key.toLowerCase() === q.toLowerCase());
   }
 
+  // Authors
+  testAuthors: SubjectAuthor[] = [];
+  showAuthorPopup = false;
+  authorCandidates: AuthorCandidate[] = [];
+  authorCandidatesLoading = false;
+  authorSearch = '';
+
   // Add question modal
   showAddModal = false;
   addDraft: any = null;
@@ -75,7 +85,8 @@ export class TestEditComponent implements OnInit {
     private questionsService: QuestionsService,
     private imageService: ImageService,
     private tagService: TagService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -85,6 +96,7 @@ export class TestEditComponent implements OnInit {
         this.test = test;
         this.testName = test.name;
         if (!test.questions || test.questions.length === 0) return of([]);
+        this.testAuthors = test.authors ?? [];
         return forkJoin(
           test.questions.map(qId =>
             this.questionsService.getQuestion(qId).pipe(map(q => ({ ...q, id: qId })))
@@ -115,6 +127,51 @@ export class TestEditComponent implements OnInit {
       this.test.questions = this.test.questions.filter(id => id !== questionId);
       this.questions = this.questions.filter(q => q.id !== questionId);
     }
+  }
+
+  get canModify(): boolean {
+    const role = this.authService.getUser()?.role;
+    return role === 'MODERATOR' || role === 'ADMIN';
+  }
+
+  avatarFallback(username: string): string {
+    return username?.charAt(0).toUpperCase() ?? '?';
+  }
+
+  openAuthorPopup(): void {
+    if (!this.test) return;
+    this.showAuthorPopup = true;
+    this.authorSearch = '';
+    this.authorCandidatesLoading = true;
+    this.testService.getAuthorCandidates(this.test.id).subscribe({
+      next: (list) => { this.authorCandidates = list; this.authorCandidatesLoading = false; },
+      error: () => { this.authorCandidatesLoading = false; }
+    });
+  }
+
+  closeAuthorPopup(): void { this.showAuthorPopup = false; }
+
+  get filteredAuthorCandidates(): AuthorCandidate[] {
+    const q = this.authorSearch.trim().toLowerCase();
+    if (!q) return this.authorCandidates;
+    return this.authorCandidates.filter(c => c.username.toLowerCase().includes(q));
+  }
+
+  selectAuthor(candidate: AuthorCandidate): void {
+    if (!this.test) return;
+    this.testService.addAuthor(this.test.id, candidate.id).subscribe({
+      next: (t) => {
+        this.testAuthors = t.authors ?? [];
+        this.authorCandidates = this.authorCandidates.filter(c => c.id !== candidate.id);
+      }
+    });
+  }
+
+  removeAuthor(userId: string): void {
+    if (!this.test) return;
+    this.testService.removeAuthor(this.test.id, userId).subscribe({
+      next: (t) => { this.testAuthors = t.authors ?? []; }
+    });
   }
 
   // ── HTML helpers ──────────────────────────────────────────────────────────

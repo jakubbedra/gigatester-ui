@@ -33,6 +33,12 @@
         <div class="tag-filter-hint" *ngIf="selectedTagIds.size === 0">
           {{ 'CROSSWORD_VIEW.TAG_HINT' | translate }}
         </div>
+        <div class="tag-mode-toggle" *ngIf="selectedTagIds.size > 0">
+          <button type="button" class="tag-mode-btn" [class.active]="!excludeTags"
+                  (click)="excludeTags = false; onExcludeToggle()">{{ 'TEST_VIEW.TAG_INCLUDE' | translate }}</button>
+          <button type="button" class="tag-mode-btn" [class.active]="excludeTags"
+                  (click)="excludeTags = true; onExcludeToggle()">{{ 'TEST_VIEW.TAG_EXCLUDE' | translate }}</button>
+        </div>
       </div>
 
       <div class="field-section">
