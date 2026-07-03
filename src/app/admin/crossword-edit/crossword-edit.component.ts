@@ -142,6 +142,27 @@ export class CrosswordEditComponent implements OnInit {
     this.tagSearch = '';
   }
 
+  onTagKeydown(event: KeyboardEvent) {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    const q = this.tagSearch.trim();
+    if (!q || !this.editDraft) return;
+    const suggestions = this.tagSuggestions;
+    if (suggestions.length > 0 && suggestions[0].key.toLowerCase() === q.toLowerCase()) {
+      this.addTag(suggestions[0]);
+      return;
+    }
+    if (suggestions.length > 0 && suggestions[0].key.toLowerCase().startsWith(q.toLowerCase())) {
+      this.addTag(suggestions[0]);
+      return;
+    }
+    this.tagService.createTag({ key: q }).subscribe(id => {
+      const newTag: TagResponse = { id, key: q };
+      this.allTags.push(newTag);
+      this.addTag(newTag);
+    });
+  }
+
   removeTag(tagId: string) {
     if (!this.editDraft) return;
     this.editDraft.tags = this.editDraft.tags.filter(t => t.id !== tagId);

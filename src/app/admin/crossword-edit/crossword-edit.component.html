@@ -111,7 +111,8 @@
                   {{ tag.key }}<button class="tag-remove" (click)="removeTag(tag.id)">×</button>
                 </span>
                 <input class="tag-text-input" type="text" [(ngModel)]="tagSearch"
-                  placeholder="{{ 'CROSSWORD_EDIT.TAG_PLACEHOLDER' | translate }}" />
+                  placeholder="{{ 'CROSSWORD_EDIT.TAG_PLACEHOLDER' | translate }}"
+                  (keydown)="onTagKeydown($event)" />
               </div>
               <div class="tag-suggestions" *ngIf="tagSuggestions.length > 0">
                 <button type="button" class="tag-suggestion" *ngFor="let tag of tagSuggestions"
