@@ -262,7 +262,10 @@
     "OPEN_QUESTIONS": "Open Questions",
     "PASSING": "Passing %",
     "CREATE_EDIT": "Create & Edit",
-    "CREATING": "Creating…"
+    "CREATING": "Creating…",
+    "AUTHORS": "Authors",
+    "NO_AUTHORS": "No authors assigned.",
+    "ADD_AUTHOR": "Add author"
   },
   "TEST_EDIT": {
     "BACK": "Tests",

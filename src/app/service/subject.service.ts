@@ -39,4 +39,15 @@ export class SubjectsService {
     return this.http.delete<SubjectResponse>(`${this.baseUrl}/${subjectId}/authors/${userId}`);
   }
 
+  getAuthorCandidates(subjectId: string): Observable<AuthorCandidate[]> {
+    return this.http.get<AuthorCandidate[]>(`${this.baseUrl}/${subjectId}/author-candidates`);
+  }
+
+}
+
+export interface AuthorCandidate {
+  id: string;
+  username: string;
+  role: string;
+  profilePictureUrl: string | null;
 }

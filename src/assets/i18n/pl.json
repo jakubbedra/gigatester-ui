@@ -262,7 +262,10 @@
     "OPEN_QUESTIONS": "Pytania otwarte",
     "PASSING": "Próg %",
     "CREATE_EDIT": "Utwórz i edytuj",
-    "CREATING": "Tworzenie…"
+    "CREATING": "Tworzenie…",
+    "AUTHORS": "Autorzy",
+    "NO_AUTHORS": "Brak przypisanych autorów.",
+    "ADD_AUTHOR": "Dodaj autora"
   },
   "TEST_EDIT": {
     "BACK": "Testy",

@@ -8,6 +8,7 @@ import { SubjectsService } from '../../service/subject.service';
 import { CommentService } from '../../service/comment.service';
 import { AuthService } from '../../service/auth.service';
 import { CommentResponse, TestSummaryResponse, CrosswordSummaryResponse, SubjectAuthor } from '../../models/models.d';
+import { AuthorCandidate } from '../../service/subject.service';
 
 @Component({
   selector: 'app-tests-list',
@@ -29,9 +30,10 @@ export class TestsListComponent implements OnInit {
   subjectAuthors: SubjectAuthor[] = [];
   expandedReplies = new Set<string>();
 
-  addAuthorInput = '';
-  addAuthorLoading = false;
-  addAuthorError = '';
+  showAuthorPopup = false;
+  authorCandidates: AuthorCandidate[] = [];
+  authorCandidatesLoading = false;
+  authorSearch = '';
 
   editingDescription = false;
   editDescriptionValue = '';
@@ -377,17 +379,35 @@ export class TestsListComponent implements OnInit {
     this.router.navigate(['/users', userId]);
   }
 
-  addAuthor(): void {
-    if (!this.subjectId || !this.addAuthorInput.trim()) return;
-    this.addAuthorLoading = true;
-    this.addAuthorError = '';
-    this.subjectsService.addAuthor(this.subjectId, this.addAuthorInput.trim()).subscribe({
+  openAuthorPopup(): void {
+    if (!this.subjectId) return;
+    this.showAuthorPopup = true;
+    this.authorSearch = '';
+    this.authorCandidatesLoading = true;
+    this.subjectsService.getAuthorCandidates(this.subjectId).subscribe({
+      next: (list) => { this.authorCandidates = list; this.authorCandidatesLoading = false; },
+      error: () => { this.authorCandidatesLoading = false; }
+    });
+  }
+
+  closeAuthorPopup(): void {
+    this.showAuthorPopup = false;
+  }
+
+  get filteredCandidates(): AuthorCandidate[] {
+    const q = this.authorSearch.trim().toLowerCase();
+    if (!q) return this.authorCandidates;
+    return this.authorCandidates.filter(c => c.username.toLowerCase().includes(q));
+  }
+
+  selectAuthor(candidate: AuthorCandidate): void {
+    if (!this.subjectId) return;
+    this.subjectsService.addAuthor(this.subjectId, candidate.id).subscribe({
       next: (subject) => {
         this.subjectAuthors = subject.authors ?? [];
-        this.addAuthorInput = '';
-        this.addAuthorLoading = false;
-      },
-      error: () => { this.addAuthorError = 'User not found or invalid ID.'; this.addAuthorLoading = false; }
+        // Remove from candidates list
+        this.authorCandidates = this.authorCandidates.filter(c => c.id !== candidate.id);
+      }
     });
   }
 
