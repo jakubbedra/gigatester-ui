@@ -26,9 +26,9 @@ export class LatexPipe implements PipeTransform {
     let match: RegExpExecArray | null;
 
     while ((match = regex.exec(remaining)) !== null) {
-      // Push plain text before this match (HTML-escaped)
+      // Push plain text before this match as-is (content may be HTML)
       const before = remaining.slice(lastIndex, match.index);
-      if (before) parts.push(this.escapeHtml(before));
+      if (before) parts.push(before);
 
       const displaySrc = match[1];
       const inlineSrc = match[2];
@@ -46,9 +46,9 @@ export class LatexPipe implements PipeTransform {
       lastIndex = match.index + match[0].length;
     }
 
-    // Remaining plain text
+    // Remaining plain text / HTML as-is
     const tail = remaining.slice(lastIndex);
-    if (tail) parts.push(this.escapeHtml(tail));
+    if (tail) parts.push(tail);
 
     return parts.join('');
   }
