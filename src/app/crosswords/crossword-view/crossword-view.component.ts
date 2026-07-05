@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CrosswordResponse, CrosswordStateResponse, TagResponse } from '../../models/models.d';
+import { CrosswordResponse, CrosswordStateResponse, MultiplayerSessionSummaryResponse, TagResponse } from '../../models/models.d';
 import { CrosswordService } from '../../service/crossword.service';
 import { CrosswordStateService } from '../../service/crossword-state.service';
+import { CrosswordMultiplayerService } from '../../service/crossword-multiplayer.service';
 import { AuthService } from '../../service/auth.service';
 import { Subscription } from 'rxjs';
 
@@ -25,6 +26,13 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
   selectedTagIds: Set<string> = new Set();
   excludeTags = false;
 
+  mode: 'singleplayer' | 'multiplayer' = 'singleplayer';
+  mySessions: MultiplayerSessionSummaryResponse[] = [];
+  mySessionsLoading = false;
+  creatingMultiplayer = false;
+  multiplayerError = '';
+  newSessionId: string | null = null;
+
   generating = false;
   generatingProgress = 0;
   generatingError = '';
@@ -42,6 +50,7 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
     private router: Router,
     private crosswordService: CrosswordService,
     private crosswordStateService: CrosswordStateService,
+    private multiplayerService: CrosswordMultiplayerService,
     private authService: AuthService
   ) {}
 
@@ -52,6 +61,57 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
 
   editCrossword(): void {
     this.router.navigate(['/admin/crosswords', this.crosswordId, 'edit']);
+  }
+
+  loadMySessions() {
+    this.mySessionsLoading = true;
+    this.multiplayerService.getMySessions().subscribe({
+      next: (sessions) => {
+        this.mySessions = sessions.filter(s =>
+          s.crosswordId === this.crosswordId &&
+          (s.status === 'WAITING_FOR_PLAYER' || s.status === 'IN_PROGRESS')
+        );
+        this.mySessionsLoading = false;
+      },
+      error: () => { this.mySessionsLoading = false; }
+    });
+  }
+
+  setMode(m: 'singleplayer' | 'multiplayer') {
+    this.mode = m;
+    this.newSessionId = null;
+    this.multiplayerError = '';
+    if (m === 'multiplayer') this.loadMySessions();
+  }
+
+  createMultiplayerRoom() {
+    if (this.form.invalid || this.creatingMultiplayer) return;
+    this.creatingMultiplayer = true;
+    this.multiplayerError = '';
+    this.multiplayerService.createSession({
+      crosswordId: this.crosswordId,
+      numberOfWords: Number(this.form.value.numberOfWords),
+      tagFilter: this.selectedTagIds.size > 0 ? Array.from(this.selectedTagIds) : undefined,
+      tagFilterMode: this.excludeTags ? 'EXCLUDE' : 'INCLUDE'
+    }).subscribe({
+      next: (session) => {
+        this.creatingMultiplayer = false;
+        this.newSessionId = session.id;
+        this.loadMySessions();
+      },
+      error: () => {
+        this.creatingMultiplayer = false;
+        this.multiplayerError = 'Failed to create room. Please try again.';
+      }
+    });
+  }
+
+  joinSessionLink(sessionId: string): string {
+    return `${window.location.origin}/crosswords/sessions/${sessionId}`;
+  }
+
+  goToSession(sessionId: string) {
+    this.router.navigate(['/crosswords/sessions', sessionId]);
   }
 
   ngOnInit() {

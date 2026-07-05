@@ -6,6 +6,15 @@
       <button *ngIf="canModify" type="button" class="edit-btn" (click)="editCrossword()">✎ Edit</button>
     </div>
 
+    <!-- Mode toggle -->
+    <div class="mode-tabs">
+      <button type="button" class="mode-tab" [class.active]="mode === 'singleplayer'" (click)="setMode('singleplayer')">Singleplayer</button>
+      <button type="button" class="mode-tab" [class.active]="mode === 'multiplayer'" (click)="setMode('multiplayer')">Multiplayer</button>
+    </div>
+
+    <!-- ══ SINGLEPLAYER ══ -->
+    <ng-container *ngIf="mode === 'singleplayer'">
+
     <!-- Resume banner -->
     <div class="resume-banner" *ngIf="existingState && !showNewForm">
       <div class="resume-info">
@@ -75,5 +84,82 @@
       </button>
 
     </form>
+
+    </ng-container><!-- end singleplayer -->
+
+    <!-- ══ MULTIPLAYER ══ -->
+    <ng-container *ngIf="mode === 'multiplayer'">
+
+      <!-- Active sessions for this crossword -->
+      <div class="mp-sessions" *ngIf="mySessions.length > 0">
+        <div class="mp-sessions-label">Your active sessions</div>
+        <div class="mp-session-row" *ngFor="let s of mySessions" (click)="goToSession(s.id)">
+          <div class="mp-session-info">
+            <span class="mp-session-opp">vs {{ s.opponent?.username ?? 'Waiting for player…' }}</span>
+            <span class="mp-session-status" [class.my-turn]="s.myTurn && s.status === 'IN_PROGRESS'">
+              {{ s.status === 'WAITING_FOR_PLAYER' ? 'Waiting for opponent' : (s.myTurn ? 'Your turn' : "Opponent's turn") }}
+            </span>
+          </div>
+          <div class="mp-session-scores">{{ s.myScore }} – {{ s.opponentScore }}</div>
+          <span class="mp-session-arrow">›</span>
+        </div>
+      </div>
+
+      <!-- New room creator -->
+      <div class="mp-create-section">
+        <div class="mp-create-title">Create a new room</div>
+        <p class="mp-create-hint">Configure your puzzle, then share the invite link with a friend.</p>
+
+        <!-- Reuse same tag / word-count form -->
+        <div class="field-section" *ngIf="allTags.length > 0">
+          <div class="field-label">{{ 'CROSSWORD_VIEW.FILTER_BY_TAG' | translate }}</div>
+          <div class="tag-filter-row">
+            <button type="button" class="tag-filter-chip"
+                    [class.active]="selectedTagIds.has(tag.id)"
+                    *ngFor="let tag of allTags"
+                    (click)="toggleTag(tag.id)">
+              {{ tag.key }}
+            </button>
+          </div>
+          <div class="tag-mode-toggle" *ngIf="selectedTagIds.size > 0">
+            <button type="button" class="tag-mode-btn" [class.active]="!excludeTags"
+                    (click)="excludeTags = false; onExcludeToggle()">Include</button>
+            <button type="button" class="tag-mode-btn" [class.active]="excludeTags"
+                    (click)="excludeTags = true; onExcludeToggle()">Exclude</button>
+          </div>
+        </div>
+
+        <form [formGroup]="form">
+          <div class="field-section">
+            <div class="field-label">{{ 'CROSSWORD_VIEW.WORD_COUNT' | translate }}</div>
+            <div class="form-group">
+              <label>
+                {{ 'CROSSWORD_VIEW.WORDS_TO_INCLUDE' | translate }}
+                <span class="avail">/ {{ termCount }} {{ 'CROSSWORD_VIEW.AVAILABLE' | translate }}</span>
+              </label>
+              <input type="number" formControlName="numberOfWords" min="1" [max]="termCount">
+            </div>
+          </div>
+        </form>
+
+        <p class="gen-error" *ngIf="multiplayerError">{{ multiplayerError }}</p>
+
+        <!-- Invite link after creation -->
+        <div class="invite-box" *ngIf="newSessionId">
+          <div class="invite-label">Room created! Share this link:</div>
+          <div class="invite-link-row">
+            <input class="invite-link-input" [value]="joinSessionLink(newSessionId)" readonly />
+            <button class="invite-copy-btn" (click)="goToSession(newSessionId)">Open Room</button>
+          </div>
+        </div>
+
+        <button type="button" class="start-btn" [disabled]="form.invalid || creatingMultiplayer"
+                (click)="createMultiplayerRoom()">
+          {{ creatingMultiplayer ? '…' : 'Create Room' }}
+        </button>
+      </div>
+
+    </ng-container><!-- end multiplayer -->
+
   </div>
 </div>

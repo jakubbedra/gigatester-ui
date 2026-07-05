@@ -1,0 +1,206 @@
+<div class="cw-wrapper">
+
+  <!-- Loading -->
+  <div class="cw-loading" *ngIf="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Error -->
+  <div class="cw-error" *ngIf="error && !loading">
+    <p>{{ error }}</p>
+    <button class="winner-btn" (click)="newCrossword()">Back</button>
+  </div>
+
+  <!-- Join via invite link -->
+  <div class="cw-join" *ngIf="canJoin && !loading && !session">
+    <div class="winner-card">
+      <div class="winner-emoji">🎮</div>
+      <div class="winner-title">You've been invited!</div>
+      <div class="winner-subtitle">Join the multiplayer crossword session</div>
+      <button class="winner-btn" (click)="joinSession()">Join Game</button>
+      <p class="join-error" *ngIf="error">{{ error }}</p>
+    </div>
+  </div>
+
+  <ng-container *ngIf="session && !loading">
+
+    <!-- Winner overlay -->
+    <div class="winner-overlay" *ngIf="showWinner">
+      <div class="winner-card">
+        <div class="winner-emoji">{{ winner === 'me' ? '🏆' : winner === 'opponent' ? '😞' : '🤝' }}</div>
+        <div class="winner-title">{{ winner === 'me' ? 'You Win!' : winner === 'opponent' ? (opponentName + ' Wins!') : 'Tie!' }}</div>
+        <div class="winner-subtitle">Game complete</div>
+        <div class="winner-scores">
+          <div class="ws-player" [class.ws-winner]="winner === 'me'">
+            <span class="ws-name">You</span>
+            <span class="ws-pts">{{ myPoints }} pts</span>
+          </div>
+          <div class="ws-vs">vs</div>
+          <div class="ws-player" [class.ws-winner]="winner === 'opponent'">
+            <span class="ws-name">{{ opponentName }}</span>
+            <span class="ws-pts">{{ opponentPoints }} pts</span>
+          </div>
+        </div>
+        <button class="winner-btn" (click)="newCrossword()">Play Again</button>
+      </div>
+    </div>
+
+    <div class="cw-card">
+      <div class="cw-layout">
+
+        <!-- LEFT: grid + hand -->
+        <div class="main-pane">
+
+          <!-- Word completion toasts -->
+          <div class="toast-container">
+            <div *ngFor="let toast of wordToasts" class="word-toast">
+              <span class="toast-word">{{ toast.word }}</span>
+              <span class="toast-pts">+{{ toast.points }} pts</span>
+            </div>
+          </div>
+
+          <div class="top-controls">
+            <div class="zoom-controls">
+              <button class="zoom-btn" (click)="zoomOut()">−</button>
+              <span class="zoom-label">Zoom</span>
+              <button class="zoom-btn" (click)="zoomIn()">+</button>
+            </div>
+            <button class="mute-btn" (click)="sound.toggleMute()" [title]="sound.muted ? 'Unmute' : 'Mute'">
+              {{ sound.muted ? '🔇' : '🔊' }}
+            </button>
+          </div>
+
+          <div class="grid-scroll" #gridScroll>
+            <div class="grid" [style.--cols]="session.width" [style.--cell-size.px]="cellSize">
+              <ng-container *ngFor="let row of rows(); let r = index">
+                <div *ngFor="let cell of row; let c = index"
+                     class="cell"
+                     [class.inactive]="cell.char === '#'"
+                     [class.space-cell]="cell.char === ' '"
+                     [class.highlighted]="cell.highlighted && cell.char !== '#'"
+                     [class.placed]="cell.placed"
+                     [class.drop-zone]="isDragging && isEmptyForDrop(r, c)"
+                     [class.drop-target]="isHoveredCell(r, c)"
+                     [class.flash-correct]="flashCorrect.has(r + ',' + c)"
+                     [class.flash-wrong]="flashWrong.has(r + ',' + c)"
+                     [style.animation-delay.ms]="flashDelay.get(r + ',' + c) ?? 0"
+                     [attr.data-cell-row]="r"
+                     [attr.data-cell-col]="c"
+                     (click)="cell.placed && recallPlaced(r, c)">
+                  <span class="cell-number" *ngIf="cell.number && !cell.placed">{{ cell.number }}</span>
+                  <span class="cell-letter" *ngIf="cell.char !== '#' && cell.char !== '_'">{{ cell.char }}</span>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+
+          <!-- Hand (your turn) -->
+          <div class="hand-card" *ngIf="isMyTurn">
+            <div class="hand-header">
+              <div class="hand-label">Your hand <span class="hand-hint">— drag or tap a tile, then tap a cell</span></div>
+              <button class="submit-btn" [disabled]="isSubmitting || placedCount === 0" (click)="submitTurn()">
+                {{ isSubmitting ? '…' : 'Submit' }}
+              </button>
+            </div>
+            <div class="hand-tiles">
+              <ng-container *ngFor="let letter of handLetters; let i = index">
+                <div *ngIf="letter"
+                     cdkDrag
+                     [cdkDragDisabled]="isSubmitting"
+                     (cdkDragStarted)="onDragStarted()"
+                     (cdkDragMoved)="onDragMoved($event)"
+                     (cdkDragEnded)="onDrop($event, letter, i)"
+                     class="letter-tile">
+                  {{ letter }}
+                  <div *cdkDragPreview class="tile-preview">{{ letter }}</div>
+                  <div *cdkDragPlaceholder class="tile-placeholder"></div>
+                </div>
+                <div *ngIf="!letter" class="letter-tile empty-slot"></div>
+              </ng-container>
+            </div>
+          </div>
+
+          <!-- Waiting for opponent -->
+          <div class="hand-card waiting-hand" *ngIf="!isMyTurn && session.status === 'IN_PROGRESS'">
+            <div class="waiting-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <span class="waiting-text">Waiting for {{ opponentName }} to play…</span>
+          </div>
+
+          <!-- Waiting for player 2 to join -->
+          <div class="hand-card waiting-hand" *ngIf="isWaiting">
+            <div class="waiting-icon">⏳</div>
+            <div class="waiting-text-block">
+              <p class="waiting-label">Waiting for an opponent to join</p>
+              <div class="invite-row">
+                <input class="invite-input" [value]="inviteLink" readonly />
+                <button class="invite-copy" (click)="copyInviteLink()">Copy</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT: title + scores + clues -->
+        <div class="side-pane">
+          <h2 class="cw-title">{{ session.crosswordName }}</h2>
+
+          <!-- Scores -->
+          <div class="side-card score-card">
+            <div class="score-row">
+              <div class="score-player" [class.current]="session.player1.id === session.currentTurnUserId">
+                <span class="score-name">{{ session.player1.username }}</span>
+                <span class="score-value">{{ session.player1Points }}</span>
+              </div>
+              <span class="score-divider">VS</span>
+              <div class="score-player" [class.current]="session.player2 && session.player2.id === session.currentTurnUserId">
+                <span class="score-name">{{ session.player2 ? session.player2.username : '?' }}</span>
+                <span class="score-value">{{ session.player2Points }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab bar (mobile only) -->
+          <div class="tab-bar">
+            <button class="tab-btn" [class.active]="activeTab === 'across'" (click)="activeTab = 'across'">Across</button>
+            <button class="tab-btn" [class.active]="activeTab === 'down'" (click)="activeTab = 'down'">Down</button>
+          </div>
+
+          <!-- Across -->
+          <div class="side-card clues-card" [class.hidden-mobile]="activeTab !== 'across'">
+            <div class="side-title">Across</div>
+            <div class="clues-scroll">
+              <div *ngFor="let entry of across" class="clue-item"
+                   [class.active]="isActive(entry)"
+                   (click)="selectClue(entry)">
+                <span class="clue-number">{{ entry.number }}</span>
+                <span class="clue-text">{{ entry.clue.clue }}</span>
+                <span class="clue-len">({{ entry.length }})</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Down -->
+          <div class="side-card clues-card" [class.hidden-mobile]="activeTab !== 'down'">
+            <div class="side-title">Down</div>
+            <div class="clues-scroll">
+              <div *ngFor="let entry of down" class="clue-item"
+                   [class.active]="isActive(entry)"
+                   (click)="selectClue(entry)">
+                <span class="clue-number">{{ entry.number }}</span>
+                <span class="clue-text">{{ entry.clue.clue }}</span>
+                <span class="clue-len">({{ entry.length }})</span>
+              </div>
+            </div>
+          </div>
+
+          <button class="abandon-link" (click)="abandon()">Abandon game</button>
+
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+
+</div>

@@ -427,3 +427,40 @@ export const enum ContentType {
     TEXT = "TEXT",
     HTML = "HTML",
 }
+
+export interface MultiplayerPlayerInfo {
+    id: string;
+    username: string;
+    profilePictureUrl: string | null;
+}
+
+export interface MultiplayerSessionResponse {
+    id: string;
+    crosswordId: string;
+    crosswordName: string;
+    player1: MultiplayerPlayerInfo;
+    player2: MultiplayerPlayerInfo | null;
+    status: 'WAITING_FOR_PLAYER' | 'IN_PROGRESS' | 'FINISHED' | 'ABANDONED';
+    currentTurnUserId: string;
+    myTurn: boolean;
+    currentGrid: string;
+    width: number;
+    height: number;
+    myHand: string;
+    player1Points: number;
+    player2Points: number;
+    clues: CrosswordStateClueResponse[];
+    createdAt: string;
+}
+
+export interface MultiplayerSessionSummaryResponse {
+    id: string;
+    crosswordId: string;
+    crosswordName: string;
+    opponent: MultiplayerPlayerInfo | null;
+    status: 'WAITING_FOR_PLAYER' | 'IN_PROGRESS' | 'FINISHED' | 'ABANDONED';
+    myTurn: boolean;
+    myScore: number;
+    opponentScore: number;
+    createdAt: string;
+}

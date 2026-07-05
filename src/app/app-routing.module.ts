@@ -11,6 +11,7 @@ import { TestEditComponent } from './admin/test-edit/test-edit.component';
 import { AllAtOnceComponent } from './tests/all-at-once/all-at-once.component';
 import { CrosswordViewComponent } from './crosswords/crossword-view/crossword-view.component';
 import { CrosswordPlayComponent } from './crosswords/crossword-play/crossword-play.component';
+import { CrosswordMultiplayerPlayComponent } from './crosswords/crossword-multiplayer-play/crossword-multiplayer-play.component';
 import { LoginComponent } from './auth/login/login.component';
 import { ResetPasswordComponent } from './auth/reset-password/reset-password.component';
 import { AccountComponent } from './account/account.component';
@@ -46,6 +47,7 @@ const routes: Routes = [
   { path: 'admin/ai-generator', component: AiGeneratorComponent, canActivate: [AuthGuard, ModeratorGuard] },
   { path: 'admin/inbox', component: InboxComponent, canActivate: [AuthGuard, ModeratorGuard] },
   { path: 'crosswords/states/:id', component: CrosswordPlayComponent, canActivate: [AuthGuard] },
+  { path: 'crosswords/sessions/:id', component: CrosswordMultiplayerPlayComponent, canActivate: [AuthGuard] },
   { path: 'crosswords/:id', component: CrosswordViewComponent, canActivate: [AuthGuard] },
   { path: 'users/:id', component: UserProfileComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: 'home', pathMatch: 'full' },

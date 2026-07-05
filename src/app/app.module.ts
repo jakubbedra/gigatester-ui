@@ -41,6 +41,7 @@ import { AuthInterceptor } from './interceptor/auth.interceptor';
 import { QuillModule } from 'ngx-quill';
 import { LatexPipe } from './pipes/latex.pipe';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { CrosswordMultiplayerPlayComponent } from './crosswords/crossword-multiplayer-play/crossword-multiplayer-play.component';
 
 @NgModule({
   declarations: [
@@ -72,6 +73,7 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
     MetricsComponent,
     LatexPipe,
     UserProfileComponent,
+    CrosswordMultiplayerPlayComponent,
   ],
   imports: [
     BrowserModule,

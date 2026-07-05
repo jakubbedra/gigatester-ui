@@ -342,3 +342,34 @@ input[type="number"] {
 
 .tag-mode-btn:hover { border-color: #7b6df5; color: #c0b0ff; }
 .tag-mode-btn.active { background: rgba(123,109,245,0.15); border-color: #7b6df5; color: #c0b0ff; }
+
+/* ── Mode tabs ── */
+.mode-tabs { display: flex; gap: 0; border-radius: 10px; overflow: hidden; background: #161616; border: 1px solid #2a2a2a; }
+.mode-tab { flex: 1; padding: 9px 0; background: transparent; border: none; color: #666; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.15s; letter-spacing: 0.02em; }
+.mode-tab:hover { color: #aaa; background: rgba(255,255,255,0.04); }
+.mode-tab.active { background: rgba(123,109,245,0.15); color: #c0b0ff; border-bottom: 2px solid #7b6df5; }
+
+/* ── Multiplayer session list ── */
+.mp-sessions { display: flex; flex-direction: column; gap: 8px; }
+.mp-sessions-label { font-size: 11px; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 2px; }
+.mp-session-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; border: 1px solid #2a2a2a; background: #1a1a1a; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.mp-session-row:hover { border-color: #7b6df5; background: rgba(123,109,245,0.06); }
+.mp-session-info { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.mp-session-opp { font-size: 13px; font-weight: 600; color: #e0e0e0; }
+.mp-session-status { font-size: 11px; color: #666; }
+.mp-session-status.my-turn { color: #7b6df5; font-weight: 600; }
+.mp-session-scores { font-size: 13px; color: #888; font-variant-numeric: tabular-nums; }
+.mp-session-arrow { color: #444; font-size: 18px; }
+
+/* ── Multiplayer create section ── */
+.mp-create-section { display: flex; flex-direction: column; gap: 20px; }
+.mp-create-title { font-size: 15px; font-weight: 700; color: #e0e0e0; }
+.mp-create-hint { font-size: 12px; color: #666; margin: -12px 0 0; }
+
+/* ── Invite box ── */
+.invite-box { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; background: rgba(123,109,245,0.08); border: 1px solid rgba(123,109,245,0.3); border-radius: 12px; }
+.invite-label { font-size: 12px; color: #c0b0ff; font-weight: 600; }
+.invite-link-row { display: flex; gap: 8px; }
+.invite-link-input { flex: 1; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #aaa; font-size: 11px; padding: 7px 10px; outline: none; min-width: 0; }
+.invite-copy-btn { flex-shrink: 0; background: #7b6df5; border: none; border-radius: 8px; color: #fff; font-size: 12px; font-weight: 600; padding: 7px 14px; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
+.invite-copy-btn:hover { background: #9080ff; }
