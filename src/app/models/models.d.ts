@@ -195,6 +195,7 @@ export interface SubjectGroupResponse {
     id: string;
     name: string;
     subjects: string[];
+    owners: SubjectAuthor[];
 }
 
 export interface SubjectGroupsResponse {

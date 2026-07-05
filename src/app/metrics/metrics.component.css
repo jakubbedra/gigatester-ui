@@ -2,13 +2,13 @@
   padding: 32px;
   max-width: 900px;
   margin: 0 auto;
-  color: #c8c8e8;
+  color: #c8c8c8;
 }
 
 .page-title {
   font-size: 22px;
   font-weight: 700;
-  color: #e0e0f5;
+  color: #e8e8e8;
   margin: 0 0 20px;
 }
 
@@ -22,17 +22,17 @@
 
 .filter-label {
   font-size: 12px;
-  color: #6a6a9a;
+  color: #777;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
 }
 
 .filter-select {
-  background: #1a1a2e;
-  border: 1px solid rgba(123, 109, 245, 0.3);
+  background: #1e1e1e;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
-  color: #c8c8e8;
+  color: #c8c8c8;
   padding: 6px 12px;
   font-size: 13px;
   cursor: pointer;
@@ -49,9 +49,9 @@
 .tab-btn {
   padding: 8px 20px;
   border-radius: 8px;
-  border: 1px solid rgba(123, 109, 245, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   background: transparent;
-  color: #9090b0;
+  color: #888;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -60,9 +60,9 @@
 
 .tab-btn.active,
 .tab-btn:hover {
-  background: rgba(123, 109, 245, 0.15);
-  border-color: rgba(123, 109, 245, 0.5);
-  color: #c0b0ff;
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e0e0e0;
 }
 
 /* ── Summary cards ── */
@@ -76,8 +76,8 @@
 .stat-card {
   flex: 1;
   min-width: 120px;
-  background: #1a1a2e;
-  border: 1px solid rgba(123, 109, 245, 0.2);
+  background: #232323;
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 14px;
   padding: 20px 16px;
   text-align: center;
@@ -86,7 +86,7 @@
 .stat-value {
   font-size: 28px;
   font-weight: 700;
-  color: #c0b0ff;
+  color: #f0f0f0;
   line-height: 1;
   margin-bottom: 6px;
 }
@@ -95,13 +95,13 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #6a6a9a;
+  color: #666;
 }
 
 /* ── Line chart ── */
 .chart-card {
-  background: #1a1a2e;
-  border: 1px solid rgba(123, 109, 245, 0.2);
+  background: #232323;
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 14px;
   padding: 24px;
   margin-bottom: 24px;
@@ -110,7 +110,7 @@
 .chart-title {
   font-size: 13px;
   font-weight: 600;
-  color: #9090b0;
+  color: #888;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin: 0 0 16px;
@@ -135,7 +135,7 @@
 }
 
 .line-taken {
-  stroke: rgba(123, 109, 245, 0.35);
+  stroke: rgba(180, 180, 180, 0.3);
   stroke-dasharray: 4 3;
 }
 
@@ -145,12 +145,12 @@
 
 .dot-passed {
   fill: #7b6df5;
-  stroke: #1a1a2e;
+  stroke: #232323;
   stroke-width: 1.5;
 }
 
 .x-label {
-  fill: #444466;
+  fill: #555;
   font-size: 9px;
 }
 
@@ -160,7 +160,7 @@
   gap: 16px;
   margin-top: 10px;
   font-size: 11px;
-  color: #6a6a9a;
+  color: #666;
 }
 
 .legend-line {
@@ -172,8 +172,8 @@
 }
 
 .legend-line.taken {
-  background: rgba(123, 109, 245, 0.35);
-  border-top: 2px dashed rgba(123, 109, 245, 0.35);
+  background: rgba(180, 180, 180, 0.3);
+  border-top: 2px dashed rgba(180, 180, 180, 0.3);
   height: 0;
 }
 
@@ -183,8 +183,8 @@
 
 /* ── Tag accuracy ── */
 .tag-stats-card {
-  background: #1a1a2e;
-  border: 1px solid rgba(123, 109, 245, 0.2);
+  background: #232323;
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 14px;
   padding: 24px;
   margin-bottom: 24px;
@@ -194,12 +194,12 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .tag-key {
   font-size: 12px;
-  color: #c0b0ff;
+  color: #bbb;
   min-width: 120px;
   white-space: nowrap;
   overflow: hidden;
@@ -208,29 +208,36 @@
 
 .tag-bar-bg {
   flex: 1;
-  height: 8px;
-  background: rgba(123, 109, 245, 0.1);
-  border-radius: 4px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 5px;
   overflow: hidden;
 }
 
 .tag-bar-fill {
   height: 100%;
-  background: #7b6df5;
-  border-radius: 4px;
+  border-radius: 5px;
   transition: width 0.4s;
 }
 
+.tag-fill-high { background: #4ade80; }
+.tag-fill-mid  { background: #facc15; }
+.tag-fill-low  { background: #f87171; }
+
 .tag-pct {
   font-size: 12px;
-  color: #c0b0ff;
+  font-weight: 700;
   width: 42px;
   text-align: right;
 }
 
+.tag-pct-high { color: #4ade80; }
+.tag-pct-mid  { color: #facc15; }
+.tag-pct-low  { color: #f87171; }
+
 .tag-count {
   font-size: 11px;
-  color: #555577;
+  color: #555;
   width: 70px;
 }
 
@@ -244,7 +251,7 @@
 
 .sort-label {
   font-size: 12px;
-  color: #6a6a9a;
+  color: #666;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-right: 4px;
@@ -253,9 +260,9 @@
 .sort-btn {
   padding: 5px 14px;
   border-radius: 6px;
-  border: 1px solid rgba(123, 109, 245, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   background: transparent;
-  color: #9090b0;
+  color: #888;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -264,24 +271,25 @@
 
 .sort-btn.active,
 .sort-btn:hover {
-  background: rgba(123, 109, 245, 0.15);
-  border-color: rgba(123, 109, 245, 0.5);
-  color: #c0b0ff;
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e0e0e0;
 }
 
 /* ── My rank banner ── */
 .my-rank {
-  background: rgba(123, 109, 245, 0.1);
-  border: 1px solid rgba(123, 109, 245, 0.25);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   padding: 12px 20px;
   margin-bottom: 20px;
   font-size: 14px;
-  color: #c0b0ff;
+  color: #ccc;
 }
 
 .my-rank strong {
   font-size: 18px;
+  color: #f0f0f0;
 }
 
 /* ── Ranking table ── */
@@ -297,24 +305,24 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #555577;
+  color: #555;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .ranking-table td {
   padding: 12px 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  color: #c8c8e8;
+  color: #c8c8c8;
 }
 
 .ranking-table tr:hover td {
-  background: rgba(123, 109, 245, 0.05);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .ranking-table tr.me td {
-  color: #c0b0ff;
+  color: #f0f0f0;
   font-weight: 600;
-  background: rgba(123, 109, 245, 0.08);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .rank-cell {
@@ -325,7 +333,7 @@
 /* ── Empty state ── */
 .empty-state {
   text-align: center;
-  color: #555577;
+  color: #555;
   padding: 48px 0;
   font-size: 14px;
 }

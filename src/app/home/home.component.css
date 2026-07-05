@@ -101,6 +101,44 @@
   flex-shrink: 0;
 }
 
+/* ── Owner chips on card ── */
+.owners-row { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 22px 12px; }
+.owner-chip { display: flex; align-items: center; gap: 5px; background: rgba(123,109,245,0.1); border: 1px solid rgba(123,109,245,0.25); border-radius: 20px; padding: 3px 8px 3px 4px; }
+.owner-avatar { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; }
+.owner-avatar-fallback { width: 18px; height: 18px; border-radius: 50%; background: #7b6df5; color: #fff; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.owner-name { font-size: 11px; color: #a090e0; font-weight: 600; }
+
+/* ── Owner chips in edit modal ── */
+.owner-chips-edit { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.owner-chip-edit { display: flex; align-items: center; gap: 6px; background: #2a2a3e; border: 1px solid rgba(123,109,245,0.3); border-radius: 20px; padding: 4px 10px 4px 6px; }
+.owner-av { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
+.owner-av-fallback { width: 22px; height: 22px; border-radius: 50%; background: #7b6df5; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.owner-chip-name { font-size: 12px; color: #c0b0ff; }
+.owner-chip-remove { background: none; border: none; color: #7b6df5; font-size: 11px; cursor: pointer; padding: 0 2px; line-height: 1; }
+.owner-chip-remove:hover { color: #f07070; }
+.owners-empty { font-size: 12px; color: #555; font-style: italic; margin: 0 0 8px; }
+.btn-add-owner { background: none; border: 1.5px dashed rgba(123,109,245,0.4); border-radius: 20px; color: #7b6df5; font-size: 12px; font-weight: 600; padding: 4px 14px; cursor: pointer; transition: border-color 0.15s; }
+.btn-add-owner:hover { border-color: #7b6df5; }
+
+/* ── Owner picker popup ── */
+.owner-popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 600; }
+.owner-popup { background: #1e1e1e; border: 1px solid #3a3a3a; border-radius: 16px; padding: 24px; width: 340px; max-height: 420px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.7); }
+.owner-popup-header { display: flex; align-items: center; justify-content: space-between; }
+.owner-popup-title { font-size: 15px; font-weight: 700; color: #fff; }
+.owner-popup-close { background: none; border: none; color: #888; font-size: 14px; cursor: pointer; }
+.owner-popup-close:hover { color: #ccc; }
+.owner-popup-search { padding: 8px 12px; background: #2a2a2a; border: 1px solid #3d3d3d; border-radius: 8px; color: #e0e0e0; font-size: 13px; outline: none; width: 100%; box-sizing: border-box; }
+.owner-popup-search:focus { border-color: #7b6df5; }
+.owner-popup-list { display: flex; flex-direction: column; gap: 4px; overflow-y: auto; max-height: 240px; }
+.owner-popup-loading { font-size: 13px; color: #666; text-align: center; padding: 16px 0; }
+.owner-candidate { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: background 0.15s; }
+.owner-candidate:hover { background: #2a2a3a; }
+.candidate-av { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+.candidate-av-fallback { width: 28px; height: 28px; border-radius: 50%; background: #7b6df5; color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.candidate-name { flex: 1; font-size: 13px; color: #e0e0e0; }
+.candidate-role { font-size: 11px; color: #666; }
+.candidate-empty { font-size: 13px; color: #555; text-align: center; margin: 0; padding: 12px 0; }
+
 .subjects-section {
   border-top: 1px solid #2a2a2a;
   padding: 16px 22px 20px;

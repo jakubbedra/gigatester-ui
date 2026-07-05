@@ -2,13 +2,15 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { forkJoin, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { SubjectGroupService } from '../../service/subject-group.service';
-import { SubjectsService } from '../../service/subject.service';
-import { SubjectGroupResponse, SubjectSummaryResponse } from '../../models/models.d';
+import { SubjectsService, AuthorCandidate } from '../../service/subject.service';
+import { AuthService } from '../../service/auth.service';
+import { SubjectGroupResponse, SubjectAuthor, SubjectSummaryResponse } from '../../models/models.d';
 
 interface SubjectGroupCard {
   id: string;
   name: string;
   subjects: SubjectSummaryResponse[];
+  owners: SubjectAuthor[];
 }
 
 @Component({
@@ -32,10 +34,26 @@ export class SubjectGroupsListComponent implements OnInit {
   newGroupName = '';
   adding = false;
 
+  // Owner management
+  groupOwners: SubjectAuthor[] = [];
+  showOwnerPopup = false;
+  ownerCandidates: AuthorCandidate[] = [];
+  ownerCandidatesLoading = false;
+  ownerSearch = '';
+
   constructor(
     private subjectGroupService: SubjectGroupService,
-    private subjectsService: SubjectsService
+    private subjectsService: SubjectsService,
+    private authService: AuthService
   ) {}
+
+  get isAdmin(): boolean {
+    return this.authService.getUser()?.role === 'ADMIN';
+  }
+
+  avatarFallback(username: string): string {
+    return username?.charAt(0).toUpperCase() ?? '?';
+  }
 
   ngOnInit() {
     this.load();
@@ -55,7 +73,8 @@ export class SubjectGroupsListComponent implements OnInit {
       this.groups = details.map(d => ({
         id: d.id,
         name: d.name,
-        subjects: this.allSubjects.filter(s => d.subjects.includes(s.id))
+        subjects: this.allSubjects.filter(s => d.subjects.includes(s.id)),
+        owners: d.owners ?? []
       }));
     });
   }
@@ -77,7 +96,9 @@ export class SubjectGroupsListComponent implements OnInit {
       this.editingGroup = detail;
       this.editName = detail.name;
       this.editSubjectIds = [...detail.subjects];
+      this.groupOwners = [...(detail.owners ?? [])];
       this.subjectSearch = '';
+      this.showOwnerPopup = false;
       this.showEditModal = true;
     });
   }
@@ -111,6 +132,7 @@ export class SubjectGroupsListComponent implements OnInit {
   cancelEdit() {
     this.showEditModal = false;
     this.editingGroup = null;
+    this.showOwnerPopup = false;
   }
 
   delete(event: Event, id: string) {
@@ -145,5 +167,45 @@ export class SubjectGroupsListComponent implements OnInit {
 
   stopPropagation(event: Event) {
     event.stopPropagation();
+  }
+
+  // ── Owner management ──
+
+  openOwnerPopup() {
+    if (!this.editingGroup) return;
+    this.showOwnerPopup = true;
+    this.ownerSearch = '';
+    this.ownerCandidatesLoading = true;
+    this.subjectGroupService.getOwnerCandidates(this.editingGroup.id).subscribe({
+      next: (list) => { this.ownerCandidates = list; this.ownerCandidatesLoading = false; },
+      error: () => { this.ownerCandidatesLoading = false; }
+    });
+  }
+
+  closeOwnerPopup() {
+    this.showOwnerPopup = false;
+  }
+
+  get filteredOwnerCandidates(): AuthorCandidate[] {
+    const q = this.ownerSearch.trim().toLowerCase();
+    if (!q) return this.ownerCandidates;
+    return this.ownerCandidates.filter(c => c.username.toLowerCase().includes(q));
+  }
+
+  selectOwner(candidate: AuthorCandidate) {
+    if (!this.editingGroup) return;
+    this.subjectGroupService.addOwner(this.editingGroup.id, candidate.id).subscribe({
+      next: (group) => {
+        this.groupOwners = group.owners ?? [];
+        this.ownerCandidates = this.ownerCandidates.filter(c => c.id !== candidate.id);
+      }
+    });
+  }
+
+  removeOwner(userId: string) {
+    if (!this.editingGroup) return;
+    this.subjectGroupService.removeOwner(this.editingGroup.id, userId).subscribe({
+      next: (group) => { this.groupOwners = group.owners ?? []; }
+    });
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SubjectGroupRequest, SubjectGroupResponse, SubjectGroupsResponse } from '../models/models.d';
+import { AuthorCandidate } from './subject.service';
 import { Environment } from "../../../environment";
 
 @Injectable({ providedIn: 'root' })
@@ -29,6 +30,18 @@ export class SubjectGroupService {
 
   deleteSubjectGroup(id: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
+  getOwnerCandidates(groupId: string): Observable<AuthorCandidate[]> {
+    return this.http.get<AuthorCandidate[]>(`${this.baseUrl}/${groupId}/owner-candidates`);
+  }
+
+  addOwner(groupId: string, userId: string): Observable<SubjectGroupResponse> {
+    return this.http.put<SubjectGroupResponse>(`${this.baseUrl}/${groupId}/owners/${userId}`, {});
+  }
+
+  removeOwner(groupId: string, userId: string): Observable<SubjectGroupResponse> {
+    return this.http.delete<SubjectGroupResponse>(`${this.baseUrl}/${groupId}/owners/${userId}`);
   }
 
 }

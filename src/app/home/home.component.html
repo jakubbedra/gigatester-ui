@@ -24,11 +24,11 @@
           <span class="lock-icon" *ngIf="!canAccessGroup(group)">🔒</span>
           <div class="card-count" *ngIf="canAccessGroup(group)">{{ group.subjects.length }}</div>
 
-          <!-- Admin: requests badge -->
-          <button class="requests-btn" *ngIf="isAdmin"
+          <!-- Admin / group owner: members button -->
+          <button class="requests-btn" *ngIf="canManageRequests(group)"
                   (click)="openRequestsModal($event, group)"
-                  [title]="'HOME.REQUESTS' | translate">
-            {{ 'HOME.REQUESTS' | translate }}
+                  [title]="'HOME.MEMBERS' | translate">
+            {{ 'HOME.MEMBERS' | translate }}
           </button>
 
           <!-- Moderator/Admin: edit context menu -->
@@ -38,6 +38,15 @@
               <button (click)="openEdit($event, group)">{{ 'SIDEBAR.EDIT' | translate }}</button>
               <button class="danger" (click)="delete($event, group.id)">{{ 'SIDEBAR.DELETE' | translate }}</button>
             </div>
+          </div>
+        </div>
+
+        <!-- Owners row -->
+        <div class="owners-row" *ngIf="group.owners.length > 0">
+          <div class="owner-chip" *ngFor="let owner of group.owners">
+            <img *ngIf="owner.profilePictureUrl" [src]="owner.profilePictureUrl" class="owner-avatar" alt="avatar" />
+            <div *ngIf="!owner.profilePictureUrl" class="owner-avatar-fallback">{{ avatarFallback(owner.username) }}</div>
+            <span class="owner-name">{{ owner.username }}</span>
           </div>
         </div>
 
@@ -89,10 +98,25 @@
 
 </div>
 
-<!-- Access Requests Modal -->
+<!-- Members Modal -->
 <div class="modal-overlay" *ngIf="showRequestsModal" (click)="closeRequestsModal()">
   <div class="modal" (click)="stopPropagation($event)">
-    <h2 class="modal-title">{{ 'HOME.ACCESS_REQUESTS' | translate }} — {{ requestsGroup?.name }}</h2>
+    <h2 class="modal-title">{{ 'HOME.MEMBERS' | translate }} — {{ requestsGroup?.name }}</h2>
+
+    <!-- Owners section (admin only) -->
+    <ng-container *ngIf="isAdmin">
+      <div class="modal-section-label">{{ 'TESTS_LIST.AUTHORS' | translate }}</div>
+      <div class="owner-chips-edit" *ngIf="groupOwners.length > 0">
+        <div class="owner-chip-edit" *ngFor="let owner of groupOwners">
+          <img *ngIf="owner.profilePictureUrl" [src]="owner.profilePictureUrl" class="owner-av" alt="avatar" />
+          <div *ngIf="!owner.profilePictureUrl" class="owner-av-fallback">{{ avatarFallback(owner.username) }}</div>
+          <span class="owner-chip-name">{{ owner.username }}</span>
+          <button class="owner-chip-remove" (click)="removeOwner(owner.id)">✕</button>
+        </div>
+      </div>
+      <p class="no-requests" *ngIf="groupOwners.length === 0">{{ 'TESTS_LIST.NO_AUTHORS' | translate }}</p>
+      <button class="btn-add-owner" (click)="openOwnerPopup()">+ {{ 'TESTS_LIST.ADD_AUTHOR' | translate }}</button>
+    </ng-container>
 
     <div class="loading-state" *ngIf="requestsLoading">
       <div class="spinner"></div>
@@ -115,7 +139,7 @@
         <p class="no-requests">{{ 'HOME.NO_PENDING' | translate }}</p>
       </ng-template>
 
-      <div class="modal-section-label" style="margin-top: 18px;">{{ 'HOME.MEMBERS' | translate }}</div>
+      <div class="modal-section-label">{{ 'HOME.MEMBERS' | translate }}</div>
       <ng-container *ngIf="approvedMembers().length > 0; else noMembers">
         <div class="requests-list">
           <div class="request-row" *ngFor="let req of approvedMembers()">
@@ -176,6 +200,27 @@
         {{ saving ? ('SUBJECT_GROUPS.SAVING' | translate) : ('SUBJECT_GROUPS.SAVE' | translate) }}
       </button>
     </div>
+  </div>
+</div>
+
+<!-- Owner picker popup -->
+<div class="owner-popup-overlay" *ngIf="showOwnerPopup" (click)="closeOwnerPopup()">
+  <div class="owner-popup" (click)="stopPropagation($event)">
+    <div class="owner-popup-header">
+      <span class="owner-popup-title">{{ 'TESTS_LIST.ADD_AUTHOR' | translate }}</span>
+      <button class="owner-popup-close" (click)="closeOwnerPopup()">✕</button>
+    </div>
+    <input class="owner-popup-search" [(ngModel)]="ownerSearch" placeholder="Search by username…" autofocus />
+    <div class="owner-popup-list" *ngIf="!ownerCandidatesLoading">
+      <div class="owner-candidate" *ngFor="let c of filteredOwnerCandidates" (click)="selectOwner(c)">
+        <img *ngIf="c.profilePictureUrl" [src]="c.profilePictureUrl" class="candidate-av" alt="avatar" />
+        <div *ngIf="!c.profilePictureUrl" class="candidate-av-fallback">{{ avatarFallback(c.username) }}</div>
+        <span class="candidate-name">{{ c.username }}</span>
+        <span class="candidate-role">{{ c.role }}</span>
+      </div>
+      <p class="candidate-empty" *ngIf="filteredOwnerCandidates.length === 0">No users found.</p>
+    </div>
+    <div class="owner-popup-loading" *ngIf="ownerCandidatesLoading">Loading…</div>
   </div>
 </div>
 

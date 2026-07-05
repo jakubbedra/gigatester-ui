@@ -179,9 +179,16 @@
           <div class="tag-row" *ngFor="let t of statsTagStats">
             <span class="tag-key">{{ t.tagKey }}</span>
             <div class="tag-bar-bg">
-              <div class="tag-bar-fill" [style.width.%]="t.accuracy"></div>
+              <div class="tag-bar-fill"
+                   [class.tag-fill-high]="t.accuracy >= 70"
+                   [class.tag-fill-mid]="t.accuracy >= 40 && t.accuracy < 70"
+                   [class.tag-fill-low]="t.accuracy < 40"
+                   [style.width.%]="t.accuracy"></div>
             </div>
-            <span class="tag-pct">{{ t.accuracy | number:'1.0-1' }}%</span>
+            <span class="tag-pct"
+                  [class.tag-pct-high]="t.accuracy >= 70"
+                  [class.tag-pct-mid]="t.accuracy >= 40 && t.accuracy < 70"
+                  [class.tag-pct-low]="t.accuracy < 40">{{ t.accuracy | number:'1.0-1' }}%</span>
             <span class="tag-count">({{ t.timesCorrect }}/{{ t.timesAnswered }})</span>
           </div>
         </div>

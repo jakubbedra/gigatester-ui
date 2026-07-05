@@ -6,12 +6,14 @@ import { SubjectGroupService } from '../service/subject-group.service';
 import { SubjectsService } from '../service/subject.service';
 import { AuthService } from '../service/auth.service';
 import { SubjectGroupAccessService, AccessStatus, AccessRequestResponse } from '../service/subject-group-access.service';
-import { SubjectGroupResponse, SubjectSummaryResponse } from '../models/models.d';
+import { SubjectGroupResponse, SubjectSummaryResponse, SubjectAuthor } from '../models/models.d';
+import { AuthorCandidate } from '../service/subject.service';
 
 interface GroupCard {
   id: string;
   name: string;
   subjects: SubjectSummaryResponse[];
+  owners: SubjectAuthor[];
   accessStatus: AccessStatus | null; // null = no request yet
   pendingRequests?: AccessRequestResponse[];
 }
@@ -38,6 +40,13 @@ export class HomeComponent implements OnInit {
   newGroupName = '';
   adding = false;
 
+  // Owner management (admin only)
+  groupOwners: SubjectAuthor[] = [];
+  showOwnerPopup = false;
+  ownerCandidates: AuthorCandidate[] = [];
+  ownerCandidatesLoading = false;
+  ownerSearch = '';
+
   showRequestsModal = false;
   requestsGroup: GroupCard | null = null;
   requestsLoading = false;
@@ -59,6 +68,19 @@ export class HomeComponent implements OnInit {
 
   get isAdmin(): boolean {
     return this.authService.getUser()?.role === 'ADMIN';
+  }
+
+  isOwnerOf(group: GroupCard): boolean {
+    const userId = this.authService.getUser()?.id;
+    return !!userId && group.owners.some(o => o.id === userId);
+  }
+
+  canManageRequests(group: GroupCard): boolean {
+    return this.isAdmin || this.isOwnerOf(group);
+  }
+
+  avatarFallback(username: string): string {
+    return username?.charAt(0).toUpperCase() ?? '?';
   }
 
   canAccessGroup(group: GroupCard): boolean {
@@ -94,6 +116,7 @@ export class HomeComponent implements OnInit {
         id: d.id,
         name: d.name,
         subjects: this.allSubjects.filter(s => d.subjects.includes(s.id)),
+        owners: d.owners ?? [],
         accessStatus: statusMap.get(d.id) ?? null
       }));
       this.loading = false;
@@ -120,6 +143,8 @@ export class HomeComponent implements OnInit {
     event.stopPropagation();
     this.openMenuId = null;
     this.requestsGroup = group;
+    this.groupOwners = [...group.owners];
+    this.showOwnerPopup = false;
     this.requestsLoading = true;
     this.showRequestsModal = true;
     this.accessService.getAccessRequests(group.id).subscribe(reqs => {
@@ -164,6 +189,7 @@ export class HomeComponent implements OnInit {
   closeRequestsModal() {
     this.showRequestsModal = false;
     this.requestsGroup = null;
+    this.showOwnerPopup = false;
   }
 
   toggleMenu(event: Event, id: string) {
@@ -213,6 +239,45 @@ export class HomeComponent implements OnInit {
   cancelEdit() {
     this.showEditModal = false;
     this.editingGroup = null;
+  }
+
+  openOwnerPopup() {
+    if (!this.requestsGroup) return;
+    this.showOwnerPopup = true;
+    this.ownerSearch = '';
+    this.ownerCandidatesLoading = true;
+    this.subjectGroupService.getOwnerCandidates(this.requestsGroup.id).subscribe({
+      next: (list) => { this.ownerCandidates = list; this.ownerCandidatesLoading = false; },
+      error: () => { this.ownerCandidatesLoading = false; }
+    });
+  }
+
+  closeOwnerPopup() { this.showOwnerPopup = false; }
+
+  get filteredOwnerCandidates(): AuthorCandidate[] {
+    const q = this.ownerSearch.trim().toLowerCase();
+    return !q ? this.ownerCandidates : this.ownerCandidates.filter(c => c.username.toLowerCase().includes(q));
+  }
+
+  selectOwner(candidate: AuthorCandidate) {
+    if (!this.requestsGroup) return;
+    this.subjectGroupService.addOwner(this.requestsGroup.id, candidate.id).subscribe({
+      next: (group) => {
+        this.groupOwners = group.owners ?? [];
+        this.requestsGroup!.owners = this.groupOwners;
+        this.ownerCandidates = this.ownerCandidates.filter(c => c.id !== candidate.id);
+      }
+    });
+  }
+
+  removeOwner(userId: string) {
+    if (!this.requestsGroup) return;
+    this.subjectGroupService.removeOwner(this.requestsGroup.id, userId).subscribe({
+      next: (group) => {
+        this.groupOwners = group.owners ?? [];
+        this.requestsGroup!.owners = this.groupOwners;
+      }
+    });
   }
 
   delete(event: Event, id: string) {
