@@ -1,0 +1,78 @@
+<div class="tr-wrapper">
+
+  <!-- Loading -->
+  <div class="tr-loading" *ngIf="phase === 'loading'">
+    <div class="tr-spinner"></div>
+    <span>Loading…</span>
+  </div>
+
+  <!-- Error -->
+  <div class="tr-error" *ngIf="phase === 'error'">
+    <p>{{ errorMsg }}</p>
+    <button class="tr-btn primary" (click)="backToView()">Back</button>
+  </div>
+
+  <!-- Question / Feedback -->
+  <div class="tr-card" *ngIf="phase === 'question' || phase === 'feedback'">
+
+    <!-- Progress bar -->
+    <div class="tr-progress-track">
+      <div class="tr-progress-fill" [style.width.%]="progress"></div>
+    </div>
+    <div class="tr-counter">{{ currentIndex + 1 }} / {{ terms.length }}</div>
+
+    <!-- Clue -->
+    <div class="tr-clue-label">Clue</div>
+    <div class="tr-clue" [innerHTML]="current.clue"></div>
+
+    <!-- Answer input (shown during question phase) -->
+    <ng-container *ngIf="phase === 'question'">
+      <input
+        #answerInput
+        class="tr-input"
+        type="text"
+        [(ngModel)]="answer"
+        placeholder="Type the term…"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+      />
+      <button class="tr-btn primary" [disabled]="!answer.trim()" (click)="submit()">Submit</button>
+    </ng-container>
+
+    <!-- Feedback (shown after submit) -->
+    <ng-container *ngIf="phase === 'feedback'">
+      <div class="tr-feedback" [class.correct]="lastCorrect" [class.wrong]="!lastCorrect">
+        <span class="tr-feedback-icon">{{ lastCorrect ? '✓' : '✗' }}</span>
+        <span class="tr-feedback-text" *ngIf="lastCorrect">Correct!</span>
+        <span class="tr-feedback-text" *ngIf="!lastCorrect">
+          Wrong — the answer was <strong>{{ current.term }}</strong>
+        </span>
+      </div>
+      <button class="tr-btn primary" (click)="next()">
+        {{ currentIndex + 1 < terms.length ? 'Next →' : 'See Results' }}
+      </button>
+    </ng-container>
+
+  </div>
+
+  <!-- Results -->
+  <div class="tr-card tr-results" *ngIf="phase === 'results'">
+    <div class="tr-results-icon">{{ wrongTermIds.length === 0 ? '🏆' : (correctCount > wrongTermIds.length ? '👍' : '📚') }}</div>
+    <div class="tr-results-score">{{ correctCount }} / {{ terms.length }}</div>
+    <div class="tr-results-label">correct</div>
+
+    <div class="tr-results-actions">
+      <button class="tr-btn primary" (click)="retryAll()">New run (all words)</button>
+      <button class="tr-btn secondary" *ngIf="wrongTermIds.length > 0" (click)="retryWrong()">
+        Retry wrong ({{ wrongTermIds.length }})
+      </button>
+      <button class="tr-btn accent" *ngIf="wrongTermIds.length > 0" (click)="generateCrossword()">
+        Generate crossword from wrong answers
+      </button>
+      <button class="tr-btn ghost" (click)="backToView()">Back to crossword</button>
+    </div>
+  </div>
+
+</div>

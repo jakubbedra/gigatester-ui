@@ -125,6 +125,7 @@ export interface CrosswordStateRequest {
     numberOfWords: number;
     tagFilterMode?: string;
     tagFilter?: string[];
+    termIdFilter?: string[];
 }
 
 export interface CrosswordLetterRequest {

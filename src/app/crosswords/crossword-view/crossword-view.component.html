@@ -10,6 +10,7 @@
     <div class="mode-tabs">
       <button type="button" class="mode-tab" [class.active]="mode === 'singleplayer'" (click)="setMode('singleplayer')">Singleplayer</button>
       <button type="button" class="mode-tab" [class.active]="mode === 'multiplayer'" (click)="setMode('multiplayer')">Multiplayer</button>
+      <button type="button" class="mode-tab" [class.active]="mode === 'testrun'" (click)="setMode('testrun')">Test Run</button>
     </div>
 
     <!-- ══ SINGLEPLAYER ══ -->
@@ -84,6 +85,29 @@
       </button>
 
     </form>
+
+    <!-- Generate from wrong answers -->
+    <div class="tr-from-run" *ngIf="latestRun && latestRun.wrongTermCount > 0 && !generating">
+      <div class="tr-from-run-header">
+        <span class="tr-from-run-tag">Last test run</span>
+        <span class="tr-from-run-score">{{ latestRun.totalTerms - latestRun.wrongTermCount }}/{{ latestRun.totalTerms }} correct</span>
+        <span class="tr-from-run-wrong">{{ latestRun.wrongTermCount }} wrong</span>
+      </div>
+      <div class="tr-from-run-body">
+        <div class="tr-word-count-field">
+          <span class="tr-word-count-label">Words to include</span>
+          <div class="tr-word-count-controls">
+            <input class="tr-word-count-input" type="number" [(ngModel)]="wrongWordCount"
+                   min="1" [max]="latestRun.wrongTermCount" />
+            <span class="tr-word-count-max">/ {{ latestRun.wrongTermCount }}</span>
+          </div>
+        </div>
+        <button type="button" class="tr-crossword-btn" (click)="generateFromWrongAnswers()"
+                [disabled]="wrongWordCount < 1 || wrongWordCount > latestRun.wrongTermCount">
+          Generate crossword from wrong answers
+        </button>
+      </div>
+    </div>
 
     </ng-container><!-- end singleplayer -->
 
@@ -160,6 +184,56 @@
       </div>
 
     </ng-container><!-- end multiplayer -->
+
+    <!-- ══ TEST RUN ══ -->
+    <ng-container *ngIf="mode === 'testrun'">
+
+      <div class="tr-section" *ngIf="latestRunLoading">
+        <span class="tr-loading-text">Loading…</span>
+      </div>
+
+      <div class="tr-section" *ngIf="!latestRunLoading">
+
+        <!-- Previous run summary -->
+        <div class="tr-prev-run" *ngIf="latestRun">
+          <div class="tr-prev-label">Last run</div>
+          <div class="tr-prev-score">{{ latestRun.totalTerms - latestRun.wrongTermCount }} / {{ latestRun.totalTerms }} correct</div>
+          <div class="tr-prev-wrong" *ngIf="latestRun.wrongTermCount > 0">
+            {{ latestRun.wrongTermCount }} wrong answer{{ latestRun.wrongTermCount === 1 ? '' : 's' }}
+          </div>
+          <div class="tr-prev-perfect" *ngIf="latestRun.wrongTermCount === 0">Perfect score!</div>
+        </div>
+
+        <!-- Generating crossword from wrong answers -->
+        <div class="generating-block" *ngIf="generating">
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" [style.width.%]="generatingProgress"></div>
+          </div>
+          <div class="generating-footer">
+            <div class="generating-label">Generating crossword…</div>
+            <button type="button" class="cancel-gen-btn" (click)="cancelGeneration()">Cancel</button>
+          </div>
+        </div>
+        <p class="gen-error" *ngIf="generatingError">{{ generatingError }}</p>
+
+        <!-- Actions -->
+        <div class="tr-actions">
+          <button class="start-btn" (click)="startTestRun('ALL')" [disabled]="generating">
+            Start test run (all {{ crossword.terms.length }} words)
+          </button>
+          <button class="tr-retry-btn" *ngIf="latestRun && latestRun.wrongTermCount > 0"
+                  (click)="startTestRun('WRONG_ONLY')" [disabled]="generating">
+            Retry wrong answers ({{ latestRun.wrongTermCount }})
+          </button>
+          <button class="tr-crossword-btn" *ngIf="latestRun && latestRun.wrongTermCount > 0"
+                  (click)="generateFromWrongAnswers()" [disabled]="generating">
+            Generate crossword from wrong answers
+          </button>
+        </div>
+
+      </div>
+
+    </ng-container><!-- end testrun -->
 
   </div>
 </div>

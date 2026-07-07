@@ -5,6 +5,7 @@ import { CrosswordResponse, CrosswordStateResponse, MultiplayerSessionSummaryRes
 import { CrosswordService } from '../../service/crossword.service';
 import { CrosswordStateService } from '../../service/crossword-state.service';
 import { CrosswordMultiplayerService } from '../../service/crossword-multiplayer.service';
+import { CrosswordTestRunService, TestRunResult } from '../../service/crossword-test-run.service';
 import { AuthService } from '../../service/auth.service';
 import { Subscription } from 'rxjs';
 
@@ -26,7 +27,10 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
   selectedTagIds: Set<string> = new Set();
   excludeTags = false;
 
-  mode: 'singleplayer' | 'multiplayer' = 'singleplayer';
+  mode: 'singleplayer' | 'multiplayer' | 'testrun' = 'singleplayer';
+  latestRun: TestRunResult | null = null;
+  latestRunLoading = false;
+  wrongWordCount = 0;
   mySessions: MultiplayerSessionSummaryResponse[] = [];
   mySessionsLoading = false;
   creatingMultiplayer = false;
@@ -51,6 +55,7 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
     private crosswordService: CrosswordService,
     private crosswordStateService: CrosswordStateService,
     private multiplayerService: CrosswordMultiplayerService,
+    private testRunService: CrosswordTestRunService,
     private authService: AuthService
   ) {}
 
@@ -77,11 +82,57 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
     });
   }
 
-  setMode(m: 'singleplayer' | 'multiplayer') {
+  setMode(m: 'singleplayer' | 'multiplayer' | 'testrun') {
     this.mode = m;
     this.newSessionId = null;
     this.multiplayerError = '';
     if (m === 'multiplayer') this.loadMySessions();
+    if (m === 'testrun') this.loadLatestRun();
+  }
+
+  loadLatestRun() {
+    this.latestRunLoading = true;
+    this.testRunService.getLatestRun(this.crosswordId).subscribe({
+      next: (run) => { this.latestRun = run; this.wrongWordCount = run.wrongTermCount; this.latestRunLoading = false; },
+      error: () => { this.latestRun = null; this.latestRunLoading = false; }
+    });
+  }
+
+  startTestRun(mode: 'ALL' | 'WRONG_ONLY') {
+    this.router.navigate(['/crosswords', this.crosswordId, 'test-run'], { queryParams: { mode } });
+  }
+
+  generateFromWrongAnswers() {
+    if (!this.latestRun?.wrongTermIds?.length) return;
+    this.generating = true;
+    this.generatingError = '';
+    this.generatingProgress = 0;
+    this.startFakeProgress();
+    this.crosswordStateService.startGeneration({
+      crosswordId: this.crosswordId,
+      numberOfWords: this.wrongWordCount,
+      termIdFilter: this.latestRun.wrongTermIds
+    }).subscribe({
+      next: ({ jobId }) => {
+        this.currentJobId = jobId;
+        this.startTimeout();
+        this.pollSub = this.crosswordStateService.pollJob(jobId).subscribe({
+          next: (result) => {
+            if (result.status === 'CANCELLED') { this.stopGenerating(); return; }
+            if (result.status === 'DONE') {
+              this.generatingProgress = 100;
+              this.stopPolling();
+              setTimeout(() => this.router.navigate(['/crosswords/states', result.stateId], { queryParams: { cid: this.crosswordId } }), 300);
+            } else {
+              this.generatingError = result.error || 'Could not generate. Try again.';
+              this.stopGenerating();
+            }
+          },
+          error: () => { this.generatingError = 'Lost connection. Try again.'; this.stopGenerating(); }
+        });
+      },
+      error: () => { this.generatingError = 'Failed to start generation.'; this.stopGenerating(); }
+    });
   }
 
   createMultiplayerRoom() {
@@ -132,6 +183,8 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
           ]
         });
       });
+
+      this.loadLatestRun();
 
       this.crosswordStateService.getUserCrosswordState(this.crosswordId).subscribe({
         next: (state) => {
