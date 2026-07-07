@@ -31,6 +31,10 @@ export class CrosswordsListComponent implements OnInit {
     });
   }
 
+  view(id: string) {
+    this.router.navigate(['/crosswords', id]);
+  }
+
   edit(id: string) {
     this.router.navigate(['/admin/crosswords', id, 'edit']);
   }
