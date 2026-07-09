@@ -40,6 +40,11 @@ export class HomeComponent implements OnInit {
   newGroupName = '';
   adding = false;
 
+  // Confirm dialog
+  showConfirm = false;
+  confirmMessage = '';
+  private confirmCallback: (() => void) | null = null;
+
   // Owner management (admin only)
   groupOwners: SubjectAuthor[] = [];
   showOwnerPopup = false;
@@ -283,9 +288,26 @@ export class HomeComponent implements OnInit {
   delete(event: Event, id: string) {
     event.stopPropagation();
     this.openMenuId = null;
-    if (confirm('Are you sure you want to delete this subject group?')) {
+    this.openConfirm('Are you sure you want to delete this subject group?', () => {
       this.subjectGroupService.deleteSubjectGroup(id).subscribe(() => this.load());
-    }
+    });
+  }
+
+  openConfirm(message: string, onConfirm: () => void) {
+    this.confirmMessage = message;
+    this.confirmCallback = onConfirm;
+    this.showConfirm = true;
+  }
+
+  confirmYes() {
+    this.showConfirm = false;
+    this.confirmCallback?.();
+    this.confirmCallback = null;
+  }
+
+  confirmNo() {
+    this.showConfirm = false;
+    this.confirmCallback = null;
   }
 
   openAdd() {

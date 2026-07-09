@@ -71,6 +71,11 @@ export class TestEditComponent implements OnInit {
   addType: 'CLOSED' | 'OPEN' | 'STATEMENT' = 'CLOSED';
   addingQuestion = false;
 
+  // Confirm dialog
+  confirmMessage = '';
+  private confirmCallback: (() => void) | null = null;
+  showConfirm = false;
+
   readonly gradingRuleOptions: GradingRule[] = [
     GradingRule.IGNORE_CASE,
     GradingRule.IGNORE_PUNCTUATION,
@@ -123,10 +128,27 @@ export class TestEditComponent implements OnInit {
 
   removeQuestion(questionId: string) {
     if (!this.test) return;
-    if (confirm('Remove this question from the test?')) {
-      this.test.questions = this.test.questions.filter(id => id !== questionId);
+    this.openConfirm('Remove this question from the test?', () => {
+      this.test!.questions = this.test!.questions.filter(id => id !== questionId);
       this.questions = this.questions.filter(q => q.id !== questionId);
-    }
+    });
+  }
+
+  openConfirm(message: string, onConfirm: () => void) {
+    this.confirmMessage = message;
+    this.confirmCallback = onConfirm;
+    this.showConfirm = true;
+  }
+
+  confirmYes() {
+    this.showConfirm = false;
+    this.confirmCallback?.();
+    this.confirmCallback = null;
+  }
+
+  confirmNo() {
+    this.showConfirm = false;
+    this.confirmCallback = null;
   }
 
   get canModify(): boolean {
@@ -304,7 +326,7 @@ export class TestEditComponent implements OnInit {
     this.addingQuestion = true;
     this.questionsService.addQuestion(this.addDraft).subscribe((created: any) => {
       const newId = created?.id ?? created;
-      this.test!.questions = [...this.test!.questions, newId];
+      this.test!.questions = [newId, ...this.test!.questions];
       this.testService.updateTest(this.test!.id, {
         name: this.testName,
         questions: this.test!.questions,
@@ -313,9 +335,30 @@ export class TestEditComponent implements OnInit {
         passingPercentage: this.test!.passingPercentage
       }).subscribe(() => {
         this.questionsService.getQuestion(newId).subscribe(q => {
-          this.questions = [...this.questions, { ...q, id: newId } as QuestionDtoUnion];
+          this.questions = [{ ...q, id: newId } as QuestionDtoUnion, ...this.questions];
           this.addingQuestion = false;
           this.showAddModal = false;
+        });
+      });
+    });
+  }
+
+  duplicateQuestion(q: QuestionDtoUnion) {
+    if (!this.test) return;
+    const draft = JSON.parse(JSON.stringify(q));
+    delete draft.id;
+    this.questionsService.addQuestion(draft).subscribe((created: any) => {
+      const newId = created?.id ?? created;
+      this.test!.questions = [newId, ...this.test!.questions];
+      this.testService.updateTest(this.test!.id, {
+        name: this.testName,
+        questions: this.test!.questions,
+        closedQuestionsCount: this.test!.closedQuestionsCount,
+        openQuestionsCount: this.test!.openQuestionsCount,
+        passingPercentage: this.test!.passingPercentage
+      }).subscribe(() => {
+        this.questionsService.getQuestion(newId).subscribe(fetched => {
+          this.questions = [{ ...fetched, id: newId } as QuestionDtoUnion, ...this.questions];
         });
       });
     });
@@ -364,6 +407,22 @@ export class TestEditComponent implements OnInit {
 
   removeStatement(i: number, draft = this.editDraft) {
     draft.statements.splice(i, 1);
+  }
+
+  // ── Lazy image loading ────────────────────────────────────────────────────
+
+  private imagesLoaded = new Set<string>();
+
+  hasImages(text: string | null | undefined): boolean {
+    return /<img/i.test(text ?? '');
+  }
+
+  isImgLoaded(id: string): boolean {
+    return this.imagesLoaded.has(id);
+  }
+
+  loadImages(id: string) {
+    this.imagesLoaded.add(id);
   }
 
   // ── Type casts ────────────────────────────────────────────────────────────

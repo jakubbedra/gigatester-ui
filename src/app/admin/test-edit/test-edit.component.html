@@ -89,8 +89,14 @@
         </div>
 
         <!-- Question text -->
-        <div class="question-text html-content" *ngIf="isHtml(q.content?.type)"
-             [innerHTML]="safe(q.content.text)"></div>
+        <ng-container *ngIf="isHtml(q.content?.type)">
+          <div class="question-text html-content"
+               *ngIf="!hasImages(q.content.text) || isImgLoaded(q.id)"
+               [innerHTML]="safe(q.content.text)"></div>
+          <div class="img-placeholder" *ngIf="hasImages(q.content.text) && !isImgLoaded(q.id)">
+            <button class="btn-load-img" (click)="loadImages(q.id)">Load image</button>
+          </div>
+        </ng-container>
         <div class="question-text" *ngIf="!isHtml(q.content?.type)">{{ q.content?.text }}</div>
 
         <!-- CLOSED details -->
@@ -146,6 +152,7 @@
 
       <div class="row-actions">
         <button class="btn-edit" (click)="openEdit(q)" [title]="'TEST_EDIT.EDIT_QUESTION' | translate">✎</button>
+        <button class="btn-duplicate" (click)="duplicateQuestion(q)" title="Duplicate question">⧉</button>
         <button class="btn-remove" (click)="removeQuestion(q.id)" title="Remove from test">✕</button>
       </div>
     </div>
@@ -405,6 +412,21 @@
       <button class="btn-primary" (click)="saveQuestionEdit()" [disabled]="savingQuestion">
         {{ savingQuestion ? ('TEST_EDIT.SAVE' | translate) : ('TEST_EDIT.SAVE_QUESTION' | translate) }}
       </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     CONFIRM DIALOG
+     ══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay confirm-overlay" *ngIf="showConfirm" (click)="confirmNo()">
+  <div class="confirm-dialog" (click)="$event.stopPropagation()">
+    <div class="confirm-icon">⚠</div>
+    <p class="confirm-message">{{ confirmMessage }}</p>
+    <div class="confirm-actions">
+      <button class="btn-secondary" (click)="confirmNo()">Cancel</button>
+      <button class="btn-danger" (click)="confirmYes()">Remove</button>
     </div>
   </div>
 </div>

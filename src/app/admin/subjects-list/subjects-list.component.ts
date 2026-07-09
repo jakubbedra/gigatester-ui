@@ -53,6 +53,11 @@ export class SubjectsListComponent implements OnInit {
   newSubjectName = '';
   adding = false;
 
+  // Confirm dialog
+  showConfirm = false;
+  confirmMessage = '';
+  private confirmCallback: (() => void) | null = null;
+
   constructor(
     private subjectsService: SubjectsService,
     private testService: TestService,
@@ -161,9 +166,26 @@ export class SubjectsListComponent implements OnInit {
   delete(event: Event, id: string) {
     event.stopPropagation();
     this.openMenuId = null;
-    if (confirm('Are you sure you want to delete this subject?')) {
+    this.openConfirm('Are you sure you want to delete this subject?', () => {
       this.subjectsService.deleteSubject(id).subscribe(() => this.load());
-    }
+    });
+  }
+
+  openConfirm(message: string, onConfirm: () => void) {
+    this.confirmMessage = message;
+    this.confirmCallback = onConfirm;
+    this.showConfirm = true;
+  }
+
+  confirmYes() {
+    this.showConfirm = false;
+    this.confirmCallback?.();
+    this.confirmCallback = null;
+  }
+
+  confirmNo() {
+    this.showConfirm = false;
+    this.confirmCallback = null;
   }
 
   openAdd() {

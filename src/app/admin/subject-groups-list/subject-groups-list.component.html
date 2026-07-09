@@ -145,3 +145,15 @@
     </div>
   </div>
 </div>
+
+<!-- Confirm dialog -->
+<div class="modal-overlay confirm-overlay" *ngIf="showConfirm" (click)="confirmNo()">
+  <div class="confirm-dialog" (click)="$event.stopPropagation()">
+    <div class="confirm-icon">⚠</div>
+    <p class="confirm-message">{{ confirmMessage }}</p>
+    <div class="confirm-actions">
+      <button class="btn-secondary" (click)="confirmNo()">Cancel</button>
+      <button class="btn-danger" (click)="confirmYes()">Delete</button>
+    </div>
+  </div>
+</div>
