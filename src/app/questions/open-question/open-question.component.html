@@ -27,22 +27,53 @@
         </button>
       </div>
 
-      <textarea
+      <!-- Single answer -->
+      <textarea *ngIf="!isMultiple"
         class="user-text"
         [(ngModel)]="text"
         (ngModelChange)="emitState()"
         [disabled]="locked"
         [placeholder]="'OPEN_QUESTION.PLACEHOLDER' | translate"
       ></textarea>
+
+      <!-- Multiple required answers -->
+      <div *ngIf="isMultiple" class="multi-inputs">
+        <div class="multi-input-row" *ngFor="let _ of multiTexts; let i = index; trackBy: trackByIndex">
+          <span class="multi-index">{{ isOrdered ? i + 1 : '' }}</span>
+          <textarea
+            class="user-text multi-text"
+            [(ngModel)]="multiTexts[i]"
+            (ngModelChange)="onMultiTextChange()"
+            [disabled]="locked"
+            [placeholder]="'OPEN_QUESTION.PLACEHOLDER' | translate"
+            rows="2"
+          ></textarea>
+        </div>
+      </div>
     </div>
 
     <!-- RIGHT -->
     <div class="pane suggested-pane" [class.visible]="locked">
       <div class="pane-title">{{ 'OPEN_QUESTION.SUGGESTED_ANSWER' | translate }}</div>
 
-      <div class="suggested-box">
+      <div class="suggested-box" *ngIf="!isMultiple">
         <div [innerHTML]="suggestedAnswer | latex"></div>
       </div>
+
+      <ng-container *ngIf="isMultiple">
+        <div class="multi-input-row" style="align-items:flex-start">
+          <span class="multi-index">{{ isOrdered ? 1 : '' }}</span>
+          <div class="suggested-box" style="flex:1; min-height:unset">
+            <div [innerHTML]="suggestedAnswer | latex"></div>
+          </div>
+        </div>
+        <div class="multi-input-row" *ngFor="let v of question.answerVariations; let i = index" style="align-items:flex-start">
+          <span class="multi-index">{{ isOrdered ? i + 2 : '' }}</span>
+          <div class="suggested-box" style="flex:1; min-height:unset">
+            <div [innerHTML]="v.text | latex"></div>
+          </div>
+        </div>
+      </ng-container>
     </div>
 
   </div>

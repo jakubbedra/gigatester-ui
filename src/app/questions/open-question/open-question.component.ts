@@ -26,14 +26,38 @@ export class OpenQuestionComponent implements OnInit, OnChanges {
   @Output() answerChange = new EventEmitter<OpenQuestionStateRequest>();
 
   text = '';
+  multiTexts: string[] = [];
   scoredPoints: number = 1.0;
   locked = false;
+
+  get isMultiple(): boolean {
+    return !!this.question?.multipleAnswers;
+  }
+
+  get isOrdered(): boolean {
+    return !!this.question?.orderedAnswers;
+  }
+
+  get inputCount(): number {
+    if (!this.question) return 1;
+    return 1 + (this.question.answerVariations?.length ?? 0);
+  }
+
+  private initMultiTexts(raw: string) {
+    const parts = raw ? raw.split('\n') : [];
+    this.multiTexts = Array.from({ length: this.inputCount }, (_, i) => parts[i] ?? '');
+  }
+
+  private joinMultiTexts(): string {
+    return this.multiTexts.join('\n');
+  }
 
   ngOnInit() {
     if (this.state) {
       this.text = this.state.givenAnswer ?? '';
       this.scoredPoints = this.state.score ?? 0.0;
     }
+    if (this.isMultiple) this.initMultiTexts(this.text);
     this.locked = this.forceLocked || !!this.state?.answered;
     this.emitState();
   }
@@ -42,6 +66,7 @@ export class OpenQuestionComponent implements OnInit, OnChanges {
     if (changes['question'] || changes['gradingEnabled'] || changes['forceLocked']) {
       this.text = this.state?.givenAnswer ?? '';
       this.scoredPoints = this.state?.score ?? 0.0;
+      if (this.isMultiple) this.initMultiTexts(this.text);
       this.locked = this.forceLocked || (this.state?.answered ?? false);
       this.emitState();
       return;
@@ -50,9 +75,17 @@ export class OpenQuestionComponent implements OnInit, OnChanges {
     if (changes['state'] && this.state) {
       this.text = this.state.givenAnswer ?? '';
       this.scoredPoints = this.state.score ?? 0.0;
+      if (this.isMultiple) this.initMultiTexts(this.text);
       this.locked = this.forceLocked || this.state.answered;
       this.emitState();
     }
+  }
+
+  trackByIndex(i: number): number { return i; }
+
+  onMultiTextChange() {
+    this.text = this.joinMultiTexts();
+    this.emitState();
   }
 
   emitState() {

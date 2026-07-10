@@ -22,6 +22,8 @@ export interface OpenQuestionDto extends QuestionDto {
     answerVariations: QuestionContentDto[];
     gradingRules: GradingRule[];
     points: number;
+    multipleAnswers?: boolean;
+    orderedAnswers?: boolean;
 }
 
 export interface QuestionContentDto {

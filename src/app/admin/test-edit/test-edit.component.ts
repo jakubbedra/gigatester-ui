@@ -315,7 +315,7 @@ export class TestEditComponent implements OnInit {
       case 'CLOSED':
         return { ...base, multipleChoice: false, answers: [] };
       case 'OPEN':
-        return { ...base, answer: { type: 'TEXT', text: '' }, answerVariations: [], gradingRules: [] };
+        return { ...base, answer: { type: 'TEXT', text: '' }, answerVariations: [], gradingRules: [], multipleAnswers: false, orderedAnswers: false };
       case 'STATEMENT':
         return { ...base, statements: [] };
     }

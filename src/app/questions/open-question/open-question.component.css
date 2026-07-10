@@ -236,6 +236,41 @@
   line-height: 1.5;
 }
 
+/* multiple required answers */
+.multi-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 auto;
+}
+
+.multi-input-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.multi-index {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(123,109,245,0.15);
+  border: 1px solid rgba(123,109,245,0.3);
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  color: #9d8ff5;
+}
+
+.multi-text {
+  flex: 1;
+  min-height: 60px;
+}
+
 /* scrollbars like your site */
 .user-text::-webkit-scrollbar,
 .suggested-box::-webkit-scrollbar { width: 8px; }

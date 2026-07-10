@@ -257,13 +257,25 @@
 
     <!-- ── OPEN ── -->
     <ng-container *ngIf="editDraft.type === 'OPEN'">
+      <div class="form-group form-group-checkbox">
+        <label>
+          <input type="checkbox" [(ngModel)]="editDraft.multipleAnswers" />
+          Multiple required answers (treat variations as separate required answers)
+        </label>
+      </div>
+      <div class="form-group form-group-checkbox" *ngIf="editDraft.multipleAnswers">
+        <label>
+          <input type="checkbox" [(ngModel)]="editDraft.orderedAnswers" />
+          Order matters (answers must match by position)
+        </label>
+      </div>
       <div class="form-group">
-        <label>{{ 'TEST_EDIT.EXPECTED_ANSWER' | translate }} <span class="type-hint">{{ editDraft.answer?.type }}</span></label>
+        <label>{{ editDraft.multipleAnswers ? 'Answer 1' : ('TEST_EDIT.EXPECTED_ANSWER' | translate) }} <span class="type-hint">{{ editDraft.answer?.type }}</span></label>
         <textarea rows="2" [(ngModel)]="editDraft.answer.text" placeholder="Correct answer"></textarea>
       </div>
       <div class="form-group">
         <div class="label-row">
-          <label>{{ 'TEST_EDIT.ANSWER_VARIATIONS' | translate }}</label>
+          <label>{{ editDraft.multipleAnswers ? 'Answers 2, 3, …' : ('TEST_EDIT.ANSWER_VARIATIONS' | translate) }}</label>
           <button class="btn-add-item" (click)="addVariation()">+ {{ 'TEST_EDIT.ADD' | translate }}</button>
         </div>
         <div class="variations-edit">
@@ -515,9 +527,21 @@
 
       <!-- OPEN fields -->
       <ng-container *ngIf="addType === 'OPEN'">
+        <div class="form-group form-group-checkbox">
+          <label>
+            <input type="checkbox" [(ngModel)]="addDraft.multipleAnswers" />
+            Multiple required answers (treat variations as separate required answers)
+          </label>
+        </div>
+        <div class="form-group form-group-checkbox" *ngIf="addDraft.multipleAnswers">
+          <label>
+            <input type="checkbox" [(ngModel)]="addDraft.orderedAnswers" />
+            Order matters (answers must match by position)
+          </label>
+        </div>
         <div class="form-group">
           <div class="label-row">
-            <label>{{ 'TEST_EDIT.EXPECTED_ANSWER' | translate }}</label>
+            <label>{{ addDraft.multipleAnswers ? 'Answer 1' : ('TEST_EDIT.EXPECTED_ANSWER' | translate) }}</label>
             <div class="content-type-toggle">
               <button class="mini-tab" [class.active]="addDraft.answer.type === 'TEXT'"
                       (click)="addDraft.answer.type = 'TEXT'">{{ 'TEST_EDIT.FORMAT_TEXT' | translate }}</button>
@@ -529,7 +553,7 @@
         </div>
         <div class="form-group">
           <div class="label-row">
-            <label>{{ 'TEST_EDIT.VARIATIONS' | translate }}</label>
+            <label>{{ addDraft.multipleAnswers ? 'Answers 2, 3, …' : ('TEST_EDIT.VARIATIONS' | translate) }}</label>
             <button class="btn-add-item" (click)="addVariation(addDraft)">+ {{ 'TEST_EDIT.ADD' | translate }}</button>
           </div>
           <div class="variations-edit">
