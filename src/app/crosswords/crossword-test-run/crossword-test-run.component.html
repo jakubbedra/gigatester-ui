@@ -23,7 +23,7 @@
 
     <!-- Clue -->
     <div class="tr-clue-label">Clue</div>
-    <div class="tr-clue" [innerHTML]="current.clue"></div>
+    <div class="tr-clue" [innerHTML]="current.clue | latex"></div>
 
     <!-- Answer input (shown during question phase) -->
     <ng-container *ngIf="phase === 'question'">

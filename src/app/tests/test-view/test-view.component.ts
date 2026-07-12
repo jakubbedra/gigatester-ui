@@ -96,10 +96,9 @@ export class TestViewComponent implements OnInit {
 
       this.testId = params.get('id')!;
 
-      this.tagService.getTags().subscribe(tags => this.allTags = tags);
-
       this.testService.getTest(this.testId).subscribe({next: test => {
         this.test = test;
+        this.testService.getTestTags(this.testId).subscribe(tags => this.allTags = tags);
         this.availableClosed = test.storedClosedQuestionsCount;
         this.availableOpen = test.storedOpenQuestionsCount;
         this.availableStatement = 0;

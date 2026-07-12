@@ -51,6 +51,26 @@
     </div>
   </div>
 
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <div class="filter-search-wrap">
+      <input class="filter-search" type="text" [(ngModel)]="filterText" (ngModelChange)="onFilterTextChange()"
+             [placeholder]="filterIn === 'term' ? 'Search term…' : filterIn === 'clue' ? 'Search clue…' : 'Search term or clue…'" />
+      <div class="filter-in-toggle">
+        <button [class.active]="filterIn === 'both'" (click)="filterIn = 'both'; onFilterTextChange()">Both</button>
+        <button [class.active]="filterIn === 'term'" (click)="filterIn = 'term'; onFilterTextChange()">Term</button>
+        <button [class.active]="filterIn === 'clue'" (click)="filterIn = 'clue'; onFilterTextChange()">Clue</button>
+      </div>
+      <button class="filter-clear-btn" *ngIf="isFiltered" (click)="clearFilters()" title="Clear filters">✕</button>
+    </div>
+    <div class="filter-tags" *ngIf="tagsInCrossword.length > 0">
+      <span class="filter-tag-chip"
+            *ngFor="let tag of tagsInCrossword"
+            [class.active]="filterTagIds.has(tag.id)"
+            (click)="toggleFilterTag(tag.id)">{{ tag.key }}</span>
+    </div>
+  </div>
+
   <div class="section-header">
     <h2 class="section-title">
       <label class="custom-checkbox" title="Select all">
@@ -60,7 +80,8 @@
                (change)="toggleSelectAll()" />
         <span class="checkbox-box"></span>
       </label>
-      {{ 'CROSSWORD_EDIT.TERMS' | translate }} <span class="count">{{ terms.length }}</span>
+      {{ 'CROSSWORD_EDIT.TERMS' | translate }}
+      <span class="count">{{ isFiltered ? (filteredTermsWithIndex.length + ' / ' + terms.length) : terms.length }}</span>
     </h2>
     <div class="section-actions">
       <ng-container *ngIf="selectedIndices.size > 0">
@@ -79,37 +100,37 @@
     </div>
   </div>
 
-  <div class="terms-list" *ngIf="terms.length > 0; else noTerms">
-    <div class="term-item" *ngFor="let t of pagedTerms; let i = index"
-         [class.editing]="editingIndex === pagedOffset + i"
-         [class.selected]="selectedIndices.has(pagedOffset + i)"
-         [class.confirm-delete]="confirmDeleteIndex === pagedOffset + i">
+  <div class="terms-list" *ngIf="filteredTermsWithIndex.length > 0; else noTerms">
+    <div class="term-item" *ngFor="let row of pagedFilteredTerms; let i = index"
+         [class.editing]="editingIndex === row.realIdx"
+         [class.selected]="selectedIndices.has(row.realIdx)"
+         [class.confirm-delete]="confirmDeleteIndex === row.realIdx">
 
       <!-- View mode -->
-      <ng-container *ngIf="editingIndex !== pagedOffset + i && confirmDeleteIndex !== pagedOffset + i">
+      <ng-container *ngIf="editingIndex !== row.realIdx && confirmDeleteIndex !== row.realIdx">
         <label class="custom-checkbox">
-          <input type="checkbox" [checked]="selectedIndices.has(pagedOffset + i)" (change)="toggleSelect(pagedOffset + i)" />
+          <input type="checkbox" [checked]="selectedIndices.has(row.realIdx)" (change)="toggleSelect(row.realIdx)" />
           <span class="checkbox-box"></span>
         </label>
-        <div class="term-index">{{ pagedOffset + i + 1 }}</div>
+        <div class="term-index">{{ row.realIdx + 1 }}</div>
         <div class="term-content">
-          <div class="term-word">{{ t.term || '—' }}</div>
-          <div class="term-clue" [innerHTML]="(t.clue || '—') | latex"></div>
-          <div class="term-tags" *ngIf="t.tags && t.tags.length > 0">
-            <span class="tag-chip" *ngFor="let tag of t.tags">{{ tag.key }}</span>
+          <div class="term-word">{{ row.term.term || '—' }}</div>
+          <div class="term-clue" [innerHTML]="(row.term.clue || '—') | latex"></div>
+          <div class="term-tags" *ngIf="row.term.tags && row.term.tags.length > 0">
+            <span class="tag-chip" *ngFor="let tag of row.term.tags">{{ tag.key }}</span>
           </div>
         </div>
-        <span class="clue-badge" [class.url]="t.clueType === 'URL'">{{ t.clueType }}</span>
+        <span class="clue-badge" [class.url]="row.term.clueType === 'URL'">{{ row.term.clueType }}</span>
         <div class="row-actions">
-          <button class="btn-edit" (click)="openEdit(pagedOffset + i)" [title]="'CROSSWORD_EDIT.EDIT' | translate">✎</button>
-          <button class="btn-remove" (click)="requestDelete(pagedOffset + i)" [title]="'CROSSWORD_EDIT.REMOVE' | translate">🗑</button>
+          <button class="btn-edit" (click)="openEdit(row.realIdx)" [title]="'CROSSWORD_EDIT.EDIT' | translate">✎</button>
+          <button class="btn-remove" (click)="requestDelete(row.realIdx)" [title]="'CROSSWORD_EDIT.REMOVE' | translate">🗑</button>
         </div>
       </ng-container>
 
       <!-- Confirm delete -->
-      <ng-container *ngIf="confirmDeleteIndex === pagedOffset + i">
+      <ng-container *ngIf="confirmDeleteIndex === row.realIdx">
         <div class="delete-confirm-row">
-          <span class="delete-confirm-msg">Delete <strong>{{ t.term || 'this term' }}</strong>?</span>
+          <span class="delete-confirm-msg">Delete <strong>{{ row.term.term || 'this term' }}</strong>?</span>
           <div class="delete-confirm-actions">
             <button class="btn-danger-sm" (click)="confirmDelete()">Yes, delete</button>
             <button class="btn-ghost-sm" (click)="cancelDelete()">Cancel</button>
@@ -118,10 +139,10 @@
       </ng-container>
 
       <!-- Edit mode -->
-      <ng-container *ngIf="editingIndex === pagedOffset + i && editDraft">
+      <ng-container *ngIf="editingIndex === row.realIdx && editDraft">
         <div class="edit-card">
           <div class="edit-row-top">
-            <div class="edit-index-badge">{{ pagedOffset + i + 1 }}</div>
+            <div class="edit-index-badge">{{ row.realIdx + 1 }}</div>
             <div class="edit-field-group">
               <label>{{ 'CROSSWORD_EDIT.TERM' | translate }}</label>
               <input type="text" [(ngModel)]="editDraft.term" placeholder="e.g. PARIS" autofocus />

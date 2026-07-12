@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {TestRequest, TestResponse, TestsResponse} from '../models/models.d';
+import {TagResponse, TestRequest, TestResponse, TestsResponse} from '../models/models.d';
 import {Environment} from "../../../environment";
 import { AuthorCandidate } from './subject.service';
 
@@ -41,6 +41,10 @@ export class TestService {
       params['excludeTags'] = excludeTags;
     }
     return this.http.get<any>(`${this.baseUrl}/${testId}/question-counts`, { params });
+  }
+
+  getTestTags(testId: string): Observable<TagResponse[]> {
+    return this.http.get<TagResponse[]>(`${this.baseUrl}/${testId}/tags`);
   }
 
   getAuthorCandidates(testId: string): Observable<AuthorCandidate[]> {

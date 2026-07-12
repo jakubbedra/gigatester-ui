@@ -109,6 +109,91 @@
 .btn-save:hover:not(:disabled) { background: #6a5add; box-shadow: 0 0 14px rgba(123,109,245,0.45); }
 .btn-save:disabled { background: #555; cursor: not-allowed; }
 
+/* ── Filter bar ── */
+.filter-bar {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filter-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.filter-search {
+  flex: 1;
+  padding: 10px 36px 10px 14px;
+  border-radius: 10px;
+  background: #1e1e1e;
+  border: 1px solid #2f2f2f;
+  color: #e0e0e0;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+}
+.filter-search:focus { border-color: #7b6df5; }
+.filter-search::placeholder { color: #555; }
+
+.filter-in-toggle {
+  display: flex;
+  gap: 2px;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+.filter-in-toggle button {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #3a3a3a;
+  background: #1e1e1e;
+  color: #777;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.filter-in-toggle button:hover { border-color: #7b6df5; color: #c0b8ff; }
+.filter-in-toggle button.active { background: rgba(123,109,245,0.18); border-color: #7b6df5; color: #c0b8ff; }
+
+.filter-clear-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: 0.15s;
+}
+.filter-clear-btn:hover { color: #e0e0e0; }
+
+.filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter-tag-chip {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #3a3a3a;
+  background: #1e1e1e;
+  color: #999;
+  transition: 0.15s;
+  user-select: none;
+}
+.filter-tag-chip:hover { border-color: #7b6df5; color: #c0b8ff; }
+.filter-tag-chip.active { background: rgba(123,109,245,0.18); border-color: #7b6df5; color: #c0b8ff; }
+
 /* ── Section header ── */
 .section-header {
   display: flex;

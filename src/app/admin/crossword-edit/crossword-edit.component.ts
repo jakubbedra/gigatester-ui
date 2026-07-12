@@ -42,13 +42,70 @@ export class CrosswordEditComponent implements OnInit {
   readonly pageSizes = [10, 20, 50];
   readonly clueTypes: ClueType[] = ['TEXT', 'URL'];
 
-  get pagedOffset(): number { return this.currentPage * this.pageSize; }
+  filterText = '';
+  filterIn: 'both' | 'term' | 'clue' = 'both';
+  filterTagIds = new Set<string>();
 
-  get pagedTerms(): TermRow[] {
-    return this.terms.slice(this.pagedOffset, this.pagedOffset + this.pageSize);
+  get tagsInCrossword(): TagResponse[] {
+    const seen = new Map<string, TagResponse>();
+    for (const t of this.terms) {
+      for (const tag of (t.tags ?? [])) {
+        if (!seen.has(tag.id)) seen.set(tag.id, tag);
+      }
+    }
+    return Array.from(seen.values()).sort((a, b) => a.key.localeCompare(b.key));
   }
 
-  get totalPages(): number { return Math.max(1, Math.ceil(this.terms.length / this.pageSize)); }
+  get filteredTermsWithIndex(): { term: TermRow; realIdx: number }[] {
+    const q = this.filterText.trim().toLowerCase();
+    return this.terms
+      .map((term, realIdx) => ({ term, realIdx }))
+      .filter(({ term }) => {
+        if (q) {
+          const inTerm = term.term.toLowerCase().includes(q);
+          const inClue = term.clue.toLowerCase().includes(q);
+          if (this.filterIn === 'term' && !inTerm) return false;
+          if (this.filterIn === 'clue' && !inClue) return false;
+          if (this.filterIn === 'both' && !inTerm && !inClue) return false;
+        }
+        if (this.filterTagIds.size > 0) {
+          const termTagIds = new Set((term.tags ?? []).map(t => t.id));
+          for (const id of this.filterTagIds) {
+            if (!termTagIds.has(id)) return false;
+          }
+        }
+        return true;
+      });
+  }
+
+  get pagedFilteredTerms(): { term: TermRow; realIdx: number }[] {
+    const offset = this.currentPage * this.pageSize;
+    return this.filteredTermsWithIndex.slice(offset, offset + this.pageSize);
+  }
+
+  get totalPages(): number { return Math.max(1, Math.ceil(this.filteredTermsWithIndex.length / this.pageSize)); }
+
+  toggleFilterTag(tagId: string) {
+    if (this.filterTagIds.has(tagId)) this.filterTagIds.delete(tagId);
+    else this.filterTagIds.add(tagId);
+    this.filterTagIds = new Set(this.filterTagIds);
+    this.currentPage = 0;
+  }
+
+  onFilterTextChange() {
+    this.currentPage = 0;
+  }
+
+  clearFilters() {
+    this.filterText = '';
+    this.filterIn = 'both';
+    this.filterTagIds = new Set();
+    this.currentPage = 0;
+  }
+
+  get isFiltered(): boolean {
+    return !!this.filterText.trim() || this.filterTagIds.size > 0;
+  }
 
   setPage(page: number) {
     if (this.editingIndex !== null) this.cancelEdit();
