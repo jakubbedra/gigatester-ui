@@ -9,11 +9,11 @@
 .test-card {
   width: 90%;
   max-width: 560px;
-  background-color: #1e1e1e;
+  background-color: var(--c-1e1e1e);
   padding: 40px 44px;
   border-radius: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
-  color: #e0e0e0;
+  color: var(--c-e0e0e0);
   display: flex;
   flex-direction: column;
   gap: 28px;
@@ -30,9 +30,9 @@
   position: absolute;
   right: 0;
   background: transparent;
-  border: 1px solid rgba(123, 109, 245, 0.3);
+  border: 1px solid var(--a-3);
   border-radius: 8px;
-  color: #7b6df5;
+  color: var(--c-7b6df5);
   font-size: 12px;
   font-weight: 600;
   padding: 4px 12px;
@@ -41,8 +41,8 @@
 }
 
 .edit-btn:hover {
-  background: rgba(123, 109, 245, 0.1);
-  border-color: #7b6df5;
+  background: var(--a-1);
+  border-color: var(--c-7b6df5);
 }
 
 .test-title {
@@ -50,7 +50,7 @@
   font-size: 24px;
   font-weight: 700;
   text-align: center;
-  color: #7b6df5;
+  color: var(--c-7b6df5);
   letter-spacing: 0.01em;
 }
 
@@ -72,13 +72,13 @@ form {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #888;
+  color: var(--c-888888);
 }
 
 /* ── Toggle buttons ── */
 .toggle-row {
   display: flex;
-  background: #2a2a2a;
+  background: var(--c-2a2a2a);
   border-radius: 10px;
   padding: 4px;
   gap: 4px;
@@ -90,7 +90,7 @@ form {
   border: none;
   border-radius: 8px;
   background: transparent;
-  color: #888;
+  color: var(--c-888888);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -98,14 +98,14 @@ form {
 }
 
 .toggle-btn.active {
-  background: #7b6df5;
+  background: var(--c-7b6df5);
   color: #fff;
-  box-shadow: 0 2px 10px rgba(123, 109, 245, 0.4);
+  box-shadow: 0 2px 10px var(--a-4);
 }
 
 .toggle-btn:not(.active):hover {
-  background: #333;
-  color: #ccc;
+  background: var(--c-333333);
+  color: var(--c-cccccc);
 }
 
 /* ── Exam section ── */
@@ -114,9 +114,9 @@ form {
   flex-direction: column;
   gap: 16px;
   padding: 20px;
-  background: #252525;
+  background: var(--c-252525);
   border-radius: 14px;
-  border: 1px solid #333;
+  border: 1px solid var(--c-333333);
 }
 
 .exam-grid {
@@ -139,7 +139,7 @@ form {
 .form-group label {
   font-size: 13px;
   font-weight: 600;
-  color: #aaa;
+  color: var(--c-aaaaaa);
   display: flex;
   align-items: baseline;
   gap: 6px;
@@ -148,16 +148,16 @@ form {
 .avail {
   font-size: 11px;
   font-weight: 400;
-  color: #555;
+  color: var(--c-555555);
 }
 
 /* ── Inputs ── */
 input[type="number"] {
   padding: 11px 14px;
   font-size: 15px;
-  background-color: #2a2a2a;
-  color: #e6e6e6;
-  border: 1px solid #3d3d3d;
+  background-color: var(--c-2a2a2a);
+  color: var(--c-e6e6e6);
+  border: 1px solid var(--c-3d3d3d);
   border-radius: 10px;
   width: 100%;
   box-sizing: border-box;
@@ -165,14 +165,14 @@ input[type="number"] {
 }
 
 input[type="number"]:hover {
-  background-color: #303030;
-  border-color: #555;
+  background-color: var(--c-303030);
+  border-color: var(--c-555555);
 }
 
 input[type="number"]:focus {
-  border-color: #7b6df5;
-  background-color: #2e2e2e;
-  box-shadow: 0 0 0 3px rgba(123, 109, 245, 0.2);
+  border-color: var(--c-7b6df5);
+  background-color: var(--c-2e2e2e);
+  box-shadow: 0 0 0 3px var(--a-2);
   outline: none;
 }
 
@@ -191,14 +191,14 @@ input[type="number"]:focus {
   position: absolute;
   right: 14px;
   font-size: 14px;
-  color: #666;
+  color: var(--c-666666);
   pointer-events: none;
 }
 
 /* ── Errors ── */
 .field-error {
   font-size: 12px;
-  color: #f07070;
+  color: var(--c-f07070);
 }
 
 .block-error {
@@ -211,7 +211,7 @@ input[type="number"]:focus {
   padding: 14px;
   border-radius: 12px;
   border: none;
-  background-color: #7b6df5;
+  background-color: var(--c-7b6df5);
   color: #fff;
   font-size: 16px;
   font-weight: 700;
@@ -221,13 +221,13 @@ input[type="number"]:focus {
 }
 
 .start-btn:hover:not(:disabled) {
-  background-color: #6a5add;
-  box-shadow: 0 0 18px rgba(123, 109, 245, 0.5);
+  background-color: var(--c-6a5add);
+  box-shadow: 0 0 18px var(--a-5);
 }
 
 .start-btn:disabled {
-  background: #444;
-  color: #777;
+  background: var(--c-444444);
+  color: var(--c-777777);
   cursor: not-allowed;
 }
 
@@ -245,7 +245,7 @@ input[type="number"] {
 .field-hint {
   font-size: 11px;
   font-weight: 400;
-  color: #666;
+  color: var(--c-666666);
   margin-left: 6px;
 }
 
@@ -257,10 +257,10 @@ input[type="number"] {
 }
 
 .tag-filter-chip {
-  background: #1a1a2e;
-  border: 1px solid #3a3060;
+  background: var(--c-1a1a2e);
+  border: 1px solid var(--c-3a3060);
   border-radius: 20px;
-  color: #9080cc;
+  color: var(--c-9080cc);
   padding: 5px 14px;
   font-size: 13px;
   font-weight: 600;
@@ -269,16 +269,16 @@ input[type="number"] {
 }
 
 .tag-filter-chip:hover {
-  background: #2a2060;
-  border-color: #7b6df5;
-  color: #e0d8ff;
+  background: var(--c-2a2060);
+  border-color: var(--c-7b6df5);
+  color: var(--c-e0d8ff);
 }
 
 .tag-filter-chip.selected {
-  background: #7b6df5;
-  border-color: #7b6df5;
+  background: var(--c-7b6df5);
+  border-color: var(--c-7b6df5);
   color: #fff;
-  box-shadow: 0 0 10px rgba(123, 109, 245, 0.4);
+  box-shadow: 0 0 10px var(--a-4);
 }
 
 .time-limit-input {
@@ -290,17 +290,17 @@ input[type="number"] {
 
 .time-limit-input input {
   width: 80px;
-  background: #2a2a3e;
-  border: 1px solid rgba(123, 109, 245, 0.3);
+  background: var(--c-2a2a3e);
+  border: 1px solid var(--a-3);
   border-radius: 8px;
-  color: #e0e0f0;
+  color: var(--c-e0e0f0);
   font-size: 14px;
   padding: 7px 10px;
 }
 
 .time-limit-input .suffix {
   position: static;
-  color: #9090b0;
+  color: var(--c-9090b0);
   font-size: 13px;
 }
 
@@ -311,9 +311,9 @@ input[type="number"] {
 }
 
 .tag-mode-btn {
-  background: #1a1a2e;
-  border: 1px solid #3a3060;
-  color: #9080cc;
+  background: var(--c-1a1a2e);
+  border: 1px solid var(--c-3a3060);
+  color: var(--c-9080cc);
   padding: 4px 16px;
   font-size: 13px;
   font-weight: 600;
@@ -331,8 +331,8 @@ input[type="number"] {
 }
 
 .tag-mode-btn.active {
-  background: #7b6df5;
-  border-color: #7b6df5;
+  background: var(--c-7b6df5);
+  border-color: var(--c-7b6df5);
   color: #fff;
 }
 
@@ -342,8 +342,8 @@ input[type="number"] {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  background: rgba(123, 109, 245, 0.1);
-  border: 1px solid rgba(123, 109, 245, 0.35);
+  background: var(--a-1);
+  border: 1px solid var(--a-35);
   border-radius: 12px;
   padding: 16px 20px;
 }
@@ -358,12 +358,12 @@ input[type="number"] {
 .resume-label {
   font-size: 14px;
   font-weight: 700;
-  color: #c0b0ff;
+  color: var(--c-c0b0ff);
 }
 
 .resume-meta {
   font-size: 12px;
-  color: #888;
+  color: var(--c-888888);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -387,23 +387,23 @@ input[type="number"] {
 }
 
 .resume-btn.primary {
-  background: #7b6df5;
+  background: var(--c-7b6df5);
   color: #fff;
 }
 
 .resume-btn.primary:hover {
-  background: #9080ff;
+  background: var(--c-9080ff);
 }
 
 .resume-btn.secondary {
-  background: #333;
-  color: #aaa;
-  border: 1px solid #444;
+  background: var(--c-333333);
+  color: var(--c-aaaaaa);
+  border: 1px solid var(--c-444444);
 }
 
 .resume-btn.secondary:hover {
-  background: #3d3d3d;
-  color: #ccc;
+  background: var(--c-3d3d3d);
+  color: var(--c-cccccc);
 }
 
 /* ── View tabs (Start / Your Stats) ── */
@@ -416,9 +416,9 @@ input[type="number"] {
 .view-tab {
   padding: 7px 18px;
   border-radius: 8px;
-  border: 1px solid rgba(123, 109, 245, 0.25);
+  border: 1px solid var(--a-25);
   background: transparent;
-  color: #9090b0;
+  color: var(--c-9090b0);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -427,9 +427,9 @@ input[type="number"] {
 
 .view-tab.active,
 .view-tab:hover {
-  background: rgba(123, 109, 245, 0.15);
-  border-color: rgba(123, 109, 245, 0.5);
-  color: #c0b0ff;
+  background: var(--a-15);
+  border-color: var(--a-5);
+  color: var(--c-c0b0ff);
 }
 
 /* ── Stats tab ── */
@@ -448,8 +448,8 @@ input[type="number"] {
 .stats-card {
   flex: 1;
   min-width: 100px;
-  background: #252535;
-  border: 1px solid rgba(123, 109, 245, 0.2);
+  background: var(--c-252535);
+  border: 1px solid var(--a-2);
   border-radius: 12px;
   padding: 16px 12px;
   text-align: center;
@@ -458,7 +458,7 @@ input[type="number"] {
 .stats-value {
   font-size: 24px;
   font-weight: 700;
-  color: #c0b0ff;
+  color: var(--c-c0b0ff);
   line-height: 1;
   margin-bottom: 5px;
 }
@@ -467,7 +467,7 @@ input[type="number"] {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #6a6a9a;
+  color: var(--c-6a6a9a);
 }
 
 .stats-section {
@@ -481,7 +481,7 @@ input[type="number"] {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #6a6a9a;
+  color: var(--c-6a6a9a);
   font-weight: 600;
 }
 
@@ -493,7 +493,7 @@ input[type="number"] {
 
 .tag-key {
   font-size: 12px;
-  color: #c0b0ff;
+  color: var(--c-c0b0ff);
   min-width: 100px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -503,7 +503,7 @@ input[type="number"] {
 .tag-bar-bg {
   flex: 1;
   height: 8px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--w-06);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -513,25 +513,25 @@ input[type="number"] {
   border-radius: 4px;
 }
 
-.tag-fill-high { background: #7b6df5; }
-.tag-fill-mid  { background: #7b6df5; }
-.tag-fill-low  { background: #7b6df5; }
+.tag-fill-high { background: var(--c-7b6df5); }
+.tag-fill-mid  { background: var(--c-7b6df5); }
+.tag-fill-low  { background: var(--c-7b6df5); }
 
 .tag-pct {
   font-size: 12px;
   font-weight: 700;
   width: 40px;
   text-align: right;
-  color: #c0b0ff;
+  color: var(--c-c0b0ff);
 }
 
-.tag-pct-high { color: #c0b0ff; }
-.tag-pct-mid  { color: #c0b0ff; }
-.tag-pct-low  { color: #c0b0ff; }
+.tag-pct-high { color: var(--c-c0b0ff); }
+.tag-pct-mid  { color: var(--c-c0b0ff); }
+.tag-pct-low  { color: var(--c-c0b0ff); }
 
 .tag-count {
   font-size: 10px;
-  color: #555577;
+  color: var(--c-555577);
   width: 60px;
 }
 
@@ -543,9 +543,9 @@ input[type="number"] {
 .sort-btn {
   padding: 4px 12px;
   border-radius: 6px;
-  border: 1px solid rgba(123, 109, 245, 0.25);
+  border: 1px solid var(--a-25);
   background: transparent;
-  color: #9090b0;
+  color: var(--c-9090b0);
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
@@ -554,9 +554,9 @@ input[type="number"] {
 
 .sort-btn.active,
 .sort-btn:hover {
-  background: rgba(123, 109, 245, 0.15);
-  border-color: rgba(123, 109, 245, 0.5);
-  color: #c0b0ff;
+  background: var(--a-15);
+  border-color: var(--a-5);
+  color: var(--c-c0b0ff);
 }
 
 .ranking-table {
@@ -571,20 +571,20 @@ input[type="number"] {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #555577;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--c-555577);
+  border-bottom: 1px solid var(--w-05);
 }
 
 .ranking-table td {
   padding: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  color: #c8c8e8;
+  border-bottom: 1px solid var(--w-04);
+  color: var(--c-c8c8e8);
 }
 
 .ranking-table tr.me td {
-  color: #c0b0ff;
+  color: var(--c-c0b0ff);
   font-weight: 600;
-  background: rgba(123, 109, 245, 0.08);
+  background: var(--a-08);
 }
 
 .rank-cell {
@@ -594,7 +594,7 @@ input[type="number"] {
 
 .empty-state {
   text-align: center;
-  color: #555577;
+  color: var(--c-555577);
   padding: 24px 0;
   font-size: 13px;
 }

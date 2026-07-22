@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
 import { LanguageService } from '../../service/language.service';
+import { ThemeService } from '../../service/theme.service';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +20,9 @@ export class LoginComponent implements OnInit {
 
   private returnUrl = '/home';
 
-  constructor(private authService: AuthService, private router: Router, private route: ActivatedRoute, public lang: LanguageService) {}
+  constructor(private authService: AuthService, private router: Router, private route: ActivatedRoute, public lang: LanguageService, public theme: ThemeService) {
+    this.theme.init();
+  }
 
   ngOnInit(): void {
     if (this.authService.isAuthenticated()) {

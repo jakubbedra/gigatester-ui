@@ -1,8 +1,46 @@
 @import 'quill/dist/quill.snow.css';
 
-/* You can add global styles to this file, and also import other style files */
+/* ── Theme tokens ── */
+:root {
+  --bg-base:       #1f1f1f;
+  --bg-surface:    #2b2b2b;
+  --bg-card:       #1e1e1e;
+  --bg-card-inner: #191919;
+  --text-primary:  #e0e0e0;
+  --text-muted:    #888;
+  --accent:        #7b6df5;
+  --accent-hover:  #6a5add;
+  --accent-light:  #9b8ff5;
+  --accent-lighter:#c0b0ff;
+  --accent-dark:   #1c1740;
+  --border-subtle: rgba(123,109,245,0.15);
+  --border-medium: rgba(123,109,245,0.25);
+  --border-strong: rgba(123,109,245,0.30);
+  --shadow:        rgba(0,0,0,0.5);
+}
+
+body.light-mode {
+  --bg-base:       #f2f2f7;
+  --bg-surface:    #ffffff;
+  --bg-card:       #ffffff;
+  --bg-card-inner: #f5f4ff;
+  --text-primary:  #1a1a2e;
+  --text-muted:    #666;
+  --accent:        #6a5add;
+  --accent-hover:  #5549c8;
+  --accent-light:  #7b6df5;
+  --accent-lighter:#5549c8;
+  --accent-dark:   #ede9ff;
+  --border-subtle: rgba(106,90,221,0.30);
+  --border-medium: rgba(106,90,221,0.45);
+  --border-strong: rgba(106,90,221,0.60);
+  --shadow:        rgba(0,0,0,0.12);
+}
+
 body {
-  background: #1f1f1f;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  transition: background 0.25s, color 0.25s;
 }
 
 html, body {
@@ -30,8 +68,8 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   appearance: none;
-  background: #2a2a2a;
-  border-left: 1px solid #3d3d3d;
+  background: var(--c-2a2a2a);
+  border-left: 1px solid var(--c-3d3d3d);
   border-radius: 0 8px 8px 0;
   width: 20px;
   cursor: pointer;
@@ -39,7 +77,7 @@ input[type="number"]::-webkit-outer-spin-button {
   display: flex;
   flex-direction: column;
   background-image:
-    linear-gradient(to bottom, transparent 49%, #3d3d3d 49%, #3d3d3d 51%, transparent 51%),
+    linear-gradient(to bottom, transparent 49%, var(--c-3d3d3d) 49%, var(--c-3d3d3d) 51%, transparent 51%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='5'%3E%3Cpath d='M0 5 L5 0 L10 5Z' fill='%237b6df5'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='5'%3E%3Cpath d='M0 0 L5 5 L10 0Z' fill='%237b6df5'/%3E%3C/svg%3E");
   background-repeat: no-repeat, no-repeat, no-repeat;
@@ -50,9 +88,413 @@ input[type="number"]::-webkit-outer-spin-button {
 
 input[type="number"]::-webkit-inner-spin-button:hover,
 input[type="number"]::-webkit-outer-spin-button:hover {
-  background-color: #333;
+  background-color: var(--c-333333);
 }
 
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+/* ==AUTO-THEME-TOKENS== */
+/* ── Auto-generated theme tokens (dark = original, light = inverted) ── */
+:root {
+  --c-111111: #111111;
+  --c-111122: #111122;
+  --c-12121e: #12121e;
+  --c-141414: #141414;
+  --c-141420: #141420;
+  --c-161616: #161616;
+  --c-162616: #162616;
+  --c-181818: #181818;
+  --c-182018: #182018;
+  --c-191919: #191919;
+  --c-191926: #191926;
+  --c-1a1040: #1a1040;
+  --c-1a1a1a: #1a1a1a;
+  --c-1a1a2e: #1a1a2e;
+  --c-1a4a1a: #1a4a1a;
+  --c-1c1740: #1c1740;
+  --c-1c1c2a: #1c1c2a;
+  --c-1c3a1c: #1c3a1c;
+  --c-1e1e1e: #1e1e1e;
+  --c-1e1e2e: #1e1e2e;
+  --c-1f1616: #1f1616;
+  --c-1f1f1f: #1f1f1f;
+  --c-202020: #202020;
+  --c-222222: #222222;
+  --c-22223a: #22223a;
+  --c-224422: #224422;
+  --c-22641a: #22641a;
+  --c-232323: #232323;
+  --c-242424: #242424;
+  --c-251850: #251850;
+  --c-252525: #252525;
+  --c-252535: #252535;
+  --c-262626: #262626;
+  --c-2a1212: #2a1212;
+  --c-2a1a4a: #2a1a4a;
+  --c-2a1a60: #2a1a60;
+  --c-2a2060: #2a2060;
+  --c-2a2a2a: #2a2a2a;
+  --c-2a2a3a: #2a2a3a;
+  --c-2a2a3e: #2a2a3e;
+  --c-2a5a2a: #2a5a2a;
+  --c-2b2b2b: #2b2b2b;
+  --c-2e2960: #2e2960;
+  --c-2e2a4a: #2e2a4a;
+  --c-2e2e2e: #2e2e2e;
+  --c-2e2e44: #2e2e44;
+  --c-2e2e4a: #2e2e4a;
+  --c-2ecc71: #2ecc71;
+  --c-2f2f2f: #2f2f2f;
+  --c-303030: #303030;
+  --c-32a032: #32a032;
+  --c-333333: #333333;
+  --c-383838: #383838;
+  --c-3a1f1f: #3a1f1f;
+  --c-3a2da0: #3a2da0;
+  --c-3a2fa0: #3a2fa0;
+  --c-3a3060: #3a3060;
+  --c-3a3a3a: #3a3a3a;
+  --c-3a3a50: #3a3a50;
+  --c-3a3a55: #3a3a55;
+  --c-3a3a5a: #3a3a5a;
+  --c-3a6a3a: #3a6a3a;
+  --c-3c1a64: #3c1a64;
+  --c-3d3d3d: #3d3d3d;
+  --c-3dba3d: #3dba3d;
+  --c-444444: #444444;
+  --c-46dc78: #46dc78;
+  --c-484848: #484848;
+  --c-4a1a1a: #4a1a1a;
+  --c-4a3fa0: #4a3fa0;
+  --c-4ade80: #4ade80;
+  --c-50c878: #50c878;
+  --c-555555: #555555;
+  --c-555577: #555577;
+  --c-5a2a2a: #5a2a2a;
+  --c-5a4ed0: #5a4ed0;
+  --c-5a5a7a: #5a5a7a;
+  --c-5a5a8a: #5a5a8a;
+  --c-5b4fd4: #5b4fd4;
+  --c-5de05d: #5de05d;
+  --c-641a1a: #641a1a;
+  --c-6656c0: #6656c0;
+  --c-666666: #666666;
+  --c-6a5add: #6a5add;
+  --c-6a6a9a: #6a6a9a;
+  --c-6ab87a: #6ab87a;
+  --c-6dc98a: #6dc98a;
+  --c-777777: #777777;
+  --c-7a6ad0: #7a6ad0;
+  --c-7b6df5: #7b6df5;
+  --c-7b9cf5: #7b9cf5;
+  --c-7dd87d: #7dd87d;
+  --c-888888: #888888;
+  --c-8888b8: #8888b8;
+  --c-8a3dba: #8a3dba;
+  --c-9080cc: #9080cc;
+  --c-9080d0: #9080d0;
+  --c-9080ff: #9080ff;
+  --c-9090b0: #9090b0;
+  --c-999999: #999999;
+  --c-9b8ff5: #9b8ff5;
+  --c-9b8ff7: #9b8ff7;
+  --c-9d8ff5: #9d8ff5;
+  --c-a05050: #a05050;
+  --c-a090e0: #a090e0;
+  --c-a090ff: #a090ff;
+  --c-a78bfa: #a78bfa;
+  --c-a89040: #a89040;
+  --c-a89cf5: #a89cf5;
+  --c-aaaaaa: #aaaaaa;
+  --c-b05de0: #b05de0;
+  --c-b0a0ff: #b0a0ff;
+  --c-b0b0d0: #b0b0d0;
+  --c-b8a8ff: #b8a8ff;
+  --c-b9ffcf: #b9ffcf;
+  --c-ba3d3d: #ba3d3d;
+  --c-bbbbbb: #bbbbbb;
+  --c-c0392b: #c0392b;
+  --c-c0b0ff: #c0b0ff;
+  --c-c0b8ff: #c0b8ff;
+  --c-c0c0c0: #c0c0c0;
+  --c-c0c0e0: #c0c0e0;
+  --c-c4b4ff: #c4b4ff;
+  --c-c8b8ff: #c8b8ff;
+  --c-c8c0e8: #c8c0e8;
+  --c-c8c8c8: #c8c8c8;
+  --c-c8c8e8: #c8c8e8;
+  --c-cccccc: #cccccc;
+  --c-cfcfcf: #cfcfcf;
+  --c-d0c8ff: #d0c8ff;
+  --c-d8d8d8: #d8d8d8;
+  --c-dddddd: #dddddd;
+  --c-e05050: #e05050;
+  --c-e05d5d: #e05d5d;
+  --c-e06060: #e06060;
+  --c-e07070: #e07070;
+  --c-e08080: #e08080;
+  --c-e0d8ff: #e0d8ff;
+  --c-e0e0e0: #e0e0e0;
+  --c-e0e0f0: #e0e0f0;
+  --c-e0e0f5: #e0e0f5;
+  --c-e6e6e6: #e6e6e6;
+  --c-e74c3c: #e74c3c;
+  --c-e8e4ff: #e8e4ff;
+  --c-e8e8e8: #e8e8e8;
+  --c-eae6ff: #eae6ff;
+  --c-f05050: #f05050;
+  --c-f07070: #f07070;
+  --c-f09090: #f09090;
+  --c-f0f0f0: #f0f0f0;
+  --c-f5a97b: #f5a97b;
+  --c-f87171: #f87171;
+  --c-facc15: #facc15;
+  --c-ff6868: #ff6868;
+  --c-ff7070: #ff7070;
+  --c-ff8c32: #ff8c32;
+  --c-ff8c42: #ff8c42;
+  --c-ffb432: #ffb432;
+  --c-ffb9b9: #ffb9b9;
+}
+
+body.light-mode {
+  --c-111111: #f2f2f3;
+  --c-111122: #e6e6f3;
+  --c-12121e: #e9e9f2;
+  --c-141414: #f0f0f1;
+  --c-141420: #e8e8f0;
+  --c-161616: #eeeef0;
+  --c-162616: #e3efe3;
+  --c-181818: #ededee;
+  --c-182018: #eae9ec;
+  --c-191919: #ececee;
+  --c-191926: #e3e3ed;
+  --c-1a1040: #d7d0f3;
+  --c-1a1a1a: #ebebed;
+  --c-1a1a2e: #ddddec;
+  --c-1a4a1a: #c8ecc8;
+  --c-1c1740: #d3d0ee;
+  --c-1c1c2a: #e0e0ea;
+  --c-1c3a1c: #d4ead4;
+  --c-1e1e1e: #e8e8ea;
+  --c-1e1e2e: #dddde9;
+  --c-1f1616: #efe8e8;
+  --c-1f1f1f: #e8e7e9;
+  --c-202020: #e7e6e9;
+  --c-222222: #e5e5e7;
+  --c-22223a: #d4d4e6;
+  --c-224422: #cde6cd;
+  --c-22641a: #baecb4;
+  --c-232323: #e5e4e7;
+  --c-242424: #e4e3e6;
+  --c-251850: #cdc4ed;
+  --c-252525: #e3e2e5;
+  --c-252535: #d8d8e4;
+  --c-262626: #e2e2e4;
+  --c-2a1212: #f2e0e0;
+  --c-2a1a4a: #d4c8ec;
+  --c-2a1a60: #c3b7ec;
+  --c-2a2060: #bfb7e7;
+  --c-2a2a2a: #dfdee2;
+  --c-2a2a3a: #d4d4e0;
+  --c-2a2a3e: #d1d1e0;
+  --c-2a5a2a: #bce0bc;
+  --c-2b2b2b: #dedee1;
+  --c-2e2960: #bbb7e0;
+  --c-2e2a4a: #cbc8e0;
+  --c-2e2e2e: #dcdbdf;
+  --c-2e2e44: #ccccdd;
+  --c-2e2e4a: #c8c8dd;
+  --c-2ecc71: #5fdb94;
+  --c-2f2f2f: #dbdade;
+  --c-303030: #dadadd;
+  --c-32a032: #84d884;
+  --c-333333: #d8d7db;
+  --c-383838: #d4d3d7;
+  --c-3a1f1f: #e8d4d4;
+  --c-3a2da0: #8e84dc;
+  --c-3a2fa0: #8c84db;
+  --c-3a3060: #beb7db;
+  --c-3a3a3a: #d2d2d6;
+  --c-3a3a50: #cac9ce;
+  --c-3a3a55: #bfbfd3;
+  --c-3a3a5a: #bbbbd3;
+  --c-3a6a3a: #afd3af;
+  --c-3c1a64: #ceb4ec;
+  --c-3d3d3d: #d0cfd4;
+  --c-3dba3d: #6dcf6d;
+  --c-444444: #cac9cf;
+  --c-46dc78: #3cda71;
+  --c-484848: #c7c6cc;
+  --c-4a1a1a: #ecc8c8;
+  --c-4a3fa0: #8b83ce;
+  --c-4ade80: #36da72;
+  --c-50c878: #56ca7c;
+  --c-555555: #bdbbc2;
+  --c-555577: #a3a3be;
+  --c-5a2a2a: #e0bcbc;
+  --c-5a4ed0: #574bcf;
+  --c-5a5a7a: #aba9b1;
+  --c-5a5a8a: #9494b9;
+  --c-5b4fd4: #5144d1;
+  --c-5de05d: #29d529;
+  --c-641a1a: #ecb4b4;
+  --c-6656c0: #6d5ec3;
+  --c-666666: #aeadb4;
+  --c-6a5add: #432fd4;
+  --c-6a6a9a: #8585ac;
+  --c-6ab87a: #62b473;
+  --c-6dc98a: #48bb6d;
+  --c-777777: #9f9ea7;
+  --c-7a6ad0: #533ec2;
+  --c-7b6df5: #210ecb;
+  --c-7b9cf5: #0e3ebd;
+  --c-7dd87d: #35b135;
+  --c-888888: #908e99;
+  --c-8888b8: #5e5e9d;
+  --c-8a3dba: #aa6dcf;
+  --c-9080cc: #5a44ab;
+  --c-9080d0: #5540ac;
+  --c-9080ff: #1800bb;
+  --c-9090b0: #686892;
+  --c-999999: #807e8a;
+  --c-9b8ff5: #210fa7;
+  --c-9b8ff7: #1e0ca8;
+  --c-9d8ff5: #240fa7;
+  --c-a05050: #c18282;
+  --c-a090e0: #432c9f;
+  --c-a090ff: #1900aa;
+  --c-a78bfa: #3107ae;
+  --c-a89040: #cdbb7c;
+  --c-a89cf5: #220f99;
+  --c-aaaaaa: #727077;
+  --c-b05de0: #9629d5;
+  --c-b0a0ff: #1a0098;
+  --c-b0b0d0: #464675;
+  --c-b8a8ff: #1a008f;
+  --c-b9ffcf: #007a26;
+  --c-ba3d3d: #cf6d6d;
+  --c-bbbbbb: #616065;
+  --c-c0392b: #dd7469;
+  --c-c0b0ff: #1b0085;
+  --c-c0b8ff: #0e007b;
+  --c-c0c0c0: #5c5a60;
+  --c-c0c0e0: #323265;
+  --c-c4b4ff: #1b0080;
+  --c-c8b8ff: #1c007b;
+  --c-c8c0e8: #332668;
+  --c-c8c8c8: #535257;
+  --c-c8c8e8: #27275d;
+  --c-cccccc: #4f4e52;
+  --c-cfcfcf: #4b4a4f;
+  --c-d0c8ff: #0f0067;
+  --c-d8d8d8: #414044;
+  --c-dddddd: #3b3a3e;
+  --c-e05050: #da2f2f;
+  --c-e05d5d: #d52929;
+  --c-e06060: #d22929;
+  --c-e07070: #c12a2a;
+  --c-e08080: #b02b2b;
+  --c-e0d8ff: #100050;
+  --c-e0e0e0: #37363a;
+  --c-e0e0f0: #1d1d3d;
+  --c-e0e0f5: #14143f;
+  --c-e6e6e6: #2f2e31;
+  --c-e74c3c: #e64130;
+  --c-e8e4ff: #0a0042;
+  --c-e8e8e8: #2c2c2e;
+  --c-eae6ff: #0b0042;
+  --c-f05050: #e71414;
+  --c-f07070: #c71515;
+  --c-f09090: #a41616;
+  --c-f0f0f0: #212022;
+  --c-f5a97b: #bd500e;
+  --c-f87171: #c80a0a;
+  --c-facc15: #fbd12d;
+  --c-ff6868: #d40000;
+  --c-ff7070: #cc0000;
+  --c-ff8c32: #ff750a;
+  --c-ff8c42: #fa6200;
+  --c-ffb432: #ffa50a;
+  --c-ffb9b9: #7a0000;
+}
+
+/* ==AUTO-RGBA-TOKENS== */
+/* ── Accent overlay tokens (borders/fills; boosted alpha in light) ── */
+:root {
+  --a-05: rgba(123,109,245,0.05);
+  --a-06: rgba(123,109,245,0.06);
+  --a-07: rgba(123,109,245,0.07);
+  --a-08: rgba(123,109,245,0.08);
+  --a-1: rgba(123,109,245,0.1);
+  --a-12: rgba(123,109,245,0.12);
+  --a-14: rgba(123,109,245,0.14);
+  --a-15: rgba(123,109,245,0.15);
+  --a-18: rgba(123,109,245,0.18);
+  --a-2: rgba(123,109,245,0.2);
+  --a-22: rgba(123,109,245,0.22);
+  --a-25: rgba(123,109,245,0.25);
+  --a-28: rgba(123,109,245,0.28);
+  --a-3: rgba(123,109,245,0.3);
+  --a-35: rgba(123,109,245,0.35);
+  --a-4: rgba(123,109,245,0.4);
+  --a-45: rgba(123,109,245,0.45);
+  --a-5: rgba(123,109,245,0.5);
+  --a-55: rgba(123,109,245,0.55);
+  --a-6: rgba(123,109,245,0.6);
+  --a-7: rgba(123,109,245,0.7);
+}
+
+body.light-mode {
+  --a-05: rgba(90,74,205,0.22);
+  --a-06: rgba(90,74,205,0.24);
+  --a-07: rgba(90,74,205,0.26);
+  --a-08: rgba(90,74,205,0.28);
+  --a-1: rgba(90,74,205,0.32);
+  --a-12: rgba(90,74,205,0.36);
+  --a-14: rgba(90,74,205,0.4);
+  --a-15: rgba(90,74,205,0.42);
+  --a-18: rgba(90,74,205,0.48);
+  --a-2: rgba(90,74,205,0.52);
+  --a-22: rgba(90,74,205,0.56);
+  --a-25: rgba(90,74,205,0.62);
+  --a-28: rgba(90,74,205,0.68);
+  --a-3: rgba(90,74,205,0.72);
+  --a-35: rgba(90,74,205,0.82);
+  --a-4: rgba(90,74,205,0.9);
+  --a-45: rgba(90,74,205,0.9);
+  --a-5: rgba(90,74,205,0.9);
+  --a-55: rgba(90,74,205,0.9);
+  --a-6: rgba(90,74,205,0.9);
+  --a-7: rgba(90,74,205,0.9);
+}
+
+/* ==AUTO-WHITE-TOKENS== */
+/* ── White-overlay tokens (dark: white on dark; light: ink on white) ── */
+:root {
+  --w-02: rgba(255,255,255,0.02);
+  --w-03: rgba(255,255,255,0.03);
+  --w-04: rgba(255,255,255,0.04);
+  --w-05: rgba(255,255,255,0.05);
+  --w-06: rgba(255,255,255,0.06);
+  --w-07: rgba(255,255,255,0.07);
+  --w-1: rgba(255,255,255,0.1);
+  --w-12: rgba(255,255,255,0.12);
+  --w-2: rgba(255,255,255,0.2);
+  --w-3: rgba(255,255,255,0.3);
+}
+
+body.light-mode {
+  --w-02: rgba(20,18,40,0.046);
+  --w-03: rgba(20,18,40,0.059);
+  --w-04: rgba(20,18,40,0.072);
+  --w-05: rgba(20,18,40,0.085);
+  --w-06: rgba(20,18,40,0.098);
+  --w-07: rgba(20,18,40,0.111);
+  --w-1: rgba(20,18,40,0.15);
+  --w-12: rgba(20,18,40,0.176);
+  --w-2: rgba(20,18,40,0.28);
+  --w-3: rgba(20,18,40,0.41);
 }

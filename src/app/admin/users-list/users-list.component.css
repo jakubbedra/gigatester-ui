@@ -2,7 +2,7 @@
   padding: 48px 56px;
   min-height: 100%;
   box-sizing: border-box;
-  color: #e0e0e0;
+  color: var(--c-e0e0e0);
 }
 
 .page-header {
@@ -13,7 +13,7 @@
   font-size: 30px;
   font-weight: 800;
   margin: 0;
-  color: #e8e8e8;
+  color: var(--c-e8e8e8);
   letter-spacing: -0.01em;
 }
 
@@ -26,8 +26,8 @@
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid #2a2a2a;
-  border-top-color: #888;
+  border: 3px solid var(--c-2a2a2a);
+  border-top-color: var(--c-888888);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -37,8 +37,8 @@
 }
 
 .table-wrap {
-  background: #1e1e1e;
-  border: 1px solid #2e2e2e;
+  background: var(--c-1e1e1e);
+  border: 1px solid var(--c-2e2e2e);
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -51,8 +51,8 @@ table {
 }
 
 thead tr {
-  background: #252525;
-  border-bottom: 1px solid #2e2e2e;
+  background: var(--c-252525);
+  border-bottom: 1px solid var(--c-2e2e2e);
 }
 
 thead th {
@@ -62,7 +62,7 @@ thead th {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #666;
+  color: var(--c-666666);
 }
 
 .actions-col {
@@ -70,7 +70,7 @@ thead th {
 }
 
 tbody tr {
-  border-bottom: 1px solid #262626;
+  border-bottom: 1px solid var(--c-262626);
   transition: background 0.15s;
 }
 
@@ -79,11 +79,11 @@ tbody tr:last-child {
 }
 
 tbody tr:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--w-02);
 }
 
 tbody tr.current-user {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--w-02);
 }
 
 td {
@@ -103,15 +103,15 @@ td {
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
-  background: #333;
+  background: var(--c-333333);
 }
 
 .avatar-initial {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #2e2a4a;
-  color: #a89cf5;
+  background: var(--c-2e2a4a);
+  color: var(--c-a89cf5);
   font-size: 14px;
   font-weight: 700;
   user-select: none;
@@ -120,9 +120,9 @@ td {
 .you-badge {
   font-size: 10px;
   font-weight: 700;
-  color: #777;
-  background: #2a2a2a;
-  border: 1px solid #333;
+  color: var(--c-777777);
+  background: var(--c-2a2a2a);
+  border: 1px solid var(--c-333333);
   border-radius: 20px;
   padding: 2px 8px;
   text-transform: uppercase;
@@ -139,19 +139,19 @@ td {
 }
 
 .role-user {
-  color: #888;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid #333;
+  color: var(--c-888888);
+  background: var(--w-05);
+  border: 1px solid var(--c-333333);
 }
 
 .role-moderator {
-  color: #7b9cf5;
+  color: var(--c-7b9cf5);
   background: rgba(123, 156, 245, 0.1);
   border: 1px solid rgba(123, 156, 245, 0.25);
 }
 
 .role-admin {
-  color: #f5a97b;
+  color: var(--c-f5a97b);
   background: rgba(245, 169, 123, 0.1);
   border: 1px solid rgba(245, 169, 123, 0.25);
 }
@@ -177,7 +177,7 @@ td {
 
 .btn-promote {
   background: rgba(123, 156, 245, 0.12);
-  color: #7b9cf5;
+  color: var(--c-7b9cf5);
   border: 1px solid rgba(123, 156, 245, 0.25) !important;
   margin-right: 8px;
 }
@@ -188,7 +188,7 @@ td {
 
 .btn-demote {
   background: rgba(245, 169, 123, 0.1);
-  color: #f5a97b;
+  color: var(--c-f5a97b);
   border: 1px solid rgba(245, 169, 123, 0.25) !important;
   margin-right: 8px;
 }
@@ -198,20 +198,20 @@ td {
 }
 
 .btn-reset-link {
-  background: rgba(255, 255, 255, 0.05);
-  color: #999;
-  border: 1px solid #333 !important;
+  background: var(--w-05);
+  color: var(--c-999999);
+  border: 1px solid var(--c-333333) !important;
   margin-right: 8px;
 }
 
 .btn-reset-link:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ccc;
+  background: var(--w-1);
+  color: var(--c-cccccc);
 }
 
 .btn-delete {
   background: rgba(240, 80, 80, 0.1);
-  color: #f07070;
+  color: var(--c-f07070);
   border: 1px solid rgba(240, 80, 80, 0.2) !important;
 }
 
@@ -220,7 +220,7 @@ td {
 }
 
 .no-actions {
-  color: #444;
+  color: var(--c-444444);
   font-size: 14px;
 }
 
@@ -281,8 +281,8 @@ td {
 }
 
 .modal {
-  background: #1e1e1e;
-  border: 1px solid #3a3a3a;
+  background: var(--c-1e1e1e);
+  border: 1px solid var(--c-3a3a3a);
   border-radius: 20px;
   padding: 32px 36px;
   width: 480px;
@@ -295,13 +295,13 @@ td {
 .modal-title {
   font-size: 18px;
   font-weight: 700;
-  color: #e8e8e8;
+  color: var(--c-e8e8e8);
   margin: 0;
 }
 
 .modal-subtitle {
   font-size: 13px;
-  color: #666;
+  color: var(--c-666666);
   margin: 0;
 }
 
@@ -309,8 +309,8 @@ td {
   display: flex;
   gap: 10px;
   align-items: center;
-  background: #141414;
-  border: 1px solid #2e2e2e;
+  background: var(--c-141414);
+  border: 1px solid var(--c-2e2e2e);
   border-radius: 10px;
   padding: 12px 14px;
 }
@@ -318,17 +318,17 @@ td {
 .reset-link-text {
   flex: 1;
   font-size: 12px;
-  color: #aaa;
+  color: var(--c-aaaaaa);
   word-break: break-all;
   font-family: monospace;
 }
 
 .btn-copy {
   flex-shrink: 0;
-  background: #2a2a2a;
-  border: 1px solid #3a3a3a;
+  background: var(--c-2a2a2a);
+  border: 1px solid var(--c-3a3a3a);
   border-radius: 8px;
-  color: #ccc;
+  color: var(--c-cccccc);
   font-size: 12px;
   font-weight: 600;
   padding: 7px 14px;
@@ -336,7 +336,7 @@ td {
   transition: background 0.15s;
 }
 
-.btn-copy:hover { background: #333; color: #fff; }
+.btn-copy:hover { background: var(--c-333333); color: #fff; }
 
 .modal-actions {
   display: flex;
@@ -344,9 +344,9 @@ td {
 }
 
 .btn-close {
-  background: #2a2a2a;
-  border: 1px solid #3d3d3d;
-  color: #ccc;
+  background: var(--c-2a2a2a);
+  border: 1px solid var(--c-3d3d3d);
+  color: var(--c-cccccc);
   border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
@@ -355,7 +355,7 @@ td {
   transition: background 0.15s;
 }
 
-.btn-close:hover { background: #333; color: #fff; }
+.btn-close:hover { background: var(--c-333333); color: #fff; }
 
 .danger-modal {
   border-color: rgba(220, 60, 60, 0.3);
@@ -370,7 +370,7 @@ td {
 }
 
 .danger-subtitle {
-  color: #e07070;
+  color: var(--c-e07070);
 }
 
 .modal-actions {
@@ -380,7 +380,7 @@ td {
 }
 
 .btn-delete-confirm {
-  background: #c0392b;
+  background: var(--c-c0392b);
   border: none;
   color: #fff;
   border-radius: 10px;
@@ -391,4 +391,4 @@ td {
   transition: background 0.15s;
 }
 
-.btn-delete-confirm:hover { background: #e74c3c; }
+.btn-delete-confirm:hover { background: var(--c-e74c3c); }

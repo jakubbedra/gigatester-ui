@@ -2,7 +2,7 @@
   padding: 48px 56px;
   min-height: 100%;
   box-sizing: border-box;
-  color: #e0e0e0;
+  color: var(--c-e0e0e0);
 }
 
 .page-header {
@@ -13,13 +13,13 @@
   font-size: 30px;
   font-weight: 800;
   margin: 0 0 8px;
-  color: #e8e8e8;
+  color: var(--c-e8e8e8);
   letter-spacing: -0.01em;
 }
 
 .page-subtitle {
   font-size: 14px;
-  color: #666;
+  color: var(--c-666666);
   margin: 0;
 }
 
@@ -32,8 +32,8 @@
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid #2a2a2a;
-  border-top-color: #888;
+  border: 3px solid var(--c-2a2a2a);
+  border-top-color: var(--c-888888);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -48,7 +48,7 @@
   align-items: center;
   gap: 12px;
   padding-top: 80px;
-  color: #555;
+  color: var(--c-555555);
 }
 
 .empty-icon {
@@ -61,8 +61,8 @@
 }
 
 .table-wrap {
-  background: #1e1e1e;
-  border: 1px solid #2e2e2e;
+  background: var(--c-1e1e1e);
+  border: 1px solid var(--c-2e2e2e);
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -75,8 +75,8 @@ table {
 }
 
 thead tr {
-  background: #252525;
-  border-bottom: 1px solid #2e2e2e;
+  background: var(--c-252525);
+  border-bottom: 1px solid var(--c-2e2e2e);
 }
 
 thead th {
@@ -86,7 +86,7 @@ thead th {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #666;
+  color: var(--c-666666);
 }
 
 .actions-col {
@@ -94,7 +94,7 @@ thead th {
 }
 
 tbody tr {
-  border-bottom: 1px solid #262626;
+  border-bottom: 1px solid var(--c-262626);
   transition: background 0.15s;
 }
 
@@ -103,7 +103,7 @@ tbody tr:last-child {
 }
 
 tbody tr:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--w-02);
 }
 
 td {
@@ -113,15 +113,15 @@ td {
 
 .username-cell {
   font-weight: 600;
-  color: #c0b0ff;
+  color: var(--c-c0b0ff);
 }
 
 .group-badge {
   font-size: 12px;
   font-weight: 600;
-  color: #9b8ff5;
-  background: rgba(123, 109, 245, 0.1);
-  border: 1px solid rgba(123, 109, 245, 0.2);
+  color: var(--c-9b8ff5);
+  background: var(--a-1);
+  border: 1px solid var(--a-2);
   border-radius: 20px;
   padding: 4px 12px;
 }
@@ -151,7 +151,7 @@ td {
 
 .btn-approve {
   background: rgba(80, 200, 120, 0.12);
-  color: #50c878;
+  color: var(--c-50c878);
   border: 1px solid rgba(80, 200, 120, 0.25) !important;
 }
 
@@ -161,7 +161,7 @@ td {
 
 .btn-deny {
   background: rgba(240, 80, 80, 0.1);
-  color: #f07070;
+  color: var(--c-f07070);
   border: 1px solid rgba(240, 80, 80, 0.2) !important;
 }
 

@@ -2,13 +2,13 @@
   padding: 32px;
   max-width: 900px;
   margin: 0 auto;
-  color: #c8c8c8;
+  color: var(--c-c8c8c8);
 }
 
 .page-title {
   font-size: 22px;
   font-weight: 700;
-  color: #e8e8e8;
+  color: var(--c-e8e8e8);
   margin: 0 0 20px;
 }
 
@@ -22,17 +22,17 @@
 
 .filter-label {
   font-size: 12px;
-  color: #777;
+  color: var(--c-777777);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
 }
 
 .filter-select {
-  background: #1e1e1e;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--c-1e1e1e);
+  border: 1px solid var(--w-12);
   border-radius: 8px;
-  color: #c8c8c8;
+  color: var(--c-c8c8c8);
   padding: 6px 12px;
   font-size: 13px;
   cursor: pointer;
@@ -49,9 +49,9 @@
 .tab-btn {
   padding: 8px 20px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--w-1);
   background: transparent;
-  color: #888;
+  color: var(--c-888888);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -60,9 +60,9 @@
 
 .tab-btn.active,
 .tab-btn:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #e0e0e0;
+  background: var(--w-07);
+  border-color: var(--w-2);
+  color: var(--c-e0e0e0);
 }
 
 /* ── Summary cards ── */
@@ -76,8 +76,8 @@
 .stat-card {
   flex: 1;
   min-width: 120px;
-  background: #232323;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--c-232323);
+  border: 1px solid var(--w-07);
   border-radius: 14px;
   padding: 20px 16px;
   text-align: center;
@@ -86,7 +86,7 @@
 .stat-value {
   font-size: 28px;
   font-weight: 700;
-  color: #f0f0f0;
+  color: var(--c-f0f0f0);
   line-height: 1;
   margin-bottom: 6px;
 }
@@ -95,13 +95,13 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #666;
+  color: var(--c-666666);
 }
 
 /* ── Line chart ── */
 .chart-card {
-  background: #232323;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--c-232323);
+  border: 1px solid var(--w-07);
   border-radius: 14px;
   padding: 24px;
   margin-bottom: 24px;
@@ -110,7 +110,7 @@
 .chart-title {
   font-size: 13px;
   font-weight: 600;
-  color: #888;
+  color: var(--c-888888);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin: 0 0 16px;
@@ -123,7 +123,7 @@
 }
 
 .grid-line {
-  stroke: rgba(255,255,255,0.05);
+  stroke: var(--w-05);
   stroke-width: 1;
 }
 
@@ -140,17 +140,17 @@
 }
 
 .line-passed {
-  stroke: #7b6df5;
+  stroke: var(--c-7b6df5);
 }
 
 .dot-passed {
-  fill: #7b6df5;
-  stroke: #232323;
+  fill: var(--c-7b6df5);
+  stroke: var(--c-232323);
   stroke-width: 1.5;
 }
 
 .x-label {
-  fill: #555;
+  fill: var(--c-555555);
   font-size: 9px;
 }
 
@@ -160,7 +160,7 @@
   gap: 16px;
   margin-top: 10px;
   font-size: 11px;
-  color: #666;
+  color: var(--c-666666);
 }
 
 .legend-line {
@@ -178,13 +178,13 @@
 }
 
 .legend-line.passed {
-  background: #7b6df5;
+  background: var(--c-7b6df5);
 }
 
 /* ── Tag accuracy ── */
 .tag-stats-card {
-  background: #232323;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--c-232323);
+  border: 1px solid var(--w-07);
   border-radius: 14px;
   padding: 24px;
   margin-bottom: 24px;
@@ -199,7 +199,7 @@
 
 .tag-key {
   font-size: 12px;
-  color: #bbb;
+  color: var(--c-bbbbbb);
   min-width: 120px;
   white-space: nowrap;
   overflow: hidden;
@@ -209,7 +209,7 @@
 .tag-bar-bg {
   flex: 1;
   height: 10px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--w-06);
   border-radius: 5px;
   overflow: hidden;
 }
@@ -220,9 +220,9 @@
   transition: width 0.4s;
 }
 
-.tag-fill-high { background: #4ade80; }
-.tag-fill-mid  { background: #facc15; }
-.tag-fill-low  { background: #f87171; }
+.tag-fill-high { background: var(--c-4ade80); }
+.tag-fill-mid  { background: var(--c-facc15); }
+.tag-fill-low  { background: var(--c-f87171); }
 
 .tag-pct {
   font-size: 12px;
@@ -231,13 +231,13 @@
   text-align: right;
 }
 
-.tag-pct-high { color: #4ade80; }
-.tag-pct-mid  { color: #facc15; }
-.tag-pct-low  { color: #f87171; }
+.tag-pct-high { color: var(--c-4ade80); }
+.tag-pct-mid  { color: var(--c-facc15); }
+.tag-pct-low  { color: var(--c-f87171); }
 
 .tag-count {
   font-size: 11px;
-  color: #555;
+  color: var(--c-555555);
   width: 70px;
 }
 
@@ -251,7 +251,7 @@
 
 .sort-label {
   font-size: 12px;
-  color: #666;
+  color: var(--c-666666);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-right: 4px;
@@ -260,9 +260,9 @@
 .sort-btn {
   padding: 5px 14px;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--w-1);
   background: transparent;
-  color: #888;
+  color: var(--c-888888);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -271,25 +271,25 @@
 
 .sort-btn.active,
 .sort-btn:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #e0e0e0;
+  background: var(--w-07);
+  border-color: var(--w-2);
+  color: var(--c-e0e0e0);
 }
 
 /* ── My rank banner ── */
 .my-rank {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--w-05);
+  border: 1px solid var(--w-1);
   border-radius: 10px;
   padding: 12px 20px;
   margin-bottom: 20px;
   font-size: 14px;
-  color: #ccc;
+  color: var(--c-cccccc);
 }
 
 .my-rank strong {
   font-size: 18px;
-  color: #f0f0f0;
+  color: var(--c-f0f0f0);
 }
 
 /* ── Ranking table ── */
@@ -305,24 +305,24 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #555;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--c-555555);
+  border-bottom: 1px solid var(--w-05);
 }
 
 .ranking-table td {
   padding: 12px 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  color: #c8c8c8;
+  border-bottom: 1px solid var(--w-04);
+  color: var(--c-c8c8c8);
 }
 
 .ranking-table tr:hover td {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--w-03);
 }
 
 .ranking-table tr.me td {
-  color: #f0f0f0;
+  color: var(--c-f0f0f0);
   font-weight: 600;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--w-05);
 }
 
 .rank-cell {
@@ -333,7 +333,7 @@
 /* ── Empty state ── */
 .empty-state {
   text-align: center;
-  color: #555;
+  color: var(--c-555555);
   padding: 48px 0;
   font-size: 14px;
 }

@@ -19,10 +19,10 @@
   width: 8px;
 }
 .stmt-list::-webkit-scrollbar-track {
-  background: #1e1e1e;
+  background: var(--c-1e1e1e);
 }
 .stmt-list::-webkit-scrollbar-thumb {
-  background: #7b6df5;
+  background: var(--c-7b6df5);
   border-radius: 4px;
 }
 
@@ -32,8 +32,8 @@
   align-items: center;
   gap: 14px;
 
-  background: #242424;
-  border: 2px solid #2f2f2f;
+  background: var(--c-242424);
+  border: 2px solid var(--c-2f2f2f);
   border-radius: 14px;
   padding: 14px 14px;
 
@@ -41,19 +41,19 @@
 }
 
 .stmt-row:hover {
-  border-color: #3a3a3a;
+  border-color: var(--c-3a3a3a);
 }
 
 .stmt-index {
   font-weight: 800;
-  color: #7b6df5;
+  color: var(--c-7b6df5);
   text-align: center;
 }
 
 .stmt-text {
   text-align: left;
   line-height: 1.45;
-  color: #e0e0e0;
+  color: var(--c-e0e0e0);
   font-size: 16px;
 }
 
@@ -68,10 +68,10 @@
   padding: 10px 12px;
 
   border-radius: 12px;
-  border: 2px solid #3a3a3a;
+  border: 2px solid var(--c-3a3a3a);
 
-  background: #2b2b2b;
-  color: #e0e0e0;
+  background: var(--c-2b2b2b);
+  color: var(--c-e0e0e0);
 
   font-weight: 700;
   cursor: pointer;
@@ -79,15 +79,15 @@
 }
 
 .tf-btn:hover:not(:disabled) {
-  border-color: #7b6df5;
-  box-shadow: 0 0 10px rgba(123, 109, 245, 0.25);
+  border-color: var(--c-7b6df5);
+  box-shadow: 0 0 10px var(--a-25);
 }
 
 .tf-btn.active {
-  background: #7b6df5;
-  border-color: #7b6df5;
+  background: var(--c-7b6df5);
+  border-color: var(--c-7b6df5);
   color: #fff;
-  box-shadow: 0 0 14px rgba(123, 109, 245, 0.35);
+  box-shadow: 0 0 14px var(--a-35);
 }
 
 .tf-btn:disabled {
@@ -113,25 +113,25 @@
   justify-content: space-between;
   align-items: center;
 
-  background: #202020;
-  border: 1px solid #2f2f2f;
+  background: var(--c-202020);
+  border: 1px solid var(--c-2f2f2f);
   border-radius: 12px;
   padding: 10px 14px;
 
-  color: #cfcfcf;
+  color: var(--c-cfcfcf);
   font-size: 14px;
 }
 
 .stmt-hint-badge {
   padding: 6px 10px;
   border-radius: 999px;
-  background: #2b2b2b;
-  border: 1px solid #3a3a3a;
-  color: #cfcfcf;
+  background: var(--c-2b2b2b);
+  border: 1px solid var(--c-3a3a3a);
+  color: var(--c-cfcfcf);
   font-weight: 700;
 }
 
 .stmt-hint-badge.ready {
-  border-color: #7b6df5;
-  color: #7b6df5;
+  border-color: var(--c-7b6df5);
+  color: var(--c-7b6df5);
 }

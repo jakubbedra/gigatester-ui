@@ -22,6 +22,9 @@
       <app-sidebar></app-sidebar>
       <div class="sidebar-footer">
         <span class="sidebar-user">{{ user?.username }}</span>
+        <button class="theme-btn" (click)="theme.toggle()" [title]="theme.isDark ? 'Switch to light mode' : 'Switch to dark mode'">
+          {{ theme.isDark ? '☀️' : '🌙' }}
+        </button>
         <button class="flag-btn" [class.active]="lang.current() === 'en'" (click)="lang.use('en')" title="English"><img src="assets/img/flag-en.svg" alt="EN" class="flag-img"/></button>
         <button class="flag-btn" [class.active]="lang.current() === 'pl'" (click)="lang.use('pl')" title="Polski"><img src="assets/img/flag-pl.svg" alt="PL" class="flag-img"/></button>
         <button class="logout-btn" (click)="logout()">{{ 'APP.SIGN_OUT' | translate }}</button>

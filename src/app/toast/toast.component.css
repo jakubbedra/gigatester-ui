@@ -15,11 +15,11 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #2a2a3e;
-  border: 1px solid rgba(123, 109, 245, 0.4);
+  background: var(--c-2a2a3e);
+  border: 1px solid var(--a-4);
   border-radius: 12px;
   padding: 12px 20px;
-  color: #e0e0f0;
+  color: var(--c-e0e0f0);
   font-size: 1rem;
   font-weight: 500;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
@@ -39,5 +39,5 @@
 }
 
 .toast-message {
-  color: #e0e0f0;
+  color: var(--c-e0e0f0);
 }

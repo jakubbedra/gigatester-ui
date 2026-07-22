@@ -13,14 +13,14 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  color: #888;
+  color: var(--c-888888);
 }
 
 .tr-spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid #2a2a2a;
-  border-top-color: #7b6df5;
+  border: 3px solid var(--c-2a2a2a);
+  border-top-color: var(--c-7b6df5);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -29,8 +29,8 @@
 .tr-card {
   width: 100%;
   max-width: 560px;
-  background: #1e1e1e;
-  border: 1px solid #2a2a2a;
+  background: var(--c-1e1e1e);
+  border: 1px solid var(--c-2a2a2a);
   border-radius: 20px;
   padding: 40px 44px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
@@ -42,20 +42,20 @@
 /* Progress */
 .tr-progress-track {
   height: 5px;
-  background: #2a2a2a;
+  background: var(--c-2a2a2a);
   border-radius: 3px;
   overflow: hidden;
 }
 .tr-progress-fill {
   height: 100%;
-  background: #7b6df5;
+  background: var(--c-7b6df5);
   border-radius: 3px;
   transition: width 0.3s ease;
 }
 .tr-counter {
   font-size: 12px;
   font-weight: 700;
-  color: #555;
+  color: var(--c-555555);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   text-align: right;
@@ -68,11 +68,11 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #7b6df5;
+  color: var(--c-7b6df5);
 }
 .tr-clue {
   font-size: 17px;
-  color: #e0e0e0;
+  color: var(--c-e0e0e0);
   line-height: 1.55;
   min-height: 56px;
 }
@@ -82,17 +82,17 @@
 .tr-input {
   width: 100%;
   box-sizing: border-box;
-  background: #141414;
-  border: 1.5px solid #333;
+  background: var(--c-141414);
+  border: 1.5px solid var(--c-333333);
   border-radius: 10px;
-  color: #e0e0e0;
+  color: var(--c-e0e0e0);
   font-size: 18px;
   font-weight: 600;
   padding: 12px 16px;
   outline: none;
   transition: border-color 0.15s;
 }
-.tr-input:focus { border-color: #7b6df5; }
+.tr-input:focus { border-color: var(--c-7b6df5); }
 
 /* Buttons */
 .tr-btn {
@@ -108,31 +108,31 @@
 .tr-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .tr-btn.primary {
-  background: #7b6df5;
+  background: var(--c-7b6df5);
   color: #fff;
 }
 .tr-btn.primary:hover:not(:disabled) {
-  background: #6a5add;
-  box-shadow: 0 0 18px rgba(123,109,245,0.45);
+  background: var(--c-6a5add);
+  box-shadow: 0 0 18px var(--a-45);
 }
 .tr-btn.secondary {
-  background: #252525;
-  color: #ccc;
-  border: 1px solid #333;
+  background: var(--c-252525);
+  color: var(--c-cccccc);
+  border: 1px solid var(--c-333333);
 }
-.tr-btn.secondary:hover { background: #2e2e2e; }
+.tr-btn.secondary:hover { background: var(--c-2e2e2e); }
 .tr-btn.accent {
-  background: #1c3a1c;
-  color: #7dd87d;
-  border: 1px solid #2a5a2a;
+  background: var(--c-1c3a1c);
+  color: var(--c-7dd87d);
+  border: 1px solid var(--c-2a5a2a);
 }
-.tr-btn.accent:hover { background: #224422; }
+.tr-btn.accent:hover { background: var(--c-224422); }
 .tr-btn.ghost {
   background: transparent;
-  color: #555;
-  border: 1px solid #2a2a2a;
+  color: var(--c-555555);
+  border: 1px solid var(--c-2a2a2a);
 }
-.tr-btn.ghost:hover { color: #888; border-color: #444; }
+.tr-btn.ghost:hover { color: var(--c-888888); border-color: var(--c-444444); }
 
 /* Feedback */
 .tr-feedback {
@@ -145,23 +145,23 @@
   font-weight: 600;
 }
 .tr-feedback.correct {
-  background: #162616;
-  border: 1px solid #2a5a2a;
-  color: #7dd87d;
+  background: var(--c-162616);
+  border: 1px solid var(--c-2a5a2a);
+  color: var(--c-7dd87d);
 }
 .tr-feedback.wrong {
-  background: #2a1212;
-  border: 1px solid #5a2a2a;
-  color: #e08080;
+  background: var(--c-2a1212);
+  border: 1px solid var(--c-5a2a2a);
+  color: var(--c-e08080);
 }
 .tr-feedback-icon { font-size: 20px; font-weight: 900; flex-shrink: 0; }
-.tr-feedback-text strong { color: #e0e0e0; }
+.tr-feedback-text strong { color: var(--c-e0e0e0); }
 
 /* Results */
 .tr-results { align-items: center; text-align: center; gap: 12px; }
 .tr-results-icon { font-size: 64px; line-height: 1; }
-.tr-results-score { font-size: 52px; font-weight: 900; color: #7b6df5; line-height: 1; }
-.tr-results-label { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #555; }
+.tr-results-score { font-size: 52px; font-weight: 900; color: var(--c-7b6df5); line-height: 1; }
+.tr-results-label { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--c-555555); }
 .tr-results-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 8px; }
 
 @media (max-width: 600px) {

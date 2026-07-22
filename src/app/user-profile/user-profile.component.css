@@ -10,7 +10,7 @@
 .back-btn {
   background: transparent;
   border: none;
-  color: #7b6df5;
+  color: var(--c-7b6df5);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -18,18 +18,18 @@
   align-self: flex-start;
 }
 
-.back-btn:hover { color: #a89cf5; }
+.back-btn:hover { color: var(--c-a89cf5); }
 
 .loading, .not-found {
-  color: #555;
+  color: var(--c-555555);
   font-size: 14px;
   margin-top: 40px;
   text-align: center;
 }
 
 .profile-card {
-  background: #1e1e2e;
-  border: 1px solid rgba(123, 109, 245, 0.18);
+  background: var(--c-1e1e2e);
+  border: 1px solid var(--a-18);
   border-radius: 16px;
   padding: 32px;
   display: flex;
@@ -44,7 +44,7 @@
   height: 88px;
   border-radius: 50%;
   overflow: hidden;
-  box-shadow: 0 0 0 3px rgba(123, 109, 245, 0.4);
+  box-shadow: 0 0 0 3px var(--a-4);
 }
 
 .avatar {
@@ -60,8 +60,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #2e2a4a;
-  color: #a89cf5;
+  background: var(--c-2e2a4a);
+  color: var(--c-a89cf5);
   font-size: 36px;
   font-weight: 700;
   user-select: none;
@@ -76,7 +76,7 @@
 .profile-name {
   font-size: 22px;
   font-weight: 700;
-  color: #e8e4ff;
+  color: var(--c-e8e4ff);
 }
 
 .profile-role {
@@ -84,9 +84,9 @@
   align-items: center;
   font-size: 11px;
   font-weight: 700;
-  color: #a89cf5;
-  background: rgba(123, 109, 245, 0.12);
-  border: 1px solid rgba(123, 109, 245, 0.25);
+  color: var(--c-a89cf5);
+  background: var(--a-12);
+  border: 1px solid var(--a-25);
   border-radius: 20px;
   padding: 3px 10px;
   letter-spacing: 0.07em;
@@ -96,12 +96,12 @@
 
 .profile-bio {
   font-size: 14px;
-  color: #c8c0e8;
+  color: var(--c-c8c0e8);
   line-height: 1.6;
   margin: 4px 0 0;
   white-space: pre-wrap;
 }
 
 .profile-bio.empty {
-  color: #444;
+  color: var(--c-444444);
 }

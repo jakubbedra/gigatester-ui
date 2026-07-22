@@ -3,14 +3,14 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: #1f1f1f;
+  background: var(--c-1f1f1f);
   padding: 24px;
   box-sizing: border-box;
 }
 
 .login-card {
-  background: #2b2b2b;
-  border: 1px solid rgba(123, 109, 245, 0.2);
+  background: var(--c-2b2b2b);
+  border: 1px solid var(--a-2);
   border-radius: 14px;
   padding: 40px 36px;
   width: 100%;
@@ -33,7 +33,26 @@
 
 .lang-switcher {
   display: flex;
+  align-items: center;
   gap: 4px;
+}
+
+.theme-btn {
+  background: transparent;
+  border: 1px solid var(--a-2);
+  border-radius: 6px;
+  color: var(--c-9b8ff5);
+  font-size: 13px;
+  line-height: 1;
+  padding: 4px 6px;
+  cursor: pointer;
+  margin-right: 4px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.theme-btn:hover {
+  background: var(--a-15);
+  border-color: var(--a-5);
 }
 
 .flag-btn {
@@ -50,7 +69,7 @@
 
 .flag-btn.active {
   opacity: 1;
-  border-color: rgba(123, 109, 245, 0.5);
+  border-color: var(--a-5);
 }
 
 .flag-img {
@@ -66,13 +85,13 @@
 .brand-name {
   font-size: 22px;
   font-weight: 700;
-  color: #c0b0ff;
+  color: var(--c-c0b0ff);
   letter-spacing: 0.04em;
 }
 
 .tab-row {
   display: flex;
-  border-bottom: 1px solid rgba(123, 109, 245, 0.2);
+  border-bottom: 1px solid var(--a-2);
   margin-bottom: 28px;
 }
 
@@ -81,7 +100,7 @@
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  color: #888;
+  color: var(--c-888888);
   font-size: 14px;
   font-weight: 600;
   padding: 10px 0;
@@ -91,8 +110,8 @@
 }
 
 .tab.active {
-  color: #c0b0ff;
-  border-bottom-color: #7b6df5;
+  color: var(--c-c0b0ff);
+  border-bottom-color: var(--c-7b6df5);
 }
 
 .field {
@@ -105,16 +124,16 @@
 .field label {
   font-size: 12px;
   font-weight: 600;
-  color: #999;
+  color: var(--c-999999);
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .field input {
-  background: #1f1f1f;
-  border: 1px solid rgba(123, 109, 245, 0.25);
+  background: var(--c-1f1f1f);
+  border: 1px solid var(--a-25);
   border-radius: 8px;
-  color: #e0e0e0;
+  color: var(--c-e0e0e0);
   font-size: 14px;
   padding: 10px 14px;
   outline: none;
@@ -122,15 +141,15 @@
 }
 
 .field input:focus {
-  border-color: #7b6df5;
+  border-color: var(--c-7b6df5);
 }
 
 .field input::placeholder {
-  color: #555;
+  color: var(--c-555555);
 }
 
 .error-msg {
-  color: #f87171;
+  color: var(--c-f87171);
   font-size: 13px;
   margin: 0 0 16px;
   text-align: center;
@@ -138,7 +157,7 @@
 
 .submit-btn {
   width: 100%;
-  background: #7b6df5;
+  background: var(--c-7b6df5);
   border: none;
   border-radius: 8px;
   color: #fff;
@@ -152,7 +171,7 @@
 }
 
 .submit-btn:hover:not(:disabled) {
-  background: #9080ff;
+  background: var(--c-9080ff);
 }
 
 .submit-btn:disabled {

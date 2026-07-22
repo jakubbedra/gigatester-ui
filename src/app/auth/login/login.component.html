@@ -7,6 +7,9 @@
         <span class="brand-name">Gigatester</span>
       </div>
       <div class="lang-switcher">
+        <button class="theme-btn" (click)="theme.toggle()" [title]="theme.isDark ? 'Switch to light mode' : 'Switch to dark mode'">
+          {{ theme.isDark ? '☀️' : '🌙' }}
+        </button>
         <button class="flag-btn" [class.active]="lang.current() === 'en'" (click)="lang.use('en')" title="English">
           <img src="assets/img/flag-en.svg" alt="EN" class="flag-img" />
         </button>

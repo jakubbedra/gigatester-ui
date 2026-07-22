@@ -41,9 +41,9 @@
   padding: 14px 16px;
   border-radius: 12px;
 
-  background: #2b2b2b;
-  border: 1px solid #3a3a3a;
-  color: #e0e0e0;
+  background: var(--c-2b2b2b);
+  border: 1px solid var(--c-3a3a3a);
+  color: var(--c-e0e0e0);
 
   font-size: 16px;
   font-weight: 600;
@@ -55,15 +55,15 @@
 
 /* hover */
 .answer-btn:hover {
-  border-color: #7b6df5;
-  box-shadow: 0 0 14px rgba(123, 109, 245, 0.22);
+  border-color: var(--c-7b6df5);
+  box-shadow: 0 0 14px var(--a-22);
 }
 
 /* selected state */
 .answer-btn.selected {
-  border-color: #7b6df5;
-  background: rgba(123, 109, 245, 0.12);
-  box-shadow: 0 0 18px rgba(123, 109, 245, 0.28);
+  border-color: var(--c-7b6df5);
+  background: var(--a-12);
+  box-shadow: 0 0 18px var(--a-28);
 }
 
 /* ======= RADIO vs CHECKBOX ======= */
@@ -74,7 +74,7 @@
   margin-top: 4px;
   width: 16px;
   height: 16px;
-  border: 2px solid #7b6df5;
+  border: 2px solid var(--c-7b6df5);
   background: transparent;
   transition: 0.2s ease;
 }
@@ -91,8 +91,8 @@
 
 /* fill when selected */
 .answer-btn.selected .bullet {
-  background: #7b6df5;
-  box-shadow: 0 0 10px rgba(123, 109, 245, 0.5);
+  background: var(--c-7b6df5);
+  box-shadow: 0 0 10px var(--a-5);
 }
 
 /* ======= ANSWER TEXT ======= */
@@ -111,23 +111,23 @@
   font-size: 13px;
   font-weight: 700;
   opacity: 0.75;
-  color: #cfcfcf;
+  color: var(--c-cfcfcf);
   text-align: center;
 }
 
 /* correct answers */
 .answer-btn.correct {
-  border-color: #2ecc71;
+  border-color: var(--c-2ecc71);
   background: rgba(46, 204, 113, 0.15);
 }
 
 /* incorrect SELECTED answers */
 .answer-btn.wrong {
-  border-color: #e74c3c;
+  border-color: var(--c-e74c3c);
   background: rgba(231, 76, 60, 0.15);
 }
 
 /* keep your existing selected style but soften it after grading */
 .answer-btn.selected:not(.correct):not(.wrong) {
-  background: #2b2b2b;
+  background: var(--c-2b2b2b);
 }
