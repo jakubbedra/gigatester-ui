@@ -67,14 +67,21 @@
 
   <!-- Section header -->
   <div class="section-header">
-    <h2 class="section-title">{{ 'TEST_EDIT.QUESTIONS' | translate }} <span class="count">{{ questions.length }}</span></h2>
+    <h2 class="section-title">{{ 'TEST_EDIT.QUESTIONS' | translate }} <span class="count">{{ totalQuestions }}</span></h2>
     <button class="btn-add-question" (click)="openAddQuestion()">+ {{ 'TEST_EDIT.ADD_QUESTION' | translate }}</button>
+  </div>
+
+  <!-- Search bar -->
+  <div class="question-search-bar">
+    <input class="question-search-input" type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange()"
+           placeholder="Search by question text…" />
+    <button class="question-search-clear" *ngIf="searchQuery" (click)="searchQuery = ''; page = 0; loadPage()">✕</button>
   </div>
 
   <!-- Questions list -->
   <div class="questions-list" *ngIf="questions.length > 0; else noQuestions">
     <div class="question-item" *ngFor="let q of questions; let i = index">
-      <div class="question-index">{{ i + 1 }}</div>
+      <div class="question-index">{{ page * pageSize + i + 1 }}</div>
 
       <div class="question-content">
         <div class="question-header">
@@ -158,10 +165,25 @@
     </div>
   </div>
 
+  <!-- Pagination -->
+  <div class="q-pagination-bar" *ngIf="totalQuestions > 0">
+    <div class="q-page-size-select">
+      <span class="q-page-size-label">Per page:</span>
+      <button *ngFor="let s of pageSizes" class="q-page-size-btn" [class.active]="pageSize === s" (click)="setPageSize(s)">{{ s }}</button>
+    </div>
+    <div class="q-page-nav">
+      <button class="q-page-btn" (click)="setPage(0)" [disabled]="page === 0">«</button>
+      <button class="q-page-btn" (click)="setPage(page - 1)" [disabled]="page === 0">‹</button>
+      <span class="q-page-info">{{ page + 1 }} / {{ totalPages }}</span>
+      <button class="q-page-btn" (click)="setPage(page + 1)" [disabled]="page >= totalPages - 1">›</button>
+      <button class="q-page-btn" (click)="setPage(totalPages - 1)" [disabled]="page >= totalPages - 1">»</button>
+    </div>
+  </div>
+
   <ng-template #noQuestions>
     <div class="empty-state">
       <div class="empty-icon">❓</div>
-      <p>{{ 'TEST_EDIT.NO_ANSWERS' | translate }}</p>
+      <p>{{ searchQuery ? 'No questions match your search.' : ('TEST_EDIT.NO_ANSWERS' | translate) }}</p>
     </div>
   </ng-template>
 </div>

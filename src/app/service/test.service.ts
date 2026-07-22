@@ -47,6 +47,10 @@ export class TestService {
     return this.http.get<TagResponse[]>(`${this.baseUrl}/${testId}/tags`);
   }
 
+  getTestQuestions(testId: string, page: number, size: number, q: string): Observable<{ questions: any[]; total: number; page: number; size: number }> {
+    return this.http.get<any>(`${this.baseUrl}/${testId}/questions`, { params: { page, size, q } });
+  }
+
   getAuthorCandidates(testId: string): Observable<AuthorCandidate[]> {
     return this.http.get<AuthorCandidate[]>(`${this.baseUrl}/${testId}/author-candidates`);
   }

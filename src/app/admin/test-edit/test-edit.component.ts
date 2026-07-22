@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { forkJoin, of } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { TestService } from '../../service/test.service';
 import { QuestionsService } from '../../service/question.service';
 import { ImageService } from '../../service/image.service';
@@ -31,6 +31,14 @@ export class TestEditComponent implements OnInit {
   testName = '';
   saving = false;
   loading = true;
+
+  // Pagination & search
+  page = 0;
+  pageSize = 20;
+  totalQuestions = 0;
+  searchQuery = '';
+  readonly pageSizes = [10, 20, 50];
+  private searchSubject = new Subject<string>();
 
 
   // Edit modal
@@ -96,22 +104,43 @@ export class TestEditComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
-    this.testService.getTest(id).pipe(
-      switchMap(test => {
-        this.test = test;
-        this.testName = test.name;
-        if (!test.questions || test.questions.length === 0) return of([]);
-        this.testAuthors = test.authors ?? [];
-        return forkJoin(
-          test.questions.map(qId =>
-            this.questionsService.getQuestion(qId).pipe(map(q => ({ ...q, id: qId })))
-          )
-        );
-      })
-    ).subscribe(questions => {
-      this.questions = questions as QuestionDtoUnion[];
+    this.testService.getTest(id).subscribe(test => {
+      this.test = test;
+      this.testName = test.name;
+      this.testAuthors = test.authors ?? [];
+      this.loadPage();
+    });
+    this.searchSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(() => {
+      this.page = 0;
+      this.loadPage();
+    });
+  }
+
+  loadPage() {
+    if (!this.test) return;
+    this.loading = true;
+    this.testService.getTestQuestions(this.test.id, this.page, this.pageSize, this.searchQuery).subscribe(res => {
+      this.questions = res.questions as QuestionDtoUnion[];
+      this.totalQuestions = res.total;
       this.loading = false;
     });
+  }
+
+  get totalPages(): number { return Math.max(1, Math.ceil(this.totalQuestions / this.pageSize)); }
+
+  setPage(p: number) {
+    this.page = Math.max(0, Math.min(p, this.totalPages - 1));
+    this.loadPage();
+  }
+
+  setPageSize(s: number) {
+    this.pageSize = s;
+    this.page = 0;
+    this.loadPage();
+  }
+
+  onSearchChange() {
+    this.searchSubject.next(this.searchQuery);
   }
 
   save() {
@@ -130,7 +159,13 @@ export class TestEditComponent implements OnInit {
     if (!this.test) return;
     this.openConfirm('Remove this question from the test?', () => {
       this.test!.questions = this.test!.questions.filter(id => id !== questionId);
-      this.questions = this.questions.filter(q => q.id !== questionId);
+      this.testService.updateTest(this.test!.id, {
+        name: this.testName,
+        questions: this.test!.questions,
+        closedQuestionsCount: this.test!.closedQuestionsCount,
+        openQuestionsCount: this.test!.openQuestionsCount,
+        passingPercentage: this.test!.passingPercentage
+      }).subscribe(() => this.loadPage());
     });
   }
 
@@ -275,10 +310,9 @@ export class TestEditComponent implements OnInit {
     const id = this.editDraft.id;
     this.questionsService.updateQuestion(id, this.editDraft).subscribe({
       next: () => {
-        const idx = this.questions.findIndex(q => q.id === id);
-        if (idx !== -1) this.questions[idx] = { ...this.editDraft } as QuestionDtoUnion;
         this.savingQuestion = false;
         this.closeEdit();
+        this.loadPage();
       },
       error: () => {
         this.savingQuestion = false;
@@ -334,11 +368,10 @@ export class TestEditComponent implements OnInit {
         openQuestionsCount: this.test!.openQuestionsCount,
         passingPercentage: this.test!.passingPercentage
       }).subscribe(() => {
-        this.questionsService.getQuestion(newId).subscribe(q => {
-          this.questions = [{ ...q, id: newId } as QuestionDtoUnion, ...this.questions];
-          this.addingQuestion = false;
-          this.showAddModal = false;
-        });
+        this.addingQuestion = false;
+        this.showAddModal = false;
+        this.page = 0;
+        this.loadPage();
       });
     });
   }
@@ -357,9 +390,8 @@ export class TestEditComponent implements OnInit {
         openQuestionsCount: this.test!.openQuestionsCount,
         passingPercentage: this.test!.passingPercentage
       }).subscribe(() => {
-        this.questionsService.getQuestion(newId).subscribe(fetched => {
-          this.questions = [{ ...fetched, id: newId } as QuestionDtoUnion, ...this.questions];
-        });
+        this.page = 0;
+        this.loadPage();
       });
     });
   }

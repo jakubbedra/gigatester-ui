@@ -216,6 +216,103 @@
 }
 .btn-add-question:hover { background: #6a5add; box-shadow: 0 0 12px rgba(123,109,245,0.4); }
 
+/* ── Question search bar ─────────────────────────────────────────────────── */
+.question-search-bar {
+  position: relative;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.question-search-input {
+  flex: 1;
+  padding: 10px 36px 10px 14px;
+  border-radius: 10px;
+  background: #1e1e1e;
+  border: 1px solid #2f2f2f;
+  color: #e0e0e0;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+}
+.question-search-input:focus { border-color: #7b6df5; }
+.question-search-input::placeholder { color: #555; }
+
+.question-search-clear {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: 0.15s;
+}
+.question-search-clear:hover { color: #e0e0e0; }
+
+/* ── Pagination ──────────────────────────────────────────────────────────── */
+.q-pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0 8px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.q-page-size-select {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.q-page-size-label {
+  font-size: 13px;
+  color: #777;
+}
+
+.q-page-size-btn {
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid #3a3a3a;
+  background: #1e1e1e;
+  color: #999;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.q-page-size-btn:hover { border-color: #7b6df5; color: #c0b8ff; }
+.q-page-size-btn.active { background: rgba(123,109,245,0.18); border-color: #7b6df5; color: #c0b8ff; }
+
+.q-page-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.q-page-btn {
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid #3a3a3a;
+  background: #1e1e1e;
+  color: #999;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.q-page-btn:hover:not(:disabled) { border-color: #7b6df5; color: #c0b8ff; }
+.q-page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.q-page-info {
+  font-size: 13px;
+  color: #aaa;
+  min-width: 52px;
+  text-align: center;
+}
+
 /* ── Questions list ──────────────────────────────────────────────────────── */
 .questions-list {
   display: flex;
