@@ -314,6 +314,16 @@
 }
 
 /* ── Questions list ──────────────────────────────────────────────────────── */
+.list-loading-bar {
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--a-6), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: 2px;
+  margin-bottom: 8px;
+}
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
 .questions-list {
   display: flex;
   flex-direction: column;

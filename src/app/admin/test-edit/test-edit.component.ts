@@ -31,6 +31,7 @@ export class TestEditComponent implements OnInit {
   testName = '';
   saving = false;
   loading = true;
+  listLoading = false;
 
   // Pagination & search
   page = 0;
@@ -108,7 +109,7 @@ export class TestEditComponent implements OnInit {
       this.test = test;
       this.testName = test.name;
       this.testAuthors = test.authors ?? [];
-      this.loadPage();
+      this.loadPage(true);
     });
     this.searchSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(() => {
       this.page = 0;
@@ -116,13 +117,14 @@ export class TestEditComponent implements OnInit {
     });
   }
 
-  loadPage() {
+  loadPage(initial = false) {
     if (!this.test) return;
-    this.loading = true;
+    if (initial) { this.loading = true; } else { this.listLoading = true; }
     this.testService.getTestQuestions(this.test.id, this.page, this.pageSize, this.searchQuery).subscribe(res => {
       this.questions = res.questions as QuestionDtoUnion[];
       this.totalQuestions = res.total;
       this.loading = false;
+      this.listLoading = false;
     });
   }
 
@@ -157,6 +159,10 @@ export class TestEditComponent implements OnInit {
 
   removeQuestion(questionId: string) {
     if (!this.test) return;
+    if (!questionId) {
+      alert('Question has no id — the backend is running an outdated build. Rebuild and restart the server.');
+      return;
+    }
     this.openConfirm('Remove this question from the test?', () => {
       this.test!.questions = this.test!.questions.filter(id => id !== questionId);
       this.testService.updateTest(this.test!.id, {
@@ -390,8 +396,10 @@ export class TestEditComponent implements OnInit {
         openQuestionsCount: this.test!.openQuestionsCount,
         passingPercentage: this.test!.passingPercentage
       }).subscribe(() => {
-        this.page = 0;
-        this.loadPage();
+        this.questionsService.getQuestion(newId).subscribe((newQ: any) => {
+          this.questions = [newQ, ...this.questions];
+          this.totalQuestions += 1;
+        });
       });
     });
   }

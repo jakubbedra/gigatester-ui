@@ -79,6 +79,7 @@
   </div>
 
   <!-- Questions list -->
+  <div class="list-loading-bar" *ngIf="listLoading"></div>
   <div class="questions-list" *ngIf="questions.length > 0; else noQuestions">
     <div class="question-item" *ngFor="let q of questions; let i = index">
       <div class="question-index">{{ page * pageSize + i + 1 }}</div>
@@ -181,7 +182,7 @@
   </div>
 
   <ng-template #noQuestions>
-    <div class="empty-state">
+    <div class="empty-state" *ngIf="!listLoading">
       <div class="empty-icon">❓</div>
       <p>{{ searchQuery ? 'No questions match your search.' : ('TEST_EDIT.NO_ANSWERS' | translate) }}</p>
     </div>
