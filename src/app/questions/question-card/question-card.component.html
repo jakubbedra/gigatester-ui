@@ -87,7 +87,7 @@
           </button>
         </div>
 
-      <div class="side-card tags-card" *ngIf="(question?.tags || []).length > 0">
+      <div class="side-card tags-card" *ngIf="!testState?.hideTagsDuringTest && (question?.tags || []).length > 0">
         <div class="side-title">{{ 'QUESTION_CARD.TAGS' | translate }}</div>
         <div class="question-tags">
           <span class="question-tag" *ngFor="let t of question!.tags">{{ t.key }}</span>

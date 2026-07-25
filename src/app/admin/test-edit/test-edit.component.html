@@ -24,6 +24,18 @@
         <input type="number" [(ngModel)]="test!.passingPercentage" min="0" max="100" />
       </div>
     </div>
+    <div class="form-row">
+      <label class="toggle-row">
+        <span class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="test!.hideTagsDuringTest" />
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        </span>
+        <span class="toggle-text">
+          <span class="toggle-title">Hide tags while taking the test</span>
+          <span class="toggle-hint">Useful for practicing a topic without revealing its category (e.g. histology slides)</span>
+        </span>
+      </label>
+    </div>
     <div class="meta-actions">
       <button class="btn-save" (click)="save()" [disabled]="saving || !testName.trim()">
         {{ saving ? ('TEST_EDIT.SAVE' | translate) : ('TEST_EDIT.SAVE' | translate) }}

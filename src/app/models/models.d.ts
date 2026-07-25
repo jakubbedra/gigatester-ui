@@ -288,6 +288,7 @@ export interface TestRequest {
     closedQuestionsCount: number;
     openQuestionsCount: number;
     passingPercentage: number;
+    hideTagsDuringTest?: boolean;
 }
 
 export interface TestStateRequest {
@@ -337,6 +338,7 @@ export interface TestResponse {
     storedOpenQuestionsCount: number;
     passingPercentage: number;
     timeLimit: number;
+    hideTagsDuringTest: boolean;
     authors: SubjectAuthor[];
 }
 
@@ -357,6 +359,7 @@ export interface TestStateResponse {
     timeLimitEnabled: boolean;
     timeLimitMs: number;
     startTime: number;
+    hideTagsDuringTest: boolean;
 }
 
 export interface QuestionStateSummaryResponse {

@@ -148,13 +148,20 @@ export class TestEditComponent implements OnInit {
   save() {
     if (!this.test || !this.testName.trim()) return;
     this.saving = true;
-    this.testService.updateTest(this.test.id, {
-      name: this.testName.trim(),
-      questions: this.test.questions,
-      closedQuestionsCount: this.test.closedQuestionsCount,
-      openQuestionsCount: this.test.openQuestionsCount,
-      passingPercentage: this.test.passingPercentage
-    }).subscribe(() => { this.saving = false; });
+    const name = this.testName.trim();
+    this.testService.updateTest(this.test.id, { ...this.buildTestRequest(this.test.questions), name })
+      .subscribe(() => { this.saving = false; });
+  }
+
+  private buildTestRequest(questions: string[]): any {
+    return {
+      name: this.testName,
+      questions,
+      closedQuestionsCount: this.test!.closedQuestionsCount,
+      openQuestionsCount: this.test!.openQuestionsCount,
+      passingPercentage: this.test!.passingPercentage,
+      hideTagsDuringTest: this.test!.hideTagsDuringTest
+    };
   }
 
   removeQuestion(questionId: string) {
@@ -165,13 +172,8 @@ export class TestEditComponent implements OnInit {
     }
     this.openConfirm('Remove this question from the test?', () => {
       this.test!.questions = this.test!.questions.filter(id => id !== questionId);
-      this.testService.updateTest(this.test!.id, {
-        name: this.testName,
-        questions: this.test!.questions,
-        closedQuestionsCount: this.test!.closedQuestionsCount,
-        openQuestionsCount: this.test!.openQuestionsCount,
-        passingPercentage: this.test!.passingPercentage
-      }).subscribe(() => this.loadPage());
+      this.testService.updateTest(this.test!.id, this.buildTestRequest(this.test!.questions))
+        .subscribe(() => this.loadPage());
     });
   }
 
@@ -367,13 +369,7 @@ export class TestEditComponent implements OnInit {
     this.questionsService.addQuestion(this.addDraft).subscribe((created: any) => {
       const newId = created?.id ?? created;
       this.test!.questions = [newId, ...this.test!.questions];
-      this.testService.updateTest(this.test!.id, {
-        name: this.testName,
-        questions: this.test!.questions,
-        closedQuestionsCount: this.test!.closedQuestionsCount,
-        openQuestionsCount: this.test!.openQuestionsCount,
-        passingPercentage: this.test!.passingPercentage
-      }).subscribe(() => {
+      this.testService.updateTest(this.test!.id, this.buildTestRequest(this.test!.questions)).subscribe(() => {
         this.addingQuestion = false;
         this.showAddModal = false;
         this.page = 0;
@@ -389,13 +385,7 @@ export class TestEditComponent implements OnInit {
     this.questionsService.addQuestion(draft).subscribe((created: any) => {
       const newId = created?.id ?? created;
       this.test!.questions = [newId, ...this.test!.questions];
-      this.testService.updateTest(this.test!.id, {
-        name: this.testName,
-        questions: this.test!.questions,
-        closedQuestionsCount: this.test!.closedQuestionsCount,
-        openQuestionsCount: this.test!.openQuestionsCount,
-        passingPercentage: this.test!.passingPercentage
-      }).subscribe(() => {
+      this.testService.updateTest(this.test!.id, this.buildTestRequest(this.test!.questions)).subscribe(() => {
         this.questionsService.getQuestion(newId).subscribe((newQ: any) => {
           this.questions = [newQ, ...this.questions];
           this.totalQuestions += 1;
