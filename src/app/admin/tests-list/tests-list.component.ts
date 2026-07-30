@@ -106,8 +106,12 @@ export class TestsListComponent implements OnInit {
           return forkJoin([tests$, crosswords$]);
         })
       ).subscribe(([tests, crosswords]: any) => {
-        this.tests = tests.map((t: any) => ({ id: t.id, name: t.name }));
-        this.crosswords = crosswords.map((c: any) => ({ id: c.id, name: c.name, termCount: c.terms?.length ?? 0 }));
+        this.tests = tests
+          .map((t: any) => ({ id: t.id, name: t.name }))
+          .sort((a: TestSummaryResponse, b: TestSummaryResponse) => a.name.localeCompare(b.name));
+        this.crosswords = crosswords
+          .map((c: any) => ({ id: c.id, name: c.name, termCount: c.terms?.length ?? 0 }))
+          .sort((a: CrosswordSummaryResponse, b: CrosswordSummaryResponse) => a.name.localeCompare(b.name));
       });
     } else {
       this.subjectName = null;
@@ -118,7 +122,7 @@ export class TestsListComponent implements OnInit {
       this.comments = [];
       this.subjectAuthors = [];
       this.testService.getTests().subscribe(res => {
-        this.tests = res.tests;
+        this.tests = [...res.tests].sort((a, b) => a.name.localeCompare(b.name));
         this.crosswords = [];
       });
     }

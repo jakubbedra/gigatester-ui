@@ -1,10 +1,10 @@
-import { Component, OnInit, HostListener } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { AuthService } from '../service/auth.service';
 import { LanguageService } from '../service/language.service';
 import { StreakService } from '../service/streak.service';
-import { forkJoin, of } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { forkJoin, of, Subscription, timer } from 'rxjs';
+import { switchMap, map, filter } from 'rxjs/operators';
 import { TestService } from '../service/test.service';
 import { SubjectsService } from '../service/subject.service';
 import { SubjectGroupService } from '../service/subject-group.service';
@@ -38,13 +38,17 @@ interface UniversityYear {
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
   universityYears: UniversityYear[] = [];
   openMenuId: string | null = null;
   currentStreak = 0;
   longestStreak = 0;
   inboxRequests: InboxRequest[] = [];
   inboxLoading = false;
+
+  private static readonly REFRESH_INTERVAL_MS = 30000;
+  private refreshSub?: Subscription;
+  private navSub?: Subscription;
 
   get pendingCount(): number {
     return this.inboxRequests.length;
@@ -91,14 +95,38 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.refreshAll();
+
+    // Periodic background refresh so assigned tests/crosswords/streak stay current
+    // without requiring a manual page reload.
+    this.refreshSub = timer(SidebarComponent.REFRESH_INTERVAL_MS, SidebarComponent.REFRESH_INTERVAL_MS)
+      .subscribe(() => this.refreshAll());
+
+    // Also refresh right after navigation, so changes made elsewhere (e.g. admin
+    // creating/deleting a test) are reflected as soon as the user returns here.
+    this.navSub = this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd)
+    ).subscribe(() => this.refreshAll());
+  }
+
+  ngOnDestroy() {
+    this.refreshSub?.unsubscribe();
+    this.navSub?.unsubscribe();
+  }
+
+  private refreshAll() {
     this.loadData();
+    this.refreshStreak();
+    if (this.isModerator) {
+      this.loadInbox();
+    }
+  }
+
+  private refreshStreak() {
     this.streakService.getStreak().subscribe(s => {
       this.currentStreak = s.currentStreak;
       this.longestStreak = s.longestStreak;
     });
-    if (this.isModerator) {
-      this.loadInbox();
-    }
   }
 
   loadInbox() {
@@ -154,24 +182,30 @@ export class SidebarComponent implements OnInit {
     ).subscribe((result: any) => {
       const { groups, allTests, allCrosswords, subjectDetails = [] } = result;
       const subjectMap = new Map(subjectDetails.map((s: any) => [s.id, s]));
+      const prevYearExpanded = new Map(this.universityYears.map(y => [y.id, y.expanded]));
+      const prevSubjectExpanded = new Map(
+        this.universityYears.flatMap(y => y.subjects.map(s => [s.id, s.expanded] as const))
+      );
 
       this.universityYears = groups.map((g: any) => ({
         id: g.id,
         name: g.name,
-        expanded: false,
+        expanded: prevYearExpanded.get(g.id) ?? false,
         subjects: g.subjects.map((subjectId: string) => {
           const subject = subjectMap.get(subjectId) as any;
           if (!subject) return null;
           return {
             id: subject.id,
             name: subject.name,
-            expanded: false,
+            expanded: prevSubjectExpanded.get(subject.id) ?? false,
             tests: allTests
               .filter((t: TestSummaryResponse) => subject.tests.includes(t.id))
-              .map((t: TestSummaryResponse) => ({ name: t.name, id: t.id })),
+              .map((t: TestSummaryResponse) => ({ name: t.name, id: t.id }))
+              .sort((a: Item, b: Item) => a.name.localeCompare(b.name)),
             crosswords: allCrosswords
               .filter((c: CrosswordSummaryResponse) => (subject.crosswords ?? []).includes(c.id))
               .map((c: CrosswordSummaryResponse) => ({ name: c.name, id: c.id }))
+              .sort((a: Item, b: Item) => a.name.localeCompare(b.name))
           };
         }).filter(Boolean)
       }));
