@@ -8,6 +8,8 @@ export interface UserResponse {
   id: string;
   username: string;
   role: string;
+  assignedRoleId?: string | null;
+  assignedRoleName?: string | null;
   profilePictureUrl: string | null;
   bio: string | null;
 }

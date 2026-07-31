@@ -8,6 +8,7 @@ import { AuthService } from '../service/auth.service';
 import { SubjectGroupAccessService, AccessStatus, AccessRequestResponse } from '../service/subject-group-access.service';
 import { SubjectGroupResponse, SubjectSummaryResponse, SubjectAuthor } from '../models/models.d';
 import { AuthorCandidate } from '../service/subject.service';
+import { PermissionService } from '../service/permission.service';
 
 interface GroupCard {
   id: string;
@@ -55,6 +56,7 @@ export class HomeComponent implements OnInit {
   showRequestsModal = false;
   requestsGroup: GroupCard | null = null;
   requestsLoading = false;
+  memberSearch = '';
 
   requestingGroupId: string | null = null;
 
@@ -63,12 +65,12 @@ export class HomeComponent implements OnInit {
     private subjectsService: SubjectsService,
     private accessService: SubjectGroupAccessService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private permissionService: PermissionService
   ) {}
 
   get canModify(): boolean {
-    const role = this.authService.getUser()?.role;
-    return role === 'MODERATOR' || role === 'ADMIN';
+    return this.permissionService.isStaff();
   }
 
   get isAdmin(): boolean {
@@ -152,6 +154,7 @@ export class HomeComponent implements OnInit {
     this.showOwnerPopup = false;
     this.requestsLoading = true;
     this.showRequestsModal = true;
+    this.memberSearch = '';
     this.accessService.getAccessRequests(group.id).subscribe(reqs => {
       group.pendingRequests = reqs;
       this.requestsLoading = false;
@@ -188,7 +191,14 @@ export class HomeComponent implements OnInit {
   }
 
   approvedMembers(): AccessRequestResponse[] {
-    return this.requestsGroup?.pendingRequests?.filter(r => r.status === 'APPROVED') ?? [];
+    const members = this.requestsGroup?.pendingRequests?.filter(r => r.status === 'APPROVED') ?? [];
+    const q = this.memberSearch.trim().toLowerCase();
+    if (!q) return members;
+    return members.filter(m => m.username.toLowerCase().includes(q));
+  }
+
+  hasAnyApprovedMembers(): boolean {
+    return (this.requestsGroup?.pendingRequests?.filter(r => r.status === 'APPROVED').length ?? 0) > 0;
   }
 
   closeRequestsModal() {

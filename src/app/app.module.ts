@@ -33,6 +33,7 @@ import { ResetPasswordComponent } from './auth/reset-password/reset-password.com
 import { AccountComponent } from './account/account.component';
 import { HomeComponent } from './home/home.component';
 import { UsersListComponent } from './admin/users-list/users-list.component';
+import { RolesListComponent } from './admin/roles-list/roles-list.component';
 import { AiGeneratorComponent } from './admin/ai-generator/ai-generator.component';
 import { InboxComponent } from './admin/inbox/inbox.component';
 import { ToastComponent } from './toast/toast.component';
@@ -67,6 +68,7 @@ import { CrosswordTestRunComponent } from './crosswords/crossword-test-run/cross
     AccountComponent,
     HomeComponent,
     UsersListComponent,
+    RolesListComponent,
     ResetPasswordComponent,
     AiGeneratorComponent,
     InboxComponent,

@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { CrosswordService } from '../../service/crossword.service';
 import { CrosswordSummaryResponse } from '../../models/models.d';
+import { SidebarRefreshService } from '../../service/sidebar-refresh.service';
 
 @Component({
   selector: 'app-crosswords-list',
@@ -18,7 +19,8 @@ export class CrosswordsListComponent implements OnInit {
 
   constructor(
     private crosswordService: CrosswordService,
-    private router: Router
+    private router: Router,
+    private sidebarRefreshService: SidebarRefreshService
   ) {}
 
   ngOnInit() {
@@ -69,6 +71,7 @@ export class CrosswordsListComponent implements OnInit {
       next: (id) => {
         this.adding = false;
         this.showAddModal = false;
+        this.sidebarRefreshService.notify();
         this.router.navigate(['/admin/crosswords', id, 'edit']);
       },
       error: () => { this.adding = false; }

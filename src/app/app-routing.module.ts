@@ -18,6 +18,7 @@ import { ResetPasswordComponent } from './auth/reset-password/reset-password.com
 import { AccountComponent } from './account/account.component';
 import { HomeComponent } from './home/home.component';
 import { UsersListComponent } from './admin/users-list/users-list.component';
+import { RolesListComponent } from './admin/roles-list/roles-list.component';
 import { AiGeneratorComponent } from './admin/ai-generator/ai-generator.component';
 import { InboxComponent } from './admin/inbox/inbox.component';
 import { MetricsComponent } from './metrics/metrics.component';
@@ -41,6 +42,7 @@ const routes: Routes = [
   { path: 'admin/crosswords', component: CrosswordsListComponent, canActivate: [AuthGuard, ModeratorGuard] },
   { path: 'admin/crosswords/:id/edit', component: CrosswordEditComponent, canActivate: [AuthGuard, ModeratorGuard] },
   { path: 'admin/users', component: UsersListComponent, canActivate: [AuthGuard, AdminGuard] },
+  { path: 'admin/roles', component: RolesListComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'subjects/:id', component: TestsListComponent, canActivate: [AuthGuard] },
   { path: 'tests', component: TestsListComponent, canActivate: [AuthGuard] },
   { path: 'admin/tests', component: TestsListComponent, canActivate: [AuthGuard, ModeratorGuard] },

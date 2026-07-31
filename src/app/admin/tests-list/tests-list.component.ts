@@ -7,7 +7,9 @@ import { CrosswordService } from '../../service/crossword.service';
 import { SubjectsService } from '../../service/subject.service';
 import { CommentService } from '../../service/comment.service';
 import { AuthService } from '../../service/auth.service';
-import { CommentResponse, TestSummaryResponse, CrosswordSummaryResponse, SubjectAuthor } from '../../models/models.d';
+import { PermissionService } from '../../service/permission.service';
+import { SidebarRefreshService } from '../../service/sidebar-refresh.service';
+import { CommentResponse, TestSummaryResponse, CrosswordSummaryResponse, SubjectAuthor, Permission } from '../../models/models.d';
 import { AuthorCandidate } from '../../service/subject.service';
 
 @Component({
@@ -71,12 +73,22 @@ export class TestsListComponent implements OnInit {
     private commentService: CommentService,
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private permissionService: PermissionService,
+    private sidebarRefreshService: SidebarRefreshService
   ) {}
 
+  /** Governs the subject itself: description, difficulty, authors. */
   get canModify(): boolean {
-    const role = this.authService.getUser()?.role;
-    return role === 'MODERATOR' || role === 'ADMIN';
+    return this.permissionService.hasPermission(Permission.SUBJECTS_WRITE);
+  }
+
+  get canModifyTests(): boolean {
+    return this.permissionService.hasPermission(Permission.TESTS_WRITE);
+  }
+
+  get canModifyCrosswords(): boolean {
+    return this.permissionService.hasPermission(Permission.CROSSWORDS_WRITE);
   }
 
   ngOnInit() {
@@ -284,6 +296,7 @@ export class TestsListComponent implements OnInit {
       next: (created) => {
         this.creating = false;
         this.showAddModal = false;
+        this.sidebarRefreshService.notify();
         this.router.navigate(['/admin/tests', created.id, 'edit']);
       },
       error: () => { this.creating = false; }

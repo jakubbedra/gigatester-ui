@@ -140,6 +140,11 @@
       </ng-template>
 
       <div class="modal-section-label">{{ 'HOME.MEMBERS' | translate }}</div>
+      <div class="member-search-bar" *ngIf="hasAnyApprovedMembers()">
+        <input type="text" class="member-search-input" [(ngModel)]="memberSearch"
+               [placeholder]="'HOME.SEARCH_MEMBERS' | translate" />
+        <button class="member-search-clear" *ngIf="memberSearch" (click)="memberSearch = ''">✕</button>
+      </div>
       <ng-container *ngIf="approvedMembers().length > 0; else noMembers">
         <div class="requests-list">
           <div class="request-row" *ngFor="let req of approvedMembers()">
@@ -151,7 +156,7 @@
         </div>
       </ng-container>
       <ng-template #noMembers>
-        <p class="no-requests">{{ 'HOME.NO_MEMBERS' | translate }}</p>
+        <p class="no-requests">{{ memberSearch ? ('HOME.NO_MEMBERS_MATCH' | translate) : ('HOME.NO_MEMBERS' | translate) }}</p>
       </ng-template>
     </ng-container>
 

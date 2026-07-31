@@ -4,7 +4,7 @@
       <button class="back-btn" *ngIf="subjectId" (click)="goBack()">← {{ 'TESTS_LIST.BACK' | translate }}</button>
       <h1 class="page-title">{{ subjectName ?? ('TESTS_LIST.TITLE' | translate) }}</h1>
     </div>
-    <button class="btn-add" *ngIf="canModify && !subjectId" (click)="openAdd()">+ {{ 'TESTS_LIST.NEW_TEST' | translate }}</button>
+    <button class="btn-add" *ngIf="canModifyTests && !subjectId" (click)="openAdd()">+ {{ 'TESTS_LIST.NEW_TEST' | translate }}</button>
   </div>
 
   <!-- Description + difficulty -->
@@ -104,7 +104,7 @@
         <div class="card-icon">📝</div>
         <div class="card-name">{{ test.name }}</div>
       </div>
-      <div class="context-wrapper" *ngIf="canModify" (click)="stopPropagation($event)">
+      <div class="context-wrapper" *ngIf="canModifyTests" (click)="stopPropagation($event)">
         <button class="ctx-btn" (click)="toggleMenu($event, test.id)">···</button>
         <div class="ctx-menu" *ngIf="openMenuId === test.id">
           <button (click)="edit($event, test.id)">{{ 'SIDEBAR.EDIT' | translate }}</button>
@@ -130,7 +130,7 @@
           <div class="card-icon">🔠</div>
           <div class="card-name">{{ cw.name }}</div>
         </div>
-        <div class="context-wrapper" *ngIf="canModify" (click)="stopPropagation($event)">
+        <div class="context-wrapper" *ngIf="canModifyCrosswords" (click)="stopPropagation($event)">
           <button class="ctx-btn" (click)="toggleMenu($event, 'cw-' + cw.id)">···</button>
           <div class="ctx-menu" *ngIf="openMenuId === 'cw-' + cw.id">
             <button (click)="editCrossword($event, cw.id)">{{ 'SIDEBAR.EDIT' | translate }}</button>
@@ -167,6 +167,8 @@
           <div class="comment-body">
             <div class="comment-header">
               <span class="comment-author clickable" (click)="openUserProfile(comment.authorId)">{{ comment.authorUsername }}</span>
+              <span class="comment-role-badge admin" *ngIf="comment.authorRole === 'ADMIN'">Admin</span>
+              <span class="comment-role-badge" *ngIf="comment.authorRole !== 'ADMIN' && comment.authorAssignedRoleName">{{ comment.authorAssignedRoleName }}</span>
               <span class="comment-time">{{ timeAgo(comment.createdAt) }}</span>
               <button class="delete-btn" *ngIf="canDeleteComment(comment)" (click)="deleteComment(comment)" title="Delete">✕</button>
             </div>
@@ -206,6 +208,8 @@
                   <div class="comment-body">
                     <div class="comment-header">
                       <span class="comment-author clickable" (click)="openUserProfile(reply.authorId)">{{ reply.authorUsername }}</span>
+                      <span class="comment-role-badge admin" *ngIf="reply.authorRole === 'ADMIN'">Admin</span>
+                      <span class="comment-role-badge" *ngIf="reply.authorRole !== 'ADMIN' && reply.authorAssignedRoleName">{{ reply.authorAssignedRoleName }}</span>
                       <span class="comment-time">{{ timeAgo(reply.createdAt) }}</span>
                     </div>
                     <div class="comment-content">{{ reply.content }}</div>

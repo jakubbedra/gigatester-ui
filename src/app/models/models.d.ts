@@ -122,12 +122,20 @@ export interface CrosswordSummaryResponse {
     termCount: number;
 }
 
+export const enum BotDifficulty {
+    EASY = "EASY",
+    NORMAL = "NORMAL",
+    HARD = "HARD",
+    IMPOSSIBLE = "IMPOSSIBLE",
+}
+
 export interface CrosswordStateRequest {
     crosswordId: string;
     numberOfWords: number;
     tagFilterMode?: string;
     tagFilter?: string[];
     termIdFilter?: string[];
+    botDifficulty?: BotDifficulty;
 }
 
 export interface CrosswordLetterRequest {
@@ -223,6 +231,8 @@ export interface CommentResponse {
     authorId: string;
     authorUsername: string;
     authorAvatarUrl: string | null;
+    authorRole?: string | null;
+    authorAssignedRoleName?: string | null;
     content: string;
     createdAt: string;
     likes: number;
@@ -392,6 +402,26 @@ export const enum GradingRule {
     IGNORE_CASE = "IGNORE_CASE",
     IGNORE_PUNCTUATION = "IGNORE_PUNCTUATION",
     TRIM_WHITESPACE = "TRIM_WHITESPACE",
+}
+
+export const enum Permission {
+    SUBJECTS_READ = "SUBJECTS_READ",
+    SUBJECTS_WRITE = "SUBJECTS_WRITE",
+    TESTS_READ = "TESTS_READ",
+    TESTS_WRITE = "TESTS_WRITE",
+    CROSSWORDS_READ = "CROSSWORDS_READ",
+    CROSSWORDS_WRITE = "CROSSWORDS_WRITE",
+}
+
+export interface RoleRequest {
+    name: string;
+    permissions: Permission[];
+}
+
+export interface RoleResponse {
+    id: string;
+    name: string;
+    permissions: Permission[];
 }
 
 export const enum QuestionContentType {

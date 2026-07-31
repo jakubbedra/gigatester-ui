@@ -5,6 +5,8 @@ import { LanguageService } from '../service/language.service';
 import { StreakService } from '../service/streak.service';
 import { forkJoin, of, Subscription, timer } from 'rxjs';
 import { switchMap, map, filter } from 'rxjs/operators';
+import { PermissionService } from '../service/permission.service';
+import { SidebarRefreshService } from '../service/sidebar-refresh.service';
 import { TestService } from '../service/test.service';
 import { SubjectsService } from '../service/subject.service';
 import { SubjectGroupService } from '../service/subject-group.service';
@@ -49,6 +51,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private static readonly REFRESH_INTERVAL_MS = 30000;
   private refreshSub?: Subscription;
   private navSub?: Subscription;
+  private eventSub?: Subscription;
 
   get pendingCount(): number {
     return this.inboxRequests.length;
@@ -63,12 +66,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private router: Router,
     private authService: AuthService,
     private streakService: StreakService,
+    private permissionService: PermissionService,
+    private sidebarRefreshService: SidebarRefreshService,
     public lang: LanguageService
   ) {}
 
   get isModerator(): boolean {
-    const role = this.authService.getUser()?.role;
-    return role === 'MODERATOR' || role === 'ADMIN';
+    return this.permissionService.isStaff();
   }
 
   get isAdmin(): boolean {
@@ -107,16 +111,29 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.navSub = this.router.events.pipe(
       filter(e => e instanceof NavigationEnd)
     ).subscribe(() => this.refreshAll());
+
+    // Immediate refresh when another component explicitly signals a relevant
+    // change (streak update, new subject/test/crossword) instead of waiting
+    // for the next poll or navigation.
+    this.eventSub = this.sidebarRefreshService.onRefresh.subscribe(() => this.refreshAll());
   }
 
   ngOnDestroy() {
     this.refreshSub?.unsubscribe();
     this.navSub?.unsubscribe();
+    this.eventSub?.unsubscribe();
   }
 
   private refreshAll() {
-    this.loadData();
+    this.authService.refreshMe().subscribe({
+      next: () => this.afterUserRefresh(),
+      error: () => this.afterUserRefresh()
+    });
     this.refreshStreak();
+  }
+
+  private afterUserRefresh() {
+    this.loadData();
     if (this.isModerator) {
       this.loadInbox();
     }
@@ -290,5 +307,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   navigateToUsers() {
     this.router.navigate(['/admin/users']);
+  }
+
+  navigateToRoles() {
+    this.router.navigate(['/admin/roles']);
   }
 }

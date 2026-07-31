@@ -8,6 +8,7 @@ import { QuestionsService } from '../../service/question.service';
 import { ImageService } from '../../service/image.service';
 import { TagService } from '../../service/tag.service';
 import { AuthService } from '../../service/auth.service';
+import { PermissionService } from '../../service/permission.service';
 import {
   TestResponse,
   ClosedQuestionDto,
@@ -17,6 +18,7 @@ import {
   GradingRule,
   TagResponse,
   SubjectAuthor,
+  Permission,
 } from '../../models/models.d';
 import { AuthorCandidate } from '../../service/subject.service';
 
@@ -100,7 +102,8 @@ export class TestEditComponent implements OnInit {
     private imageService: ImageService,
     private tagService: TagService,
     private sanitizer: DomSanitizer,
-    private authService: AuthService
+    private authService: AuthService,
+    private permissionService: PermissionService
   ) {}
 
   ngOnInit() {
@@ -195,8 +198,7 @@ export class TestEditComponent implements OnInit {
   }
 
   get canModify(): boolean {
-    const role = this.authService.getUser()?.role;
-    return role === 'MODERATOR' || role === 'ADMIN';
+    return this.permissionService.hasPermission(Permission.TESTS_WRITE);
   }
 
   avatarFallback(username: string): string {

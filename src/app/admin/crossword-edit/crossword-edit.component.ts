@@ -3,7 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CrosswordService } from '../../service/crossword.service';
 import { TagService } from '../../service/tag.service';
 import { AuthService } from '../../service/auth.service';
-import { ClueType, CrosswordTermResponse, TagResponse, SubjectAuthor } from '../../models/models.d';
+import { PermissionService } from '../../service/permission.service';
+import { ClueType, CrosswordTermResponse, TagResponse, SubjectAuthor, Permission } from '../../models/models.d';
 import { AuthorCandidate } from '../../service/subject.service';
 
 interface TermRow extends CrosswordTermResponse {
@@ -125,7 +126,8 @@ export class CrosswordEditComponent implements OnInit {
     private router: Router,
     private crosswordService: CrosswordService,
     private tagService: TagService,
-    private authService: AuthService
+    private authService: AuthService,
+    private permissionService: PermissionService
   ) {}
 
   ngOnInit() {
@@ -236,8 +238,7 @@ export class CrosswordEditComponent implements OnInit {
   }
 
   get canModify(): boolean {
-    const role = this.authService.getUser()?.role;
-    return role === 'MODERATOR' || role === 'ADMIN';
+    return this.permissionService.hasPermission(Permission.CROSSWORDS_WRITE);
   }
 
   avatarFallback(username: string): string {

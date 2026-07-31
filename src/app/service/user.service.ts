@@ -7,6 +7,8 @@ export interface UserResponse {
   id: string;
   username: string;
   role: 'USER' | 'MODERATOR' | 'ADMIN';
+  assignedRoleId?: string | null;
+  assignedRoleName?: string | null;
   profilePictureUrl?: string | null;
 }
 
@@ -21,12 +23,8 @@ export class UserService {
     return this.http.get<UserResponse[]>(this.baseUrl);
   }
 
-  promote(id: string): Observable<UserResponse> {
-    return this.http.put<UserResponse>(`${this.baseUrl}/${id}/promote`, {});
-  }
-
-  demote(id: string): Observable<UserResponse> {
-    return this.http.put<UserResponse>(`${this.baseUrl}/${id}/demote`, {});
+  assignRole(id: string, roleId: string | null): Observable<UserResponse> {
+    return this.http.put<UserResponse>(`${this.baseUrl}/${id}/role`, { roleId });
   }
 
   delete(id: string): Observable<void> {

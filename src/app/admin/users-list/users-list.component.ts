@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { UserService, UserResponse } from '../../service/user.service';
 import { AuthService } from '../../service/auth.service';
+import { RoleService } from '../../service/role.service';
+import { RoleResponse } from '../../models/models.d';
 
 @Component({
   selector: 'app-users-list',
@@ -9,13 +11,18 @@ import { AuthService } from '../../service/auth.service';
 })
 export class UsersListComponent implements OnInit {
   users: UserResponse[] = [];
+  roles: RoleResponse[] = [];
   loading = true;
   actionInProgress: string | null = null;
   resetLink: string | null = null;
   resetLinkUser: string | null = null;
   userToDelete: UserResponse | null = null;
 
-  constructor(private userService: UserService, private authService: AuthService) {}
+  assigningRoleTo: UserResponse | null = null;
+  selectedRoleId: string | null = null;
+  roleDropdownOpen = false;
+
+  constructor(private userService: UserService, private authService: AuthService, private roleService: RoleService) {}
 
   get currentUserId(): string | undefined {
     return this.authService.getUser()?.id;
@@ -23,6 +30,7 @@ export class UsersListComponent implements OnInit {
 
   ngOnInit() {
     this.load();
+    this.roleService.getRoles().subscribe(roles => { this.roles = roles; });
   }
 
   load() {
@@ -32,23 +40,47 @@ export class UsersListComponent implements OnInit {
     });
   }
 
-  promote(user: UserResponse) {
-    this.actionInProgress = user.id;
-    this.userService.promote(user.id).subscribe({
-      next: updated => {
-        user.role = updated.role;
-        this.actionInProgress = null;
-      },
-      error: () => { this.actionInProgress = null; }
-    });
+  openAssignRole(user: UserResponse) {
+    this.assigningRoleTo = user;
+    this.selectedRoleId = user.assignedRoleId ?? null;
+    this.roleDropdownOpen = false;
   }
 
-  demote(user: UserResponse) {
+  cancelAssignRole() {
+    this.assigningRoleTo = null;
+    this.roleDropdownOpen = false;
+  }
+
+  toggleRoleDropdown(event: Event) {
+    event.stopPropagation();
+    this.roleDropdownOpen = !this.roleDropdownOpen;
+  }
+
+  @HostListener('document:click')
+  closeRoleDropdown() {
+    this.roleDropdownOpen = false;
+  }
+
+  selectRole(roleId: string | null) {
+    this.selectedRoleId = roleId;
+    this.roleDropdownOpen = false;
+  }
+
+  get selectedRoleName(): string {
+    if (!this.selectedRoleId) return '';
+    return this.roles.find(r => r.id === this.selectedRoleId)?.name ?? '';
+  }
+
+  saveAssignRole() {
+    if (!this.assigningRoleTo) return;
+    const user = this.assigningRoleTo;
     this.actionInProgress = user.id;
-    this.userService.demote(user.id).subscribe({
+    this.userService.assignRole(user.id, this.selectedRoleId).subscribe({
       next: updated => {
-        user.role = updated.role;
+        user.assignedRoleId = updated.assignedRoleId;
+        user.assignedRoleName = updated.assignedRoleName;
         this.actionInProgress = null;
+        this.assigningRoleTo = null;
       },
       error: () => { this.actionInProgress = null; }
     });

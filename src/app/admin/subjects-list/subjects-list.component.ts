@@ -6,6 +6,7 @@ import { SubjectsService } from '../../service/subject.service';
 import { TestService } from '../../service/test.service';
 import { CrosswordService } from '../../service/crossword.service';
 import { SubjectResponse, TestSummaryResponse, CrosswordSummaryResponse } from '../../models/models.d';
+import { SidebarRefreshService } from '../../service/sidebar-refresh.service';
 
 interface SubjectCard {
   id: string;
@@ -62,7 +63,8 @@ export class SubjectsListComponent implements OnInit {
     private subjectsService: SubjectsService,
     private testService: TestService,
     private crosswordService: CrosswordService,
-    private router: Router
+    private router: Router,
+    private sidebarRefreshService: SidebarRefreshService
   ) {}
 
   ngOnInit() {
@@ -201,6 +203,7 @@ export class SubjectsListComponent implements OnInit {
         this.adding = false;
         this.showAddModal = false;
         this.load();
+        this.sidebarRefreshService.notify();
       },
       error: () => { this.adding = false; }
     });

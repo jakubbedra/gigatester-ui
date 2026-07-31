@@ -1,0 +1,94 @@
+<div class="page">
+  <div class="page-header">
+    <button class="btn-back" (click)="back()">← {{ 'ROLES.BACK' | translate }}</button>
+    <h1 class="page-title">{{ 'ROLES.TITLE' | translate }}</h1>
+    <button class="btn-add" (click)="openCreate()">+ {{ 'ROLES.ADD' | translate }}</button>
+  </div>
+
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="roles-grid" *ngIf="!loading">
+    <div class="role-card" *ngFor="let role of roles">
+      <div class="role-card-header">
+        <span class="role-name">{{ role.name }}</span>
+        <div class="role-card-actions">
+          <button class="btn-icon" (click)="openEdit(role)" title="Edit">✎</button>
+          <button class="btn-icon btn-icon-danger" (click)="confirmDelete(role)" title="Delete">✕</button>
+        </div>
+      </div>
+      <div class="permission-chips">
+        <span class="permission-chip" *ngFor="let p of role.permissions">{{ permissionLabel(p) }}</span>
+        <span class="no-permissions" *ngIf="role.permissions.length === 0">{{ 'ROLES.NO_PERMISSIONS' | translate }}</span>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="roles.length === 0">
+      <p>{{ 'ROLES.EMPTY' | translate }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- Edit / Create modal -->
+<div class="modal-overlay" *ngIf="showEditModal" (click)="closeEdit()">
+  <div class="modal role-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-header-icon">🔑</div>
+      <h2 class="modal-title">{{ editingRole ? ('ROLES.EDIT' | translate) : ('ROLES.ADD' | translate) }}</h2>
+    </div>
+
+    <div class="form-group">
+      <label>{{ 'ROLES.NAME' | translate }}</label>
+      <input type="text" [(ngModel)]="editName" [placeholder]="'ROLES.NAME' | translate" />
+    </div>
+
+    <div class="form-group">
+      <label>{{ 'ROLES.PERMISSIONS' | translate }}</label>
+      <div class="permission-table">
+        <div class="permission-table-head">
+          <span></span>
+          <span>{{ 'ROLES.READ' | translate }}</span>
+          <span>{{ 'ROLES.WRITE' | translate }}</span>
+        </div>
+        <div class="permission-row" *ngFor="let g of permissionGroups">
+          <span class="permission-row-label"><span class="permission-icon">{{ g.icon }}</span>{{ g.label }}</span>
+          <button type="button" class="permission-pill"
+                  [class.active]="isChecked(g.read)"
+                  [class.implied]="isImplied(g.read)"
+                  (click)="togglePermission(g.read)">
+            <span class="pill-check">✓</span>
+          </button>
+          <button type="button" class="permission-pill write"
+                  [class.active]="isChecked(g.write)"
+                  [class.implied]="isImplied(g.write)"
+                  (click)="togglePermission(g.write)">
+            <span class="pill-check">✓</span>
+          </button>
+        </div>
+      </div>
+      <p class="hint"><span class="hint-icon">ⓘ</span> {{ 'ROLES.SUBJECTS_WRITE_HINT' | translate }}</p>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="closeEdit()">{{ 'ROLES.CANCEL' | translate }}</button>
+      <button class="btn-primary" [disabled]="saving || !editName.trim()" (click)="save()">
+        {{ 'ROLES.SAVE' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete confirm modal -->
+<div class="modal-overlay" *ngIf="roleToDelete" (click)="cancelDelete()">
+  <div class="modal danger-modal" (click)="$event.stopPropagation()">
+    <div class="danger-icon">🗑️</div>
+    <h2 class="modal-title">{{ 'ROLES.DELETE' | translate }} "{{ roleToDelete.name }}"?</h2>
+    <p class="modal-subtitle danger-subtitle">{{ 'ROLES.DELETE_CONFIRM' | translate }}</p>
+    <p class="modal-subtitle danger-subtitle" *ngIf="deleteError">{{ deleteError }}</p>
+    <div class="modal-actions">
+      <button class="btn-close" (click)="cancelDelete()">{{ 'ROLES.CANCEL' | translate }}</button>
+      <button class="btn-delete-confirm" (click)="deleteRole()">{{ 'ROLES.DELETE' | translate }}</button>
+    </div>
+  </div>
+</div>

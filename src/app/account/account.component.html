@@ -19,7 +19,10 @@
       </div>
       <div class="avatar-info">
         <div class="avatar-name">{{ displayName }}</div>
-        <div class="avatar-role">{{ user.role }}</div>
+        <div class="avatar-role-row">
+          <span class="avatar-role">{{ user.role }}</span>
+          <span class="avatar-assigned-role" *ngIf="user.assignedRoleName">{{ user.assignedRoleName }}</span>
+        </div>
         <p class="avatar-hint">{{ 'ACCOUNT.UPLOAD_HINT' | translate }}</p>
         <p class="error-msg" *ngIf="pictureError">{{ pictureError }}</p>
       </div>

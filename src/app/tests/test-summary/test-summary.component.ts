@@ -5,6 +5,7 @@ import { TestStateService } from '../../service/test-state.service';
 import { StreakService } from '../../service/streak.service';
 import { ToastService } from '../../service/toast.service';
 import { TranslateService } from '@ngx-translate/core';
+import { SidebarRefreshService } from '../../service/sidebar-refresh.service';
 
 @Component({
   selector: 'app-test-summary',
@@ -22,7 +23,8 @@ export class TestSummaryComponent implements OnInit {
     private testStateService: TestStateService,
     private streakService: StreakService,
     private toastService: ToastService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private sidebarRefreshService: SidebarRefreshService
   ) {}
 
   ngOnInit() {
@@ -32,7 +34,8 @@ export class TestSummaryComponent implements OnInit {
       this.loading = false;
     });
     this.streakService.getStreak().subscribe(s => {
-      if (s.currentStreak > 0) {
+      this.sidebarRefreshService.notify();
+      if (this.streakService.wasJustBumpedToday(s)) {
         const label = this.translate.instant('SIDEBAR.STREAK');
         this.toastService.show({ icon: '🔥', message: `${s.currentStreak} ${label}` });
       }

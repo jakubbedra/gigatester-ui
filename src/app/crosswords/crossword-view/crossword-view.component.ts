@@ -1,12 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CrosswordResponse, CrosswordStateResponse, MultiplayerSessionSummaryResponse, TagResponse } from '../../models/models.d';
+import { BotDifficulty, CrosswordResponse, CrosswordStateResponse, MultiplayerSessionSummaryResponse, TagResponse } from '../../models/models.d';
 import { CrosswordService } from '../../service/crossword.service';
 import { CrosswordStateService } from '../../service/crossword-state.service';
 import { CrosswordMultiplayerService } from '../../service/crossword-multiplayer.service';
 import { CrosswordTestRunService, TestRunResult } from '../../service/crossword-test-run.service';
 import { AuthService } from '../../service/auth.service';
+import { PermissionService } from '../../service/permission.service';
+import { Permission } from '../../models/models.d';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -26,6 +28,14 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
   allTags: TagResponse[] = [];
   selectedTagIds: Set<string> = new Set();
   excludeTags = false;
+
+  readonly botDifficulties = [
+    { value: BotDifficulty.EASY, label: 'Easy' },
+    { value: BotDifficulty.NORMAL, label: 'Normal' },
+    { value: BotDifficulty.HARD, label: 'Hard' },
+    { value: BotDifficulty.IMPOSSIBLE, label: 'Impossible' },
+  ];
+  botDifficulty: BotDifficulty = BotDifficulty.NORMAL;
 
   mode: 'singleplayer' | 'multiplayer' | 'testrun' = 'singleplayer';
   latestRun: TestRunResult | null = null;
@@ -56,12 +66,12 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
     private crosswordStateService: CrosswordStateService,
     private multiplayerService: CrosswordMultiplayerService,
     private testRunService: CrosswordTestRunService,
-    private authService: AuthService
+    private authService: AuthService,
+    private permissionService: PermissionService
   ) {}
 
   get canModify(): boolean {
-    const role = this.authService.getUser()?.role;
-    return role === 'MODERATOR' || role === 'ADMIN';
+    return this.permissionService.hasPermission(Permission.CROSSWORDS_WRITE);
   }
 
   editCrossword(): void {
@@ -111,7 +121,8 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
     this.crosswordStateService.startGeneration({
       crosswordId: this.crosswordId,
       numberOfWords: this.wrongWordCount,
-      termIdFilter: this.latestRun.wrongTermIds
+      termIdFilter: this.latestRun.wrongTermIds,
+      botDifficulty: this.botDifficulty
     }).subscribe({
       next: ({ jobId }) => {
         this.currentJobId = jobId;
@@ -255,7 +266,8 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
       crosswordId: this.crosswordId,
       numberOfWords: Number(this.form.value.numberOfWords),
       tagFilter: this.selectedTagIds.size > 0 ? Array.from(this.selectedTagIds) : undefined,
-      tagFilterMode: this.excludeTags ? 'EXCLUDE' : 'INCLUDE'
+      tagFilterMode: this.excludeTags ? 'EXCLUDE' : 'INCLUDE',
+      botDifficulty: this.botDifficulty
     }).subscribe({
       next: ({ jobId }) => {
         this.currentJobId = jobId;

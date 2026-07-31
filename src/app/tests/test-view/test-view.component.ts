@@ -7,6 +7,8 @@ import {TestStateService} from "../../service/test-state.service";
 import {TagService} from "../../service/tag.service";
 import {AuthService} from "../../service/auth.service";
 import {MetricsService, ProgressResponse, RankingEntryDto, TagAccuracyDto} from "../../service/metrics.service";
+import {PermissionService} from "../../service/permission.service";
+import {Permission} from "../../models/models.d";
 
 @Component({
   selector: 'app-test-view',
@@ -43,7 +45,8 @@ export class TestViewComponent implements OnInit {
     private testStateService: TestStateService,
     private tagService: TagService,
     private authService: AuthService,
-    private metricsService: MetricsService
+    private metricsService: MetricsService,
+    private permissionService: PermissionService
   ) { }
 
   openStatsTab() {
@@ -83,8 +86,7 @@ export class TestViewComponent implements OnInit {
   }
 
   get canModify(): boolean {
-    const role = this.authService.getUser()?.role;
-    return role === 'MODERATOR' || role === 'ADMIN';
+    return this.permissionService.hasPermission(Permission.TESTS_WRITE);
   }
 
   editTest(): void {

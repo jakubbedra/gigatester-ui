@@ -26,18 +26,14 @@
           </td>
           <td>
             <span class="role-badge" [class]="'role-' + user.role.toLowerCase()">{{ user.role }}</span>
+            <span class="assigned-role-badge" *ngIf="user.assignedRoleName">{{ user.assignedRoleName }}</span>
           </td>
           <td class="actions-cell">
             <ng-container *ngIf="user.role !== 'ADMIN' && !isCurrentUser(user)">
-              <button class="btn-promote" *ngIf="user.role === 'USER'"
+              <button class="btn-assign-role"
                       [disabled]="actionInProgress === user.id"
-                      (click)="promote(user)">
-                {{ 'USERS.PROMOTE' | translate }}
-              </button>
-              <button class="btn-demote" *ngIf="user.role === 'MODERATOR'"
-                      [disabled]="actionInProgress === user.id"
-                      (click)="demote(user)">
-                {{ 'USERS.DEMOTE' | translate }}
+                      (click)="openAssignRole(user)">
+                {{ 'USERS.ASSIGN_ROLE' | translate }}
               </button>
               <button class="btn-reset-link"
                       [disabled]="actionInProgress === user.id"
@@ -55,6 +51,38 @@
         </tr>
       </tbody>
     </table>
+  </div>
+</div>
+
+<!-- Assign role modal -->
+<div class="modal-overlay" *ngIf="assigningRoleTo" (click)="cancelAssignRole()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h2 class="modal-title">{{ 'USERS.ASSIGN_ROLE' | translate }} — {{ assigningRoleTo.username }}</h2>
+    <p class="modal-subtitle">{{ 'USERS.ASSIGN_ROLE_HINT' | translate }}</p>
+    <div class="role-dropdown" [class.open]="roleDropdownOpen">
+      <button type="button" class="role-dropdown-trigger" (click)="toggleRoleDropdown($event)">
+        <span [class.placeholder]="!selectedRoleId">{{ selectedRoleId ? selectedRoleName : ('USERS.NO_ROLE' | translate) }}</span>
+        <span class="role-dropdown-arrow">▾</span>
+      </button>
+      <div class="role-dropdown-list" *ngIf="roleDropdownOpen">
+        <button type="button" class="role-dropdown-option" [class.selected]="!selectedRoleId" (click)="selectRole(null)">
+          <span class="option-check">✓</span>
+          <span class="option-label muted">{{ 'USERS.NO_ROLE' | translate }}</span>
+        </button>
+        <button type="button" class="role-dropdown-option" *ngFor="let role of roles"
+                [class.selected]="selectedRoleId === role.id" (click)="selectRole(role.id)">
+          <span class="option-check">✓</span>
+          <span class="option-label">{{ role.name }}</span>
+        </button>
+        <div class="role-dropdown-empty" *ngIf="roles.length === 0">{{ 'ROLES.EMPTY' | translate }}</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-close" (click)="cancelAssignRole()">{{ 'USERS.CLOSE' | translate }}</button>
+      <button class="btn-copy" [disabled]="actionInProgress === assigningRoleTo.id" (click)="saveAssignRole()">
+        {{ 'USERS.SAVE' | translate }}
+      </button>
+    </div>
   </div>
 </div>
 

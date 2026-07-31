@@ -12,7 +12,10 @@
       </div>
       <div class="profile-info">
         <div class="profile-name">{{ displayName }}</div>
-        <div class="profile-role">{{ user.role }}</div>
+        <div class="profile-role-row">
+          <span class="profile-role">{{ user.role }}</span>
+          <span class="profile-assigned-role" *ngIf="user.assignedRoleName">{{ user.assignedRoleName }}</span>
+        </div>
         <p class="profile-bio" *ngIf="user.bio">{{ user.bio }}</p>
         <p class="profile-bio empty" *ngIf="!user.bio">This user has no bio yet.</p>
       </div>

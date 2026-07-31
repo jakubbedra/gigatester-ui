@@ -8,6 +8,7 @@ import { StreakService } from '../../service/streak.service';
 import { ToastService } from '../../service/toast.service';
 import { TranslateService } from '@ngx-translate/core';
 import { CrosswordSoundService } from '../../service/crossword-sound.service';
+import { SidebarRefreshService } from '../../service/sidebar-refresh.service';
 
 export interface NumberedClue {
   number: number;
@@ -70,7 +71,8 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
     private streakService: StreakService,
     private toastService: ToastService,
     private translate: TranslateService,
-    public sound: CrosswordSoundService
+    public sound: CrosswordSoundService,
+    private sidebarRefreshService: SidebarRefreshService
   ) {}
 
   ngOnInit() {
@@ -338,7 +340,8 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
             else this.sound.playWordComplete();
           }, 1000);
           this.streakService.getStreak().subscribe(s => {
-            if (s.currentStreak > 0) {
+            this.sidebarRefreshService.notify();
+            if (this.streakService.wasJustBumpedToday(s)) {
               const label = this.translate.instant('SIDEBAR.STREAK');
               this.toastService.show({ icon: '🔥', message: `${s.currentStreak} ${label}` });
             }

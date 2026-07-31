@@ -68,6 +68,15 @@
         </div>
       </div>
 
+      <div class="field-section">
+        <div class="field-label">Bot Difficulty</div>
+        <div class="tag-mode-toggle">
+          <button type="button" class="tag-mode-btn" *ngFor="let d of botDifficulties"
+                  [class.active]="botDifficulty === d.value"
+                  (click)="botDifficulty = d.value">{{ d.label }}</button>
+        </div>
+      </div>
+
       <div class="generating-block" *ngIf="generating">
         <div class="progress-bar-track">
           <div class="progress-bar-fill" [style.width.%]="generatingProgress"></div>
