@@ -3,13 +3,13 @@
   <!-- Loading -->
   <div class="tr-loading" *ngIf="phase === 'loading'">
     <div class="tr-spinner"></div>
-    <span>Loading…</span>
+    <span>{{ 'CROSSWORD_TEST_RUN.LOADING' | translate }}</span>
   </div>
 
   <!-- Error -->
   <div class="tr-error" *ngIf="phase === 'error'">
     <p>{{ errorMsg }}</p>
-    <button class="tr-btn primary" (click)="backToView()">Back</button>
+    <button class="tr-btn primary" (click)="backToView()">{{ 'CROSSWORD_TEST_RUN.BACK' | translate }}</button>
   </div>
 
   <!-- Question / Feedback -->
@@ -22,7 +22,7 @@
     <div class="tr-counter">{{ currentIndex + 1 }} / {{ terms.length }}</div>
 
     <!-- Clue -->
-    <div class="tr-clue-label">Clue</div>
+    <div class="tr-clue-label">{{ 'CROSSWORD_TEST_RUN.CLUE' | translate }}</div>
     <div class="tr-clue" [innerHTML]="current.clue | latex"></div>
 
     <!-- Answer input (shown during question phase) -->
@@ -32,26 +32,26 @@
         class="tr-input"
         type="text"
         [(ngModel)]="answer"
-        placeholder="Type the term…"
+        placeholder="{{ 'CROSSWORD_TEST_RUN.TYPE_TERM' | translate }}"
         autocomplete="off"
         autocorrect="off"
         autocapitalize="off"
         spellcheck="false"
       />
-      <button class="tr-btn primary" [disabled]="!answer.trim()" (click)="submit()">Submit</button>
+      <button class="tr-btn primary" [disabled]="!answer.trim()" (click)="submit()">{{ 'CROSSWORD_TEST_RUN.SUBMIT' | translate }}</button>
     </ng-container>
 
     <!-- Feedback (shown after submit) -->
     <ng-container *ngIf="phase === 'feedback'">
       <div class="tr-feedback" [class.correct]="lastCorrect" [class.wrong]="!lastCorrect">
         <span class="tr-feedback-icon">{{ lastCorrect ? '✓' : '✗' }}</span>
-        <span class="tr-feedback-text" *ngIf="lastCorrect">Correct!</span>
+        <span class="tr-feedback-text" *ngIf="lastCorrect">{{ 'CROSSWORD_TEST_RUN.CORRECT_EXCL' | translate }}</span>
         <span class="tr-feedback-text" *ngIf="!lastCorrect">
-          Wrong — the answer was <strong>{{ current.term }}</strong>
+          {{ 'CROSSWORD_TEST_RUN.WRONG_PREFIX' | translate }} <strong>{{ current.term }}</strong>
         </span>
       </div>
       <button class="tr-btn primary" (click)="next()">
-        {{ currentIndex + 1 < terms.length ? 'Next →' : 'See Results' }}
+        {{ (currentIndex + 1 < terms.length ? 'CROSSWORD_TEST_RUN.NEXT' : 'CROSSWORD_TEST_RUN.SEE_RESULTS') | translate }}
       </button>
     </ng-container>
 
@@ -61,17 +61,17 @@
   <div class="tr-card tr-results" *ngIf="phase === 'results'">
     <div class="tr-results-icon">{{ wrongTermIds.length === 0 ? '🏆' : (correctCount > wrongTermIds.length ? '👍' : '📚') }}</div>
     <div class="tr-results-score">{{ correctCount }} / {{ terms.length }}</div>
-    <div class="tr-results-label">correct</div>
+    <div class="tr-results-label">{{ 'CROSSWORD_TEST_RUN.CORRECT' | translate }}</div>
 
     <div class="tr-results-actions">
-      <button class="tr-btn primary" (click)="retryAll()">New run (all words)</button>
+      <button class="tr-btn primary" (click)="retryAll()">{{ 'CROSSWORD_TEST_RUN.NEW_RUN_ALL' | translate }}</button>
       <button class="tr-btn secondary" *ngIf="wrongTermIds.length > 0" (click)="retryWrong()">
-        Retry wrong ({{ wrongTermIds.length }})
+        {{ 'CROSSWORD_TEST_RUN.RETRY_WRONG' | translate }} ({{ wrongTermIds.length }})
       </button>
       <button class="tr-btn accent" *ngIf="wrongTermIds.length > 0" (click)="generateCrossword()">
-        Generate crossword from wrong answers
+        {{ 'CROSSWORD_TEST_RUN.GENERATE_FROM_WRONG' | translate }}
       </button>
-      <button class="tr-btn ghost" (click)="backToView()">Back to crossword</button>
+      <button class="tr-btn ghost" (click)="backToView()">{{ 'CROSSWORD_TEST_RUN.BACK_TO_CROSSWORD' | translate }}</button>
     </div>
   </div>
 

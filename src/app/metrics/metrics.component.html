@@ -4,10 +4,24 @@
   <!-- Test filter -->
   <div class="test-filter" *ngIf="myTests.length > 0">
     <label class="filter-label">{{ 'METRICS.FILTER_TEST' | translate }}</label>
-    <select class="filter-select" [(ngModel)]="selectedTestId" (change)="onTestFilterChange()">
-      <option value="">{{ 'METRICS.ALL_TESTS' | translate }}</option>
-      <option *ngFor="let t of myTests" [value]="t.id">{{ t.name }}</option>
-    </select>
+    <div class="filter-dropdown" [class.open]="testFilterOpen" (click)="$event.stopPropagation()">
+      <button type="button" class="filter-dropdown-trigger" (click)="toggleTestFilter($event)">
+        <span>{{ selectedTestId ? selectedTestName : ('METRICS.ALL_TESTS' | translate) }}</span>
+        <span class="filter-dropdown-arrow">▾</span>
+      </button>
+      <div class="filter-dropdown-list" *ngIf="testFilterOpen">
+        <button type="button" class="filter-dropdown-option" [class.selected]="!selectedTestId"
+                (click)="selectTestFilter('')">
+          <span class="option-check">✓</span>
+          <span>{{ 'METRICS.ALL_TESTS' | translate }}</span>
+        </button>
+        <button type="button" class="filter-dropdown-option" *ngFor="let t of myTests"
+                [class.selected]="selectedTestId === t.id" (click)="selectTestFilter(t.id)">
+          <span class="option-check">✓</span>
+          <span>{{ t.name }}</span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <div class="tab-bar">

@@ -136,6 +136,7 @@ export interface CrosswordStateRequest {
     tagFilter?: string[];
     termIdFilter?: string[];
     botDifficulty?: BotDifficulty;
+    matchAllTags?: boolean;
 }
 
 export interface CrosswordLetterRequest {
@@ -312,6 +313,7 @@ export interface TestStateRequest {
     timeLimitMs?: number;
     tagIds?: string[];
     excludeTags?: boolean;
+    matchAllTags?: boolean;
 }
 
 export interface TestStateUpdateRequest {

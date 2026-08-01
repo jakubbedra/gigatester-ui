@@ -28,12 +28,13 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
   allTags: TagResponse[] = [];
   selectedTagIds: Set<string> = new Set();
   excludeTags = false;
+  matchAllTags = false;
 
   readonly botDifficulties = [
-    { value: BotDifficulty.EASY, label: 'Easy' },
-    { value: BotDifficulty.NORMAL, label: 'Normal' },
-    { value: BotDifficulty.HARD, label: 'Hard' },
-    { value: BotDifficulty.IMPOSSIBLE, label: 'Impossible' },
+    { value: BotDifficulty.EASY, labelKey: 'CROSSWORD_VIEW.BOT_EASY' },
+    { value: BotDifficulty.NORMAL, labelKey: 'CROSSWORD_VIEW.BOT_NORMAL' },
+    { value: BotDifficulty.HARD, labelKey: 'CROSSWORD_VIEW.BOT_HARD' },
+    { value: BotDifficulty.IMPOSSIBLE, labelKey: 'CROSSWORD_VIEW.BOT_IMPOSSIBLE' },
   ];
   botDifficulty: BotDifficulty = BotDifficulty.NORMAL;
 
@@ -154,7 +155,8 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
       crosswordId: this.crosswordId,
       numberOfWords: Number(this.form.value.numberOfWords),
       tagFilter: this.selectedTagIds.size > 0 ? Array.from(this.selectedTagIds) : undefined,
-      tagFilterMode: this.excludeTags ? 'EXCLUDE' : 'INCLUDE'
+      tagFilterMode: this.excludeTags ? 'EXCLUDE' : 'INCLUDE',
+      matchAllTags: this.matchAllTags
     }).subscribe({
       next: (session) => {
         this.creatingMultiplayer = false;
@@ -223,8 +225,11 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
     if (!this.crossword) return 0;
     if (this.selectedTagIds.size === 0) return this.crossword.terms.length;
     return this.crossword.terms.filter(t => {
-      const hasTag = (t.tags ?? []).some(tag => this.selectedTagIds.has(tag.id));
-      return this.excludeTags ? !hasTag : hasTag;
+      const termTagIds = new Set((t.tags ?? []).map(tag => tag.id));
+      const matches = this.matchAllTags
+        ? Array.from(this.selectedTagIds).every(id => termTagIds.has(id))
+        : Array.from(this.selectedTagIds).some(id => termTagIds.has(id));
+      return this.excludeTags ? !matches : matches;
     }).length;
   }
 
@@ -238,6 +243,10 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
   }
 
   onExcludeToggle() {
+    this.updateWordCount();
+  }
+
+  onMatchModeToggle() {
     this.updateWordCount();
   }
 
@@ -267,6 +276,7 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
       numberOfWords: Number(this.form.value.numberOfWords),
       tagFilter: this.selectedTagIds.size > 0 ? Array.from(this.selectedTagIds) : undefined,
       tagFilterMode: this.excludeTags ? 'EXCLUDE' : 'INCLUDE',
+      matchAllTags: this.matchAllTags,
       botDifficulty: this.botDifficulty
     }).subscribe({
       next: ({ jobId }) => {

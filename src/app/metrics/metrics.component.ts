@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { MetricsService, ProgressResponse, RankingEntryDto, DailyStatDto, TagAccuracyDto, TestSummaryForMetricsDto } from '../service/metrics.service';
 import { AuthService } from '../service/auth.service';
 
@@ -16,6 +16,7 @@ export class MetricsComponent implements OnInit {
 
   selectedTestId: string = '';
   rankingSortBy: string = 'accuracy';
+  testFilterOpen = false;
 
   constructor(
     private metricsService: MetricsService,
@@ -38,6 +39,26 @@ export class MetricsComponent implements OnInit {
   onTestFilterChange() {
     this.loadProgress();
     this.loadRanking();
+  }
+
+  toggleTestFilter(event: Event) {
+    event.stopPropagation();
+    this.testFilterOpen = !this.testFilterOpen;
+  }
+
+  selectTestFilter(testId: string) {
+    this.selectedTestId = testId;
+    this.testFilterOpen = false;
+    this.onTestFilterChange();
+  }
+
+  @HostListener('document:click')
+  closeTestFilter() {
+    this.testFilterOpen = false;
+  }
+
+  get selectedTestName(): string {
+    return this.myTests.find(t => t.id === this.selectedTestId)?.name ?? '';
   }
 
   onSortChange(sortBy: string) {

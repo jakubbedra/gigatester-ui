@@ -11,6 +11,7 @@ export interface CreateMultiplayerRequest {
   numberOfWords: number;
   tagFilter?: string[];
   tagFilterMode?: string;
+  matchAllTags?: boolean;
 }
 
 export interface SubmitTurnLetter {

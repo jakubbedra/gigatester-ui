@@ -110,6 +110,12 @@
           <button type="button" class="tag-mode-btn" [class.active]="excludeTags"
                   (click)="excludeTags = true; onExcludeToggle()">{{ 'TEST_VIEW.TAG_EXCLUDE' | translate }}</button>
         </div>
+        <div class="tag-mode-toggle" *ngIf="selectedTags.length > 1">
+          <button type="button" class="tag-mode-btn" [class.active]="!matchAllTags"
+                  (click)="matchAllTags = false; onMatchModeToggle()">{{ 'TEST_VIEW.TAG_MATCH_ANY' | translate }}</button>
+          <button type="button" class="tag-mode-btn" [class.active]="matchAllTags"
+                  (click)="matchAllTags = true; onMatchModeToggle()">{{ 'TEST_VIEW.TAG_MATCH_ALL' | translate }}</button>
+        </div>
       </div>
 
       <!-- Display type -->

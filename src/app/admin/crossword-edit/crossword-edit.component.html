@@ -25,7 +25,7 @@
         <img *ngIf="author.profilePictureUrl" [src]="author.profilePictureUrl" class="author-avatar" alt="avatar" />
         <div *ngIf="!author.profilePictureUrl" class="author-avatar-fallback">{{ avatarFallback(author.username) }}</div>
         <span class="author-name">{{ author.username }}</span>
-        <button class="author-remove" (click)="removeAuthor(author.id)" title="Remove">✕</button>
+        <button class="author-remove" (click)="removeAuthor(author.id)" [title]="'CROSSWORD_EDIT.REMOVE' | translate">✕</button>
       </div>
     </div>
     <p class="authors-empty" *ngIf="crosswordAuthors.length === 0">{{ 'TESTS_LIST.NO_AUTHORS' | translate }}</p>
@@ -36,7 +36,7 @@
           <span class="author-popup-title">{{ 'TESTS_LIST.ADD_AUTHOR' | translate }}</span>
           <button class="author-popup-close" (click)="closeAuthorPopup()">✕</button>
         </div>
-        <input class="author-popup-search" [(ngModel)]="authorSearch" placeholder="Search by username…" autofocus />
+        <input class="author-popup-search" [(ngModel)]="authorSearch" placeholder="{{ 'CROSSWORD_EDIT.SEARCH_USERNAME' | translate }}" autofocus />
         <div class="author-popup-list" *ngIf="!authorCandidatesLoading">
           <div class="author-candidate" *ngFor="let c of filteredAuthorCandidates" (click)="selectAuthor(c)">
             <img *ngIf="c.profilePictureUrl" [src]="c.profilePictureUrl" class="candidate-avatar" alt="avatar" />
@@ -44,9 +44,9 @@
             <span class="candidate-name">{{ c.username }}</span>
             <span class="candidate-role">{{ c.role }}</span>
           </div>
-          <p class="candidate-empty" *ngIf="filteredAuthorCandidates.length === 0">No users found.</p>
+          <p class="candidate-empty" *ngIf="filteredAuthorCandidates.length === 0">{{ 'CROSSWORD_EDIT.NO_USERS_FOUND' | translate }}</p>
         </div>
-        <div class="author-popup-loading" *ngIf="authorCandidatesLoading">Loading…</div>
+        <div class="author-popup-loading" *ngIf="authorCandidatesLoading">{{ 'CROSSWORD_EDIT.LOADING' | translate }}</div>
       </div>
     </div>
   </div>
@@ -55,13 +55,13 @@
   <div class="filter-bar">
     <div class="filter-search-wrap">
       <input class="filter-search" type="text" [(ngModel)]="filterText" (ngModelChange)="onFilterTextChange()"
-             [placeholder]="filterIn === 'term' ? 'Search term…' : filterIn === 'clue' ? 'Search clue…' : 'Search term or clue…'" />
+             [placeholder]="filterIn === 'term' ? ('CROSSWORD_EDIT.SEARCH_TERM' | translate) : filterIn === 'clue' ? ('CROSSWORD_EDIT.SEARCH_CLUE' | translate) : ('CROSSWORD_EDIT.SEARCH_BOTH' | translate)" />
       <div class="filter-in-toggle">
-        <button [class.active]="filterIn === 'both'" (click)="filterIn = 'both'; onFilterTextChange()">Both</button>
-        <button [class.active]="filterIn === 'term'" (click)="filterIn = 'term'; onFilterTextChange()">Term</button>
-        <button [class.active]="filterIn === 'clue'" (click)="filterIn = 'clue'; onFilterTextChange()">Clue</button>
+        <button [class.active]="filterIn === 'both'" (click)="filterIn = 'both'; onFilterTextChange()">{{ 'CROSSWORD_EDIT.BOTH' | translate }}</button>
+        <button [class.active]="filterIn === 'term'" (click)="filterIn = 'term'; onFilterTextChange()">{{ 'CROSSWORD_EDIT.TERM' | translate }}</button>
+        <button [class.active]="filterIn === 'clue'" (click)="filterIn = 'clue'; onFilterTextChange()">{{ 'CROSSWORD_EDIT.CLUE' | translate }}</button>
       </div>
-      <button class="filter-clear-btn" *ngIf="isFiltered" (click)="clearFilters()" title="Clear filters">✕</button>
+      <button class="filter-clear-btn" *ngIf="isFiltered" (click)="clearFilters()" [title]="'CROSSWORD_EDIT.CLEAR_FILTERS' | translate">✕</button>
     </div>
     <div class="filter-tags" *ngIf="tagsInCrossword.length > 0">
       <span class="filter-tag-chip"
@@ -73,7 +73,7 @@
 
   <div class="section-header">
     <h2 class="section-title">
-      <label class="custom-checkbox" title="Select all">
+      <label class="custom-checkbox" [title]="'CROSSWORD_EDIT.SELECT_ALL' | translate">
         <input type="checkbox"
                [checked]="terms.length > 0 && selectedIndices.size === terms.length"
                [indeterminate]="selectedIndices.size > 0 && selectedIndices.size < terms.length"
@@ -87,13 +87,13 @@
       <ng-container *ngIf="selectedIndices.size > 0">
         <ng-container *ngIf="!confirmBulkDelete">
           <button class="btn-bulk-delete" (click)="requestBulkDelete()">
-            🗑 Delete selected ({{ selectedIndices.size }})
+            🗑 {{ 'CROSSWORD_EDIT.DELETE_SELECTED' | translate }} ({{ selectedIndices.size }})
           </button>
         </ng-container>
         <ng-container *ngIf="confirmBulkDelete">
-          <span class="bulk-confirm-label">Delete {{ selectedIndices.size }} terms?</span>
-          <button class="btn-danger-sm" (click)="confirmBulkDeleteAction()">Yes, delete</button>
-          <button class="btn-ghost-sm" (click)="cancelBulkDelete()">Cancel</button>
+          <span class="bulk-confirm-label">{{ 'CROSSWORD_EDIT.DELETE' | translate }} {{ selectedIndices.size }} {{ 'CROSSWORD_EDIT.TERMS_Q' | translate }}</span>
+          <button class="btn-danger-sm" (click)="confirmBulkDeleteAction()">{{ 'CROSSWORD_EDIT.YES_DELETE' | translate }}</button>
+          <button class="btn-ghost-sm" (click)="cancelBulkDelete()">{{ 'CROSSWORD_EDIT.CANCEL' | translate }}</button>
         </ng-container>
       </ng-container>
       <button class="btn-add-term" (click)="addTerm()">+ {{ 'CROSSWORD_EDIT.ADD_TERM' | translate }}</button>
@@ -101,7 +101,7 @@
   </div>
 
   <div class="terms-list" *ngIf="filteredTermsWithIndex.length > 0; else noTerms">
-    <div class="term-item" *ngFor="let row of pagedFilteredTerms; let i = index"
+    <div class="term-item" *ngFor="let row of pagedFilteredTerms; let i = index; trackBy: trackByRealIdx"
          [class.editing]="editingIndex === row.realIdx"
          [class.selected]="selectedIndices.has(row.realIdx)"
          [class.confirm-delete]="confirmDeleteIndex === row.realIdx">
@@ -130,10 +130,10 @@
       <!-- Confirm delete -->
       <ng-container *ngIf="confirmDeleteIndex === row.realIdx">
         <div class="delete-confirm-row">
-          <span class="delete-confirm-msg">Delete <strong>{{ row.term.term || 'this term' }}</strong>?</span>
+          <span class="delete-confirm-msg">{{ 'CROSSWORD_EDIT.DELETE' | translate }} <strong>{{ row.term.term || ('CROSSWORD_EDIT.THIS_TERM' | translate) }}</strong>?</span>
           <div class="delete-confirm-actions">
-            <button class="btn-danger-sm" (click)="confirmDelete()">Yes, delete</button>
-            <button class="btn-ghost-sm" (click)="cancelDelete()">Cancel</button>
+            <button class="btn-danger-sm" (click)="confirmDelete()">{{ 'CROSSWORD_EDIT.YES_DELETE' | translate }}</button>
+            <button class="btn-ghost-sm" (click)="cancelDelete()">{{ 'CROSSWORD_EDIT.CANCEL' | translate }}</button>
           </div>
         </div>
       </ng-container>
@@ -145,11 +145,11 @@
             <div class="edit-index-badge">{{ row.realIdx + 1 }}</div>
             <div class="edit-field-group">
               <label>{{ 'CROSSWORD_EDIT.TERM' | translate }}</label>
-              <input type="text" [(ngModel)]="editDraft.term" placeholder="e.g. PARIS" autofocus />
+              <input type="text" [(ngModel)]="editDraft.term" placeholder="{{ 'CROSSWORD_EDIT.TERM_PLACEHOLDER' | translate }}" autofocus />
             </div>
             <div class="edit-field-group edit-clue-group">
               <label>{{ 'CROSSWORD_EDIT.CLUE' | translate }}</label>
-              <input type="text" [(ngModel)]="editDraft.clue" placeholder="Clue / hint — supports $LaTeX$" />
+              <input type="text" [(ngModel)]="editDraft.clue" placeholder="{{ 'CROSSWORD_EDIT.CLUE_PLACEHOLDER' | translate }}" />
             </div>
             <div class="edit-field-group edit-type-group">
               <label>{{ 'CROSSWORD_EDIT.TYPE' | translate }}</label>
@@ -190,7 +190,7 @@
   <!-- Pagination -->
   <div class="pagination-bar" *ngIf="terms.length > 0">
     <div class="page-size-select">
-      <span class="page-size-label">Per page:</span>
+      <span class="page-size-label">{{ 'CROSSWORD_EDIT.PER_PAGE' | translate }}</span>
       <button *ngFor="let s of pageSizes"
               class="page-size-btn"
               [class.active]="pageSize === s"

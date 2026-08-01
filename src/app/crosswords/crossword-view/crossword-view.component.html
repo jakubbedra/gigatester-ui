@@ -3,14 +3,14 @@
 
     <div class="title-row">
       <h1 class="test-title">{{ crossword.name }}</h1>
-      <button *ngIf="canModify" type="button" class="edit-btn" (click)="editCrossword()">✎ Edit</button>
+      <button *ngIf="canModify" type="button" class="edit-btn" (click)="editCrossword()">✎ {{ 'SIDEBAR.EDIT' | translate }}</button>
     </div>
 
     <!-- Mode toggle -->
     <div class="mode-tabs">
-      <button type="button" class="mode-tab" [class.active]="mode === 'singleplayer'" (click)="setMode('singleplayer')">Singleplayer</button>
-      <button type="button" class="mode-tab" [class.active]="mode === 'multiplayer'" (click)="setMode('multiplayer')">Multiplayer</button>
-      <button type="button" class="mode-tab" [class.active]="mode === 'testrun'" (click)="setMode('testrun')">Test Run</button>
+      <button type="button" class="mode-tab" [class.active]="mode === 'singleplayer'" (click)="setMode('singleplayer')">{{ 'CROSSWORD_VIEW.SINGLEPLAYER' | translate }}</button>
+      <button type="button" class="mode-tab" [class.active]="mode === 'multiplayer'" (click)="setMode('multiplayer')">{{ 'CROSSWORD_VIEW.MULTIPLAYER' | translate }}</button>
+      <button type="button" class="mode-tab" [class.active]="mode === 'testrun'" (click)="setMode('testrun')">{{ 'CROSSWORD_VIEW.TEST_RUN_TAB' | translate }}</button>
     </div>
 
     <!-- ══ SINGLEPLAYER ══ -->
@@ -49,6 +49,12 @@
           <button type="button" class="tag-mode-btn" [class.active]="excludeTags"
                   (click)="excludeTags = true; onExcludeToggle()">{{ 'TEST_VIEW.TAG_EXCLUDE' | translate }}</button>
         </div>
+        <div class="tag-mode-toggle" *ngIf="selectedTagIds.size > 1">
+          <button type="button" class="tag-mode-btn" [class.active]="!matchAllTags"
+                  (click)="matchAllTags = false; onMatchModeToggle()">{{ 'TEST_VIEW.TAG_MATCH_ANY' | translate }}</button>
+          <button type="button" class="tag-mode-btn" [class.active]="matchAllTags"
+                  (click)="matchAllTags = true; onMatchModeToggle()">{{ 'TEST_VIEW.TAG_MATCH_ALL' | translate }}</button>
+        </div>
       </div>
 
       <div class="field-section">
@@ -69,11 +75,11 @@
       </div>
 
       <div class="field-section">
-        <div class="field-label">Bot Difficulty</div>
+        <div class="field-label">{{ 'CROSSWORD_VIEW.BOT_DIFFICULTY' | translate }}</div>
         <div class="tag-mode-toggle">
           <button type="button" class="tag-mode-btn" *ngFor="let d of botDifficulties"
                   [class.active]="botDifficulty === d.value"
-                  (click)="botDifficulty = d.value">{{ d.label }}</button>
+                  (click)="botDifficulty = d.value">{{ d.labelKey | translate }}</button>
         </div>
       </div>
 
@@ -82,8 +88,8 @@
           <div class="progress-bar-fill" [style.width.%]="generatingProgress"></div>
         </div>
         <div class="generating-footer">
-          <div class="generating-label">Generating crossword…</div>
-          <button type="button" class="cancel-gen-btn" (click)="cancelGeneration()">Cancel</button>
+          <div class="generating-label">{{ 'CROSSWORD_VIEW.GENERATING' | translate }}</div>
+          <button type="button" class="cancel-gen-btn" (click)="cancelGeneration()">{{ 'CROSSWORD_VIEW.CANCEL' | translate }}</button>
         </div>
       </div>
 
@@ -98,13 +104,13 @@
     <!-- Generate from wrong answers -->
     <div class="tr-from-run" *ngIf="latestRun && latestRun.wrongTermCount > 0 && !generating">
       <div class="tr-from-run-header">
-        <span class="tr-from-run-tag">Last test run</span>
-        <span class="tr-from-run-score">{{ latestRun.totalTerms - latestRun.wrongTermCount }}/{{ latestRun.totalTerms }} correct</span>
-        <span class="tr-from-run-wrong">{{ latestRun.wrongTermCount }} wrong</span>
+        <span class="tr-from-run-tag">{{ 'CROSSWORD_VIEW.LAST_TEST_RUN' | translate }}</span>
+        <span class="tr-from-run-score">{{ latestRun.totalTerms - latestRun.wrongTermCount }}/{{ latestRun.totalTerms }} {{ 'CROSSWORD_VIEW.CORRECT' | translate }}</span>
+        <span class="tr-from-run-wrong">{{ latestRun.wrongTermCount }} {{ 'CROSSWORD_VIEW.WRONG' | translate }}</span>
       </div>
       <div class="tr-from-run-body">
         <div class="tr-word-count-field">
-          <span class="tr-word-count-label">Words to include</span>
+          <span class="tr-word-count-label">{{ 'CROSSWORD_VIEW.WORDS_TO_INCLUDE' | translate }}</span>
           <div class="tr-word-count-controls">
             <input class="tr-word-count-input" type="number" [(ngModel)]="wrongWordCount"
                    min="1" [max]="latestRun.wrongTermCount" />
@@ -113,7 +119,7 @@
         </div>
         <button type="button" class="tr-crossword-btn" (click)="generateFromWrongAnswers()"
                 [disabled]="wrongWordCount < 1 || wrongWordCount > latestRun.wrongTermCount">
-          Generate crossword from wrong answers
+          {{ 'CROSSWORD_VIEW.GENERATE_FROM_WRONG' | translate }}
         </button>
       </div>
     </div>
@@ -125,12 +131,12 @@
 
       <!-- Active sessions for this crossword -->
       <div class="mp-sessions" *ngIf="mySessions.length > 0">
-        <div class="mp-sessions-label">Your active sessions</div>
+        <div class="mp-sessions-label">{{ 'CROSSWORD_VIEW.YOUR_ACTIVE_SESSIONS' | translate }}</div>
         <div class="mp-session-row" *ngFor="let s of mySessions" (click)="goToSession(s.id)">
           <div class="mp-session-info">
-            <span class="mp-session-opp">vs {{ s.opponent?.username ?? 'Waiting for player…' }}</span>
+            <span class="mp-session-opp">vs {{ s.opponent?.username ?? ('CROSSWORD_VIEW.WAITING_FOR_PLAYER' | translate) }}</span>
             <span class="mp-session-status" [class.my-turn]="s.myTurn && s.status === 'IN_PROGRESS'">
-              {{ s.status === 'WAITING_FOR_PLAYER' ? 'Waiting for opponent' : (s.myTurn ? 'Your turn' : "Opponent's turn") }}
+              {{ (s.status === 'WAITING_FOR_PLAYER' ? 'CROSSWORD_VIEW.WAITING_FOR_OPPONENT' : (s.myTurn ? 'CROSSWORD_VIEW.YOUR_TURN' : 'CROSSWORD_VIEW.OPPONENTS_TURN')) | translate }}
             </span>
           </div>
           <div class="mp-session-scores">{{ s.myScore }} – {{ s.opponentScore }}</div>
@@ -140,8 +146,8 @@
 
       <!-- New room creator -->
       <div class="mp-create-section">
-        <div class="mp-create-title">Create a new room</div>
-        <p class="mp-create-hint">Configure your puzzle, then share the invite link with a friend.</p>
+        <div class="mp-create-title">{{ 'CROSSWORD_VIEW.CREATE_ROOM_TITLE' | translate }}</div>
+        <p class="mp-create-hint">{{ 'CROSSWORD_VIEW.CREATE_ROOM_HINT' | translate }}</p>
 
         <!-- Reuse same tag / word-count form -->
         <div class="field-section" *ngIf="allTags.length > 0">
@@ -156,9 +162,15 @@
           </div>
           <div class="tag-mode-toggle" *ngIf="selectedTagIds.size > 0">
             <button type="button" class="tag-mode-btn" [class.active]="!excludeTags"
-                    (click)="excludeTags = false; onExcludeToggle()">Include</button>
+                    (click)="excludeTags = false; onExcludeToggle()">{{ 'TEST_VIEW.TAG_INCLUDE' | translate }}</button>
             <button type="button" class="tag-mode-btn" [class.active]="excludeTags"
-                    (click)="excludeTags = true; onExcludeToggle()">Exclude</button>
+                    (click)="excludeTags = true; onExcludeToggle()">{{ 'TEST_VIEW.TAG_EXCLUDE' | translate }}</button>
+          </div>
+          <div class="tag-mode-toggle" *ngIf="selectedTagIds.size > 1">
+            <button type="button" class="tag-mode-btn" [class.active]="!matchAllTags"
+                    (click)="matchAllTags = false; onMatchModeToggle()">{{ 'TEST_VIEW.TAG_MATCH_ANY' | translate }}</button>
+            <button type="button" class="tag-mode-btn" [class.active]="matchAllTags"
+                    (click)="matchAllTags = true; onMatchModeToggle()">{{ 'TEST_VIEW.TAG_MATCH_ALL' | translate }}</button>
           </div>
         </div>
 
@@ -179,16 +191,16 @@
 
         <!-- Invite link after creation -->
         <div class="invite-box" *ngIf="newSessionId">
-          <div class="invite-label">Room created! Share this link:</div>
+          <div class="invite-label">{{ 'CROSSWORD_VIEW.ROOM_CREATED' | translate }}</div>
           <div class="invite-link-row">
             <input class="invite-link-input" [value]="joinSessionLink(newSessionId)" readonly />
-            <button class="invite-copy-btn" (click)="goToSession(newSessionId)">Open Room</button>
+            <button class="invite-copy-btn" (click)="goToSession(newSessionId)">{{ 'CROSSWORD_VIEW.OPEN_ROOM' | translate }}</button>
           </div>
         </div>
 
         <button type="button" class="start-btn" [disabled]="form.invalid || creatingMultiplayer"
                 (click)="createMultiplayerRoom()">
-          {{ creatingMultiplayer ? '…' : 'Create Room' }}
+          {{ creatingMultiplayer ? '…' : ('CROSSWORD_VIEW.CREATE_ROOM_BTN' | translate) }}
         </button>
       </div>
 
@@ -198,19 +210,19 @@
     <ng-container *ngIf="mode === 'testrun'">
 
       <div class="tr-section" *ngIf="latestRunLoading">
-        <span class="tr-loading-text">Loading…</span>
+        <span class="tr-loading-text">{{ 'CROSSWORD_VIEW.LOADING' | translate }}</span>
       </div>
 
       <div class="tr-section" *ngIf="!latestRunLoading">
 
         <!-- Previous run summary -->
         <div class="tr-prev-run" *ngIf="latestRun">
-          <div class="tr-prev-label">Last run</div>
-          <div class="tr-prev-score">{{ latestRun.totalTerms - latestRun.wrongTermCount }} / {{ latestRun.totalTerms }} correct</div>
+          <div class="tr-prev-label">{{ 'CROSSWORD_VIEW.LAST_RUN' | translate }}</div>
+          <div class="tr-prev-score">{{ latestRun.totalTerms - latestRun.wrongTermCount }} / {{ latestRun.totalTerms }} {{ 'CROSSWORD_VIEW.CORRECT' | translate }}</div>
           <div class="tr-prev-wrong" *ngIf="latestRun.wrongTermCount > 0">
-            {{ latestRun.wrongTermCount }} wrong answer{{ latestRun.wrongTermCount === 1 ? '' : 's' }}
+            {{ latestRun.wrongTermCount }} {{ (latestRun.wrongTermCount === 1 ? 'CROSSWORD_VIEW.WRONG_ANSWER' : 'CROSSWORD_VIEW.WRONG_ANSWERS') | translate }}
           </div>
-          <div class="tr-prev-perfect" *ngIf="latestRun.wrongTermCount === 0">Perfect score!</div>
+          <div class="tr-prev-perfect" *ngIf="latestRun.wrongTermCount === 0">{{ 'CROSSWORD_VIEW.PERFECT_SCORE' | translate }}</div>
         </div>
 
         <!-- Generating crossword from wrong answers -->
@@ -219,8 +231,8 @@
             <div class="progress-bar-fill" [style.width.%]="generatingProgress"></div>
           </div>
           <div class="generating-footer">
-            <div class="generating-label">Generating crossword…</div>
-            <button type="button" class="cancel-gen-btn" (click)="cancelGeneration()">Cancel</button>
+            <div class="generating-label">{{ 'CROSSWORD_VIEW.GENERATING' | translate }}</div>
+            <button type="button" class="cancel-gen-btn" (click)="cancelGeneration()">{{ 'CROSSWORD_VIEW.CANCEL' | translate }}</button>
           </div>
         </div>
         <p class="gen-error" *ngIf="generatingError">{{ generatingError }}</p>
@@ -228,15 +240,15 @@
         <!-- Actions -->
         <div class="tr-actions">
           <button class="start-btn" (click)="startTestRun('ALL')" [disabled]="generating">
-            Start test run (all {{ crossword.terms.length }} words)
+            {{ 'CROSSWORD_VIEW.START_TEST_RUN_ALL' | translate }} {{ crossword.terms.length }} {{ 'CROSSWORD_VIEW.WORDS_SUFFIX' | translate }}
           </button>
           <button class="tr-retry-btn" *ngIf="latestRun && latestRun.wrongTermCount > 0"
                   (click)="startTestRun('WRONG_ONLY')" [disabled]="generating">
-            Retry wrong answers ({{ latestRun.wrongTermCount }})
+            {{ 'CROSSWORD_VIEW.RETRY_WRONG_ANSWERS' | translate }} ({{ latestRun.wrongTermCount }})
           </button>
           <button class="tr-crossword-btn" *ngIf="latestRun && latestRun.wrongTermCount > 0"
                   (click)="generateFromWrongAnswers()" [disabled]="generating">
-            Generate crossword from wrong answers
+            {{ 'CROSSWORD_VIEW.GENERATE_FROM_WRONG' | translate }}
           </button>
         </div>
 

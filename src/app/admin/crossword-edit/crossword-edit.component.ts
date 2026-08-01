@@ -86,6 +86,10 @@ export class CrosswordEditComponent implements OnInit {
 
   get totalPages(): number { return Math.max(1, Math.ceil(this.filteredTermsWithIndex.length / this.pageSize)); }
 
+  trackByRealIdx(index: number, row: { term: TermRow; realIdx: number }): number {
+    return row.realIdx;
+  }
+
   toggleFilterTag(tagId: string) {
     if (this.filterTagIds.has(tagId)) this.filterTagIds.delete(tagId);
     else this.filterTagIds.add(tagId);

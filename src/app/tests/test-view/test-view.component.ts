@@ -33,6 +33,7 @@ export class TestViewComponent implements OnInit {
   allTags: TagResponse[] = [];
   selectedTags: TagResponse[] = [];
   excludeTags = false;
+  matchAllTags = false;
   availableClosed = 0;
   availableOpen = 0;
   availableStatement = 0;
@@ -168,6 +169,7 @@ export class TestViewComponent implements OnInit {
       ...formVals,
       tagIds: this.selectedTags.map(t => t.id),
       excludeTags: this.excludeTags,
+      matchAllTags: this.matchAllTags,
       timeLimitMs: formVals.timeLimitEnabled ? timeLimitMinutes * 60000 : 0
     };
     this.testStateService.createTestState(this.testId, state).subscribe({
@@ -225,9 +227,13 @@ export class TestViewComponent implements OnInit {
     if (this.selectedTags.length > 0) this.refreshCounts();
   }
 
+  onMatchModeToggle() {
+    if (this.selectedTags.length > 0) this.refreshCounts();
+  }
+
   private refreshCounts() {
     const tagIds = this.selectedTags.map(t => t.id);
-    this.testService.getQuestionCounts(this.testId, tagIds, this.excludeTags).subscribe(counts => {
+    this.testService.getQuestionCounts(this.testId, tagIds, this.excludeTags, this.matchAllTags).subscribe(counts => {
       this.availableClosed = counts.closedQuestionsCount;
       this.availableOpen = counts.openQuestionsCount;
       this.availableStatement = counts.statementQuestionsCount;
