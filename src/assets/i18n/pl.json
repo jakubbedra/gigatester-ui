@@ -208,7 +208,10 @@
     "PERFECT_SCORE": "Idealny wynik!",
     "START_TEST_RUN_ALL": "Rozpocznij test — wszystkie",
     "WORDS_SUFFIX": "słów",
-    "RETRY_WRONG_ANSWERS": "Powtórz błędne odpowiedzi"
+    "RETRY_WRONG_ANSWERS": "Powtórz błędne odpowiedzi",
+    "TEST_RUN_IN_PROGRESS": "Masz nieukończony test",
+    "START_NEW_TEST_RUN_ALL": "Nowy test — wszystkie",
+    "START_NEW_RETRY_WRONG": "Nowy test — błędne"
   },
   "CROSSWORD_TEST_RUN": {
     "LOADING": "Ładowanie…",

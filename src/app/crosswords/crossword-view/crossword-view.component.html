@@ -215,6 +215,17 @@
 
       <div class="tr-section" *ngIf="!latestRunLoading">
 
+        <!-- In-progress run banner -->
+        <div class="resume-banner" *ngIf="inProgressRun">
+          <div class="resume-info">
+            <span class="resume-label">{{ 'CROSSWORD_VIEW.TEST_RUN_IN_PROGRESS' | translate }}</span>
+            <span class="resume-meta">{{ inProgressRun.currentIndex }} / {{ inProgressRun.totalTerms }} {{ 'CROSSWORD_VIEW.WORDS_SUFFIX' | translate }}</span>
+          </div>
+          <div class="resume-actions">
+            <button type="button" class="resume-btn primary" (click)="continueTestRun()">{{ 'CROSSWORD_VIEW.CONTINUE' | translate }}</button>
+          </div>
+        </div>
+
         <!-- Previous run summary -->
         <div class="tr-prev-run" *ngIf="latestRun">
           <div class="tr-prev-label">{{ 'CROSSWORD_VIEW.LAST_RUN' | translate }}</div>
@@ -240,11 +251,11 @@
         <!-- Actions -->
         <div class="tr-actions">
           <button class="start-btn" (click)="startTestRun('ALL')" [disabled]="generating">
-            {{ 'CROSSWORD_VIEW.START_TEST_RUN_ALL' | translate }} {{ crossword.terms.length }} {{ 'CROSSWORD_VIEW.WORDS_SUFFIX' | translate }}
+            {{ (inProgressRun ? 'CROSSWORD_VIEW.START_NEW_TEST_RUN_ALL' : 'CROSSWORD_VIEW.START_TEST_RUN_ALL') | translate }} {{ crossword.terms.length }} {{ 'CROSSWORD_VIEW.WORDS_SUFFIX' | translate }}
           </button>
           <button class="tr-retry-btn" *ngIf="latestRun && latestRun.wrongTermCount > 0"
                   (click)="startTestRun('WRONG_ONLY')" [disabled]="generating">
-            {{ 'CROSSWORD_VIEW.RETRY_WRONG_ANSWERS' | translate }} ({{ latestRun.wrongTermCount }})
+            {{ (inProgressRun ? 'CROSSWORD_VIEW.START_NEW_RETRY_WRONG' : 'CROSSWORD_VIEW.RETRY_WRONG_ANSWERS') | translate }} ({{ latestRun.wrongTermCount }})
           </button>
           <button class="tr-crossword-btn" *ngIf="latestRun && latestRun.wrongTermCount > 0"
                   (click)="generateFromWrongAnswers()" [disabled]="generating">

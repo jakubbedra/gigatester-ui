@@ -5,7 +5,7 @@ import { BotDifficulty, CrosswordResponse, CrosswordStateResponse, MultiplayerSe
 import { CrosswordService } from '../../service/crossword.service';
 import { CrosswordStateService } from '../../service/crossword-state.service';
 import { CrosswordMultiplayerService } from '../../service/crossword-multiplayer.service';
-import { CrosswordTestRunService, TestRunResult } from '../../service/crossword-test-run.service';
+import { CrosswordTestRunService, TestRunResult, TestRunProgress } from '../../service/crossword-test-run.service';
 import { AuthService } from '../../service/auth.service';
 import { PermissionService } from '../../service/permission.service';
 import { Permission } from '../../models/models.d';
@@ -41,6 +41,7 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
   mode: 'singleplayer' | 'multiplayer' | 'testrun' = 'singleplayer';
   latestRun: TestRunResult | null = null;
   latestRunLoading = false;
+  inProgressRun: TestRunProgress | null = null;
   wrongWordCount = 0;
   mySessions: MultiplayerSessionSummaryResponse[] = [];
   mySessionsLoading = false;
@@ -107,10 +108,18 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
       next: (run) => { this.latestRun = run; this.wrongWordCount = run.wrongTermCount; this.latestRunLoading = false; },
       error: () => { this.latestRun = null; this.latestRunLoading = false; }
     });
+    this.testRunService.getInProgressRun(this.crosswordId).subscribe(run => this.inProgressRun = run);
   }
 
   startTestRun(mode: 'ALL' | 'WRONG_ONLY') {
     this.router.navigate(['/crosswords', this.crosswordId, 'test-run'], { queryParams: { mode } });
+  }
+
+  continueTestRun() {
+    if (!this.inProgressRun) return;
+    this.router.navigate(['/crosswords', this.crosswordId, 'test-run'], {
+      queryParams: { mode: this.inProgressRun.mode, resume: 'true' }
+    });
   }
 
   generateFromWrongAnswers() {

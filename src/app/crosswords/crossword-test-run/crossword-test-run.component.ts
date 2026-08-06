@@ -40,10 +40,18 @@ export class CrosswordTestRunComponent implements OnInit, OnDestroy {
     document.addEventListener('keydown', this.globalKeydown);
     this.crosswordId = this.route.snapshot.paramMap.get('id')!;
     const mode = (this.route.snapshot.queryParamMap.get('mode') ?? 'ALL') as 'ALL' | 'WRONG_ONLY';
+    const resume = this.route.snapshot.queryParamMap.get('resume') === 'true';
 
-    this.testRunService.startTestRun(this.crosswordId, mode).subscribe({
+    this.testRunService.startTestRun(this.crosswordId, mode, resume).subscribe({
       next: (resp) => {
         this.terms = resp.terms;
+        this.currentIndex = resp.resumedIndex ?? 0;
+        this.wrongTermIds = resp.resumedWrongTermIds ?? [];
+        if (this.currentIndex >= this.terms.length) {
+          // Shouldn't normally happen (server only resumes unfinished runs), but guard anyway.
+          this.finishRun();
+          return;
+        }
         this.phase = 'question';
         setTimeout(() => this.focusInput(), 0);
       },
@@ -69,6 +77,7 @@ export class CrosswordTestRunComponent implements OnInit, OnDestroy {
   next() {
     this.answer = '';
     this.currentIndex++;
+    this.testRunService.updateProgress(this.crosswordId, this.currentIndex, this.wrongTermIds).subscribe({ error: () => {} });
     if (this.currentIndex >= this.terms.length) {
       this.finishRun();
     } else {

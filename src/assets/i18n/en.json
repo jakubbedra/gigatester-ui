@@ -208,7 +208,10 @@
     "PERFECT_SCORE": "Perfect score!",
     "START_TEST_RUN_ALL": "Start test run — all",
     "WORDS_SUFFIX": "words",
-    "RETRY_WRONG_ANSWERS": "Retry wrong answers"
+    "RETRY_WRONG_ANSWERS": "Retry wrong answers",
+    "TEST_RUN_IN_PROGRESS": "You have an unfinished test run",
+    "START_NEW_TEST_RUN_ALL": "Start new run — all",
+    "START_NEW_RETRY_WRONG": "Start new — retry wrong"
   },
   "CROSSWORD_TEST_RUN": {
     "LOADING": "Loading…",
