@@ -138,7 +138,6 @@
   font-size: 15px;
   font-weight: 700;
   color: var(--c-e8e8e8);
-  text-transform: uppercase;
   line-height: 1;
 }
 
@@ -233,7 +232,6 @@
   font-size: 22px;
   font-weight: 800;
   color: #fff;
-  text-transform: uppercase;
   cursor: grab;
   user-select: none;
   transition: transform 0.1s, box-shadow 0.1s;
@@ -266,7 +264,6 @@
   font-size: 22px;
   font-weight: 800;
   color: #fff;
-  text-transform: uppercase;
   transform: rotate(3deg) scale(1.08);
 }
 
@@ -679,7 +676,6 @@
   font-size: 15px;
   font-weight: 800;
   color: var(--c-e0e0e0);
-  text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 

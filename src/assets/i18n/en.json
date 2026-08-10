@@ -372,7 +372,12 @@
     "FORMAT_TEXT": "Text",
     "FORMAT_HTML": "HTML",
     "IMAGE_HINT": "Images can be uploaded after the question is created (via Edit).",
-    "TAGS": "Tags"
+    "TAGS": "Tags",
+    "MULTIPLE_REQUIRED_ANSWERS": "Multiple required answers (treat variations as separate required answers)",
+    "ORDER_MATTERS": "Order matters (answers must match by position)",
+    "ANSWER_1": "Answer 1",
+    "ANSWERS_2_3": "Answers 2, 3, …",
+    "CORRECT_ANSWER_PLACEHOLDER": "Correct answer"
   },
   "CROSSWORDS_LIST": {
     "TITLE": "Crosswords",

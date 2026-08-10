@@ -372,7 +372,12 @@
     "FORMAT_TEXT": "Tekst",
     "FORMAT_HTML": "HTML",
     "IMAGE_HINT": "Obrazy można przesłać po utworzeniu pytania (przez Edycję).",
-    "TAGS": "Tagi"
+    "TAGS": "Tagi",
+    "MULTIPLE_REQUIRED_ANSWERS": "Wiele wymaganych odpowiedzi (traktuj warianty jako osobne wymagane odpowiedzi)",
+    "ORDER_MATTERS": "Kolejność ma znaczenie (odpowiedzi muszą pasować pozycyjnie)",
+    "ANSWER_1": "Odpowiedź 1",
+    "ANSWERS_2_3": "Odpowiedzi 2, 3, …",
+    "CORRECT_ANSWER_PLACEHOLDER": "Poprawna odpowiedź"
   },
   "CROSSWORDS_LIST": {
     "TITLE": "Krzyżówki",

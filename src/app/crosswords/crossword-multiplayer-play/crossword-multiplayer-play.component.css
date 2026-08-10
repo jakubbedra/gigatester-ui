@@ -129,7 +129,6 @@
   font-size: 15px;
   font-weight: 700;
   color: var(--c-e8e8e8);
-  text-transform: uppercase;
   line-height: 1;
 }
 .cell.placed .cell-letter { color: var(--c-c4b4ff); }
@@ -199,7 +198,6 @@
   font-size: 22px;
   font-weight: 800;
   color: #fff;
-  text-transform: uppercase;
   cursor: grab;
   user-select: none;
   transition: transform 0.1s, box-shadow 0.1s;
@@ -229,7 +227,6 @@
   font-size: 22px;
   font-weight: 800;
   color: #fff;
-  text-transform: uppercase;
   transform: rotate(3deg) scale(1.08);
 }
 
@@ -436,7 +433,7 @@
   to   { opacity: 0; transform: translateY(-10px); }
 }
 
-.toast-word { font-size: 15px; font-weight: 800; color: var(--c-e0e0e0); text-transform: uppercase; letter-spacing: 0.06em; }
+.toast-word { font-size: 15px; font-weight: 800; color: var(--c-e0e0e0); letter-spacing: 0.06em; }
 .toast-pts { font-size: 14px; font-weight: 900; color: var(--c-7b6df5); white-space: nowrap; }
 
 /* ── Winner overlay ── */

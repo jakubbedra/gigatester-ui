@@ -305,7 +305,7 @@ export class TestEditComponent implements OnInit {
     this.uploadingImage = true;
     this.imageService.uploadImage(this.editDraft.id, file).subscribe({
       next: (url) => {
-        const tag = `<img src="${url}" width="40%" height="40%">`;
+        const tag = `<img src="${url}" width="80%" height="80%">`;
         this.editDraft.content.text = (this.editDraft.content.text || '') + tag;
         this.uploadingImage = false;
         (event.target as HTMLInputElement).value = '';

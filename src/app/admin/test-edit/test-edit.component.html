@@ -295,22 +295,22 @@
       <div class="form-group form-group-checkbox">
         <label>
           <input type="checkbox" [(ngModel)]="editDraft.multipleAnswers" />
-          Multiple required answers (treat variations as separate required answers)
+          {{ 'TEST_EDIT.MULTIPLE_REQUIRED_ANSWERS' | translate }}
         </label>
       </div>
       <div class="form-group form-group-checkbox" *ngIf="editDraft.multipleAnswers">
         <label>
           <input type="checkbox" [(ngModel)]="editDraft.orderedAnswers" />
-          Order matters (answers must match by position)
+          {{ 'TEST_EDIT.ORDER_MATTERS' | translate }}
         </label>
       </div>
       <div class="form-group">
-        <label>{{ editDraft.multipleAnswers ? 'Answer 1' : ('TEST_EDIT.EXPECTED_ANSWER' | translate) }} <span class="type-hint">{{ editDraft.answer?.type }}</span></label>
-        <textarea rows="2" [(ngModel)]="editDraft.answer.text" placeholder="Correct answer"></textarea>
+        <label>{{ editDraft.multipleAnswers ? ('TEST_EDIT.ANSWER_1' | translate) : ('TEST_EDIT.EXPECTED_ANSWER' | translate) }} <span class="type-hint">{{ editDraft.answer?.type }}</span></label>
+        <textarea rows="2" [(ngModel)]="editDraft.answer.text" [placeholder]="'TEST_EDIT.CORRECT_ANSWER_PLACEHOLDER' | translate"></textarea>
       </div>
       <div class="form-group">
         <div class="label-row">
-          <label>{{ editDraft.multipleAnswers ? 'Answers 2, 3, …' : ('TEST_EDIT.ANSWER_VARIATIONS' | translate) }}</label>
+          <label>{{ editDraft.multipleAnswers ? ('TEST_EDIT.ANSWERS_2_3' | translate) : ('TEST_EDIT.ANSWER_VARIATIONS' | translate) }}</label>
           <button class="btn-add-item" (click)="addVariation()">+ {{ 'TEST_EDIT.ADD' | translate }}</button>
         </div>
         <div class="variations-edit">
@@ -565,18 +565,18 @@
         <div class="form-group form-group-checkbox">
           <label>
             <input type="checkbox" [(ngModel)]="addDraft.multipleAnswers" />
-            Multiple required answers (treat variations as separate required answers)
+            {{ 'TEST_EDIT.MULTIPLE_REQUIRED_ANSWERS' | translate }}
           </label>
         </div>
         <div class="form-group form-group-checkbox" *ngIf="addDraft.multipleAnswers">
           <label>
             <input type="checkbox" [(ngModel)]="addDraft.orderedAnswers" />
-            Order matters (answers must match by position)
+            {{ 'TEST_EDIT.ORDER_MATTERS' | translate }}
           </label>
         </div>
         <div class="form-group">
           <div class="label-row">
-            <label>{{ addDraft.multipleAnswers ? 'Answer 1' : ('TEST_EDIT.EXPECTED_ANSWER' | translate) }}</label>
+            <label>{{ addDraft.multipleAnswers ? ('TEST_EDIT.ANSWER_1' | translate) : ('TEST_EDIT.EXPECTED_ANSWER' | translate) }}</label>
             <div class="content-type-toggle">
               <button class="mini-tab" [class.active]="addDraft.answer.type === 'TEXT'"
                       (click)="addDraft.answer.type = 'TEXT'">{{ 'TEST_EDIT.FORMAT_TEXT' | translate }}</button>
@@ -584,11 +584,11 @@
                       (click)="addDraft.answer.type = 'HTML'">{{ 'TEST_EDIT.FORMAT_HTML' | translate }}</button>
             </div>
           </div>
-          <textarea rows="2" [(ngModel)]="addDraft.answer.text" placeholder="Correct answer"></textarea>
+          <textarea rows="2" [(ngModel)]="addDraft.answer.text" [placeholder]="'TEST_EDIT.CORRECT_ANSWER_PLACEHOLDER' | translate"></textarea>
         </div>
         <div class="form-group">
           <div class="label-row">
-            <label>{{ addDraft.multipleAnswers ? 'Answers 2, 3, …' : ('TEST_EDIT.VARIATIONS' | translate) }}</label>
+            <label>{{ addDraft.multipleAnswers ? ('TEST_EDIT.ANSWERS_2_3' | translate) : ('TEST_EDIT.VARIATIONS' | translate) }}</label>
             <button class="btn-add-item" (click)="addVariation(addDraft)">+ {{ 'TEST_EDIT.ADD' | translate }}</button>
           </div>
           <div class="variations-edit">

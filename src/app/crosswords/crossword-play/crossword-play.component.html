@@ -138,7 +138,7 @@
                  [class.active]="isActive(entry)"
                  (click)="selectClue(entry)">
               <span class="clue-number">{{ entry.number }}</span>
-              <span class="clue-text">{{ entry.clue.clue }}</span>
+              <span class="clue-text" [innerHTML]="entry.clue.clue | latex"></span>
               <span class="clue-len">({{ entry.length }})</span>
             </div>
           </div>
@@ -152,7 +152,7 @@
                  [class.active]="isActive(entry)"
                  (click)="selectClue(entry)">
               <span class="clue-number">{{ entry.number }}</span>
-              <span class="clue-text">{{ entry.clue.clue }}</span>
+              <span class="clue-text" [innerHTML]="entry.clue.clue | latex"></span>
               <span class="clue-len">({{ entry.length }})</span>
             </div>
           </div>
