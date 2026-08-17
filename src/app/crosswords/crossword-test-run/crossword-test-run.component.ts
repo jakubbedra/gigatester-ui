@@ -96,12 +96,20 @@ export class CrosswordTestRunComponent implements OnInit, OnDestroy {
       next: () => {
         this.submitting = false;
         this.phase = 'results';
+        this.playFinishSound();
       },
       error: () => {
         this.submitting = false;
         this.phase = 'results';
+        this.playFinishSound();
       }
     });
+  }
+
+  private playFinishSound() {
+    if (this.wrongTermIds.length === 0) this.sound.playWin();
+    else if (this.correctCount >= this.wrongTermIds.length) this.sound.playWordComplete();
+    else this.sound.playLose();
   }
 
   ngOnDestroy() {
