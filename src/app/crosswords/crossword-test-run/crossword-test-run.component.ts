@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CrosswordTestRunService, TestRunTerm } from '../../service/crossword-test-run.service';
+import { CrosswordSoundService } from '../../service/crossword-sound.service';
 
 type Phase = 'loading' | 'error' | 'question' | 'feedback' | 'results';
 
@@ -27,7 +28,8 @@ export class CrosswordTestRunComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private testRunService: CrosswordTestRunService
+    private testRunService: CrosswordTestRunService,
+    public sound: CrosswordSoundService
   ) {}
 
   private globalKeydown = (e: KeyboardEvent) => {
@@ -72,6 +74,8 @@ export class CrosswordTestRunComponent implements OnInit, OnDestroy {
     if (!correct) this.wrongTermIds.push(this.current.id);
     this.lastCorrect = correct;
     this.phase = 'feedback';
+    if (correct) this.sound.playCorrect();
+    else this.sound.playWrong();
   }
 
   next() {

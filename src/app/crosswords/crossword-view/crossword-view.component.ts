@@ -105,7 +105,7 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
   loadLatestRun() {
     this.latestRunLoading = true;
     this.testRunService.getLatestRun(this.crosswordId).subscribe({
-      next: (run) => { this.latestRun = run; this.wrongWordCount = run.wrongTermCount; this.latestRunLoading = false; },
+      next: (run) => { this.latestRun = run; this.wrongWordCount = this.filteredWrongTermCount; this.latestRunLoading = false; },
       error: () => { this.latestRun = null; this.latestRunLoading = false; }
     });
     this.testRunService.getInProgressRun(this.crosswordId).subscribe(run => this.inProgressRun = run);
@@ -132,6 +132,9 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
       crosswordId: this.crosswordId,
       numberOfWords: this.wrongWordCount,
       termIdFilter: this.latestRun.wrongTermIds,
+      tagFilter: this.selectedTagIds.size > 0 ? Array.from(this.selectedTagIds) : undefined,
+      tagFilterMode: this.excludeTags ? 'EXCLUDE' : 'INCLUDE',
+      matchAllTags: this.matchAllTags,
       botDifficulty: this.botDifficulty
     }).subscribe({
       next: ({ jobId }) => {
@@ -233,13 +236,23 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
   get termCount(): number {
     if (!this.crossword) return 0;
     if (this.selectedTagIds.size === 0) return this.crossword.terms.length;
-    return this.crossword.terms.filter(t => {
-      const termTagIds = new Set((t.tags ?? []).map(tag => tag.id));
-      const matches = this.matchAllTags
-        ? Array.from(this.selectedTagIds).every(id => termTagIds.has(id))
-        : Array.from(this.selectedTagIds).some(id => termTagIds.has(id));
-      return this.excludeTags ? !matches : matches;
-    }).length;
+    return this.crossword.terms.filter(t => this.matchesTagFilter(t)).length;
+  }
+
+  get filteredWrongTermCount(): number {
+    if (!this.latestRun?.wrongTermIds?.length) return 0;
+    if (!this.crossword) return this.latestRun.wrongTermCount;
+    const wrongIds = new Set(this.latestRun.wrongTermIds);
+    return this.crossword.terms.filter(t => wrongIds.has(t.id) && this.matchesTagFilter(t)).length;
+  }
+
+  private matchesTagFilter(t: { tags?: TagResponse[] | null }): boolean {
+    if (this.selectedTagIds.size === 0) return true;
+    const termTagIds = new Set((t.tags ?? []).map(tag => tag.id));
+    const matches = this.matchAllTags
+      ? Array.from(this.selectedTagIds).every(id => termTagIds.has(id))
+      : Array.from(this.selectedTagIds).some(id => termTagIds.has(id));
+    return this.excludeTags ? !matches : matches;
   }
 
   toggleTag(tagId: string) {
@@ -264,6 +277,11 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
     this.form.get('numberOfWords')?.setValidators([Validators.required, Validators.min(1), Validators.max(max)]);
     this.form.get('numberOfWords')?.setValue(max);
     this.form.get('numberOfWords')?.updateValueAndValidity();
+
+    const wrongMax = this.filteredWrongTermCount;
+    if (this.latestRun?.wrongTermIds?.length) {
+      this.wrongWordCount = Math.min(this.wrongWordCount || wrongMax, wrongMax);
+    }
   }
 
   continueGame(): void {

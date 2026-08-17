@@ -15,6 +15,12 @@
   <!-- Question / Feedback -->
   <div class="tr-card" *ngIf="phase === 'question' || phase === 'feedback'">
 
+    <div class="tr-top-controls">
+      <button class="mute-btn" (click)="sound.toggleMute()" [title]="sound.muted ? 'Unmute sounds' : 'Mute sounds'">
+        {{ sound.muted ? '🔇' : '🔊' }}
+      </button>
+    </div>
+
     <!-- Progress bar -->
     <div class="tr-progress-track">
       <div class="tr-progress-fill" [style.width.%]="progress"></div>

@@ -113,12 +113,12 @@
           <span class="tr-word-count-label">{{ 'CROSSWORD_VIEW.WORDS_TO_INCLUDE' | translate }}</span>
           <div class="tr-word-count-controls">
             <input class="tr-word-count-input" type="number" [(ngModel)]="wrongWordCount"
-                   min="1" [max]="latestRun.wrongTermCount" />
-            <span class="tr-word-count-max">/ {{ latestRun.wrongTermCount }}</span>
+                   min="1" [max]="filteredWrongTermCount" />
+            <span class="tr-word-count-max">/ {{ filteredWrongTermCount }}</span>
           </div>
         </div>
         <button type="button" class="tr-crossword-btn" (click)="generateFromWrongAnswers()"
-                [disabled]="wrongWordCount < 1 || wrongWordCount > latestRun.wrongTermCount">
+                [disabled]="wrongWordCount < 1 || wrongWordCount > filteredWrongTermCount || filteredWrongTermCount < 1">
           {{ 'CROSSWORD_VIEW.GENERATE_FROM_WRONG' | translate }}
         </button>
       </div>
@@ -215,6 +215,31 @@
 
       <div class="tr-section" *ngIf="!latestRunLoading">
 
+        <!-- Tag filter (applies on top of test run results) -->
+        <div class="field-section" *ngIf="allTags.length > 0">
+          <div class="field-label">{{ 'CROSSWORD_VIEW.FILTER_BY_TAG' | translate }}</div>
+          <div class="tag-filter-row">
+            <button type="button" class="tag-filter-chip"
+                    [class.active]="selectedTagIds.has(tag.id)"
+                    *ngFor="let tag of allTags"
+                    (click)="toggleTag(tag.id)">
+              {{ tag.key }}
+            </button>
+          </div>
+          <div class="tag-mode-toggle" *ngIf="selectedTagIds.size > 0">
+            <button type="button" class="tag-mode-btn" [class.active]="!excludeTags"
+                    (click)="excludeTags = false; onExcludeToggle()">{{ 'TEST_VIEW.TAG_INCLUDE' | translate }}</button>
+            <button type="button" class="tag-mode-btn" [class.active]="excludeTags"
+                    (click)="excludeTags = true; onExcludeToggle()">{{ 'TEST_VIEW.TAG_EXCLUDE' | translate }}</button>
+          </div>
+          <div class="tag-mode-toggle" *ngIf="selectedTagIds.size > 1">
+            <button type="button" class="tag-mode-btn" [class.active]="!matchAllTags"
+                    (click)="matchAllTags = false; onMatchModeToggle()">{{ 'TEST_VIEW.TAG_MATCH_ANY' | translate }}</button>
+            <button type="button" class="tag-mode-btn" [class.active]="matchAllTags"
+                    (click)="matchAllTags = true; onMatchModeToggle()">{{ 'TEST_VIEW.TAG_MATCH_ALL' | translate }}</button>
+          </div>
+        </div>
+
         <!-- In-progress run banner -->
         <div class="resume-banner" *ngIf="inProgressRun">
           <div class="resume-info">
@@ -258,8 +283,8 @@
             {{ (inProgressRun ? 'CROSSWORD_VIEW.START_NEW_RETRY_WRONG' : 'CROSSWORD_VIEW.RETRY_WRONG_ANSWERS') | translate }} ({{ latestRun.wrongTermCount }})
           </button>
           <button class="tr-crossword-btn" *ngIf="latestRun && latestRun.wrongTermCount > 0"
-                  (click)="generateFromWrongAnswers()" [disabled]="generating">
-            {{ 'CROSSWORD_VIEW.GENERATE_FROM_WRONG' | translate }}
+                  (click)="generateFromWrongAnswers()" [disabled]="generating || filteredWrongTermCount < 1">
+            {{ 'CROSSWORD_VIEW.GENERATE_FROM_WRONG' | translate }} ({{ filteredWrongTermCount }})
           </button>
         </div>
 

@@ -26,6 +26,33 @@
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+.tr-top-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.mute-btn {
+  background: transparent;
+  border: 1px solid var(--c-3a3a3a);
+  border-radius: 8px;
+  color: var(--c-e0e0e0);
+  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+
+.mute-btn:hover {
+  background: var(--c-2a2a2a);
+  border-color: var(--c-555555);
+}
+
 .tr-card {
   width: 100%;
   max-width: 560px;
