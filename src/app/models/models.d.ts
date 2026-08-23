@@ -314,6 +314,8 @@ export interface TestStateRequest {
     tagIds?: string[];
     excludeTags?: boolean;
     matchAllTags?: boolean;
+    distributionMode?: 'RANDOM' | 'MAX_PER_TAG';
+    maxPerTag?: number;
 }
 
 export interface TestStateUpdateRequest {
@@ -356,6 +358,7 @@ export interface TestResponse {
 
 export interface TestStateResponse {
     id: string;
+    testId: string;
     testName: string;
     questions: QuestionStateSummaryResponse[];
     closedQuestionsCount: number;

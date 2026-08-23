@@ -102,7 +102,7 @@
     </form>
 
     <!-- Generate from wrong answers -->
-    <div class="tr-from-run" *ngIf="latestRun && latestRun.wrongTermCount > 0 && !generating">
+    <div class="tr-from-run" *ngIf="latestRun && filteredWrongTermCount > 0 && !generating">
       <div class="tr-from-run-header">
         <span class="tr-from-run-tag">{{ 'CROSSWORD_VIEW.LAST_TEST_RUN' | translate }}</span>
         <span class="tr-from-run-score">{{ latestRun.totalTerms - latestRun.wrongTermCount }}/{{ latestRun.totalTerms }} {{ 'CROSSWORD_VIEW.CORRECT' | translate }}</span>
@@ -275,15 +275,15 @@
 
         <!-- Actions -->
         <div class="tr-actions">
-          <button class="start-btn" (click)="startTestRun('ALL')" [disabled]="generating">
-            {{ (inProgressRun ? 'CROSSWORD_VIEW.START_NEW_TEST_RUN_ALL' : 'CROSSWORD_VIEW.START_TEST_RUN_ALL') | translate }} {{ crossword.terms.length }} {{ 'CROSSWORD_VIEW.WORDS_SUFFIX' | translate }}
+          <button class="start-btn" (click)="startTestRun('ALL')" [disabled]="generating || testRunWordCount < 1">
+            {{ (inProgressRun ? 'CROSSWORD_VIEW.START_NEW_TEST_RUN_ALL' : 'CROSSWORD_VIEW.START_TEST_RUN_ALL') | translate }} {{ testRunWordCount }} {{ 'CROSSWORD_VIEW.WORDS_SUFFIX' | translate }}
           </button>
-          <button class="tr-retry-btn" *ngIf="latestRun && latestRun.wrongTermCount > 0"
+          <button class="tr-retry-btn" *ngIf="testRunWrongCount > 0"
                   (click)="startTestRun('WRONG_ONLY')" [disabled]="generating">
-            {{ (inProgressRun ? 'CROSSWORD_VIEW.START_NEW_RETRY_WRONG' : 'CROSSWORD_VIEW.RETRY_WRONG_ANSWERS') | translate }} ({{ latestRun.wrongTermCount }})
+            {{ (inProgressRun ? 'CROSSWORD_VIEW.START_NEW_RETRY_WRONG' : 'CROSSWORD_VIEW.RETRY_WRONG_ANSWERS') | translate }} ({{ testRunWrongCount }})
           </button>
-          <button class="tr-crossword-btn" *ngIf="latestRun && latestRun.wrongTermCount > 0"
-                  (click)="generateFromWrongAnswers()" [disabled]="generating || filteredWrongTermCount < 1">
+          <button class="tr-crossword-btn" *ngIf="filteredWrongTermCount > 0"
+                  (click)="generateFromWrongAnswers()" [disabled]="generating">
             {{ 'CROSSWORD_VIEW.GENERATE_FROM_WRONG' | translate }} ({{ filteredWrongTermCount }})
           </button>
         </div>

@@ -116,6 +116,18 @@
           <button type="button" class="tag-mode-btn" [class.active]="matchAllTags"
                   (click)="matchAllTags = true; onMatchModeToggle()">{{ 'TEST_VIEW.TAG_MATCH_ALL' | translate }}</button>
         </div>
+        <ng-container *ngIf="selectedTags.length > 0 && !excludeTags">
+          <div class="tag-mode-toggle">
+            <button type="button" class="tag-mode-btn" [class.active]="distributionMode === 'RANDOM'"
+                    (click)="setDistributionMode('RANDOM')">{{ 'TEST_VIEW.DISTRIBUTION_RANDOM' | translate }}</button>
+            <button type="button" class="tag-mode-btn" [class.active]="distributionMode === 'MAX_PER_TAG'"
+                    (click)="setDistributionMode('MAX_PER_TAG')">{{ 'TEST_VIEW.DISTRIBUTION_MAX_PER_TAG' | translate }}</button>
+          </div>
+          <div class="max-per-tag-field" *ngIf="distributionMode === 'MAX_PER_TAG'">
+            <label>{{ 'TEST_VIEW.MAX_PER_TAG_LABEL' | translate }}</label>
+            <input type="number" min="1" [(ngModel)]="maxPerTag" [ngModelOptions]="{standalone: true}" (change)="onMaxPerTagChange()" />
+          </div>
+        </ng-container>
       </div>
 
       <!-- Display type -->

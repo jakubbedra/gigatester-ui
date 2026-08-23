@@ -18,6 +18,7 @@ import {
 import { TestStateService } from '../../service/test-state.service';
 import { QuestionStateService } from '../../service/question-state.service';
 import { QuestionsService } from '../../service/question.service';
+import { QuestionReportService } from '../../service/question-report.service';
 
 export interface QuestionEntry {
   stateSummary: QuestionStateSummaryResponse;
@@ -48,12 +49,19 @@ export class AllAtOnceComponent implements OnInit, OnDestroy {
   allCorrect = false;
   private nextRoundEntries: QuestionEntry[] = [];
 
+  reportingEntry: QuestionEntry | null = null;
+  reportMessage = '';
+  reportAnonymous = false;
+  reportSubmitting = false;
+  reportedEntryIds = new Set<string>();
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private testStateService: TestStateService,
     private questionStateService: QuestionStateService,
-    private questionService: QuestionsService
+    private questionService: QuestionsService,
+    private questionReportService: QuestionReportService
   ) {}
 
   ngOnInit() {
@@ -262,5 +270,39 @@ export class AllAtOnceComponent implements OnInit, OnDestroy {
 
   answeredCount(): number {
     return this.entries.filter(e => e.state?.answered).length;
+  }
+
+  canReport(entry: QuestionEntry): boolean {
+    if (this.isExamMode()) return this.isInReview();
+    if (this.isLearningMode()) return this.learningPhase !== 'answering';
+    return false;
+  }
+
+  openReport(entry: QuestionEntry) {
+    this.reportingEntry = entry;
+    this.reportMessage = '';
+    this.reportAnonymous = false;
+  }
+
+  cancelReport() {
+    this.reportingEntry = null;
+  }
+
+  submitReport() {
+    if (!this.reportingEntry || !this.testState || this.reportSubmitting) return;
+    this.reportSubmitting = true;
+    this.questionReportService.createReport(
+      this.reportingEntry.question.id,
+      this.testState.testId,
+      this.reportMessage.trim(),
+      this.reportAnonymous
+    ).subscribe({
+      next: () => {
+        this.reportedEntryIds.add(this.reportingEntry!.question.id);
+        this.reportSubmitting = false;
+        this.reportingEntry = null;
+      },
+      error: () => { this.reportSubmitting = false; }
+    });
   }
 }

@@ -32,6 +32,19 @@
         </span>
       </li>
 
+      <li *ngIf="showFavouritesTab && favourites.length > 0">
+        <span class="menu-title year">{{ 'SIDEBAR.FAVOURITES' | translate }}</span>
+        <ul class="submenu">
+          <li *ngFor="let fav of favourites">
+            <div class="menu-row test-row">
+              <a *ngIf="fav.type === 'TEST'" [routerLink]="['/tests', fav.id]" class="tests">{{ fav.name }}</a>
+              <a *ngIf="fav.type === 'CROSSWORD'" [routerLink]="['/crosswords', fav.id]" class="tests crossword-link">🔠 {{ fav.name }}</a>
+              <button class="pin-btn pinned" (click)="togglePin($event, fav)" title="Unpin">★</button>
+            </div>
+          </li>
+        </ul>
+      </li>
+
       <li *ngFor="let year of universityYears">
         <span class="menu-title year"
               [class.expanded]="year.expanded"
@@ -61,6 +74,8 @@
               <li *ngFor="let test of subject.tests">
                 <div class="menu-row test-row">
                   <a [routerLink]="['/tests', test.id]" class="tests">{{ test.name }}</a>
+                  <button class="pin-btn" [class.pinned]="test.pinned" (click)="togglePin($event, test)"
+                          [title]="test.pinned ? 'Unpin' : 'Pin'">{{ test.pinned ? '★' : '☆' }}</button>
                   <div class="context-wrapper" *ngIf="isModerator">
                     <button class="ctx-btn" (click)="toggleMenu($event, 'test-' + test.id)">···</button>
                     <div class="ctx-menu" *ngIf="openMenuId === 'test-' + test.id">
@@ -73,6 +88,8 @@
               <li *ngFor="let cw of subject.crosswords">
                 <div class="menu-row test-row">
                   <a [routerLink]="['/crosswords', cw.id]" class="tests crossword-link">🔠 {{ cw.name }}</a>
+                  <button class="pin-btn" [class.pinned]="cw.pinned" (click)="togglePin($event, cw)"
+                          [title]="cw.pinned ? 'Unpin' : 'Pin'">{{ cw.pinned ? '★' : '☆' }}</button>
                   <div class="context-wrapper" *ngIf="isModerator">
                     <button class="ctx-btn" (click)="toggleMenu($event, 'cw-' + cw.id)">···</button>
                     <div class="ctx-menu" *ngIf="openMenuId === 'cw-' + cw.id">

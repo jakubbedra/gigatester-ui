@@ -20,6 +20,10 @@ export class CrosswordService {
     return this.http.get<CrosswordsResponse>(this.baseUrl);
   }
 
+  getConfig(): Observable<{ maxWordLimit: number }> {
+    return this.http.get<{ maxWordLimit: number }>(`${this.baseUrl}/config`);
+  }
+
   getCrossword(id: string): Observable<CrosswordResponse> {
     return this.http.get<CrosswordResponse>(`${this.baseUrl}/${id}`);
   }

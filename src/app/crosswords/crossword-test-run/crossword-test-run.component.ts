@@ -25,6 +25,8 @@ export class CrosswordTestRunComponent implements OnInit, OnDestroy {
   wrongTermIds: string[] = [];
   submitting = false;
 
+  readonly greekLetters = ['α', 'β', 'γ', 'δ'];
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -43,8 +45,12 @@ export class CrosswordTestRunComponent implements OnInit, OnDestroy {
     this.crosswordId = this.route.snapshot.paramMap.get('id')!;
     const mode = (this.route.snapshot.queryParamMap.get('mode') ?? 'ALL') as 'ALL' | 'WRONG_ONLY';
     const resume = this.route.snapshot.queryParamMap.get('resume') === 'true';
+    const tagIdsParam = this.route.snapshot.queryParamMap.get('tagIds');
+    const tagIds = tagIdsParam ? tagIdsParam.split(',').filter(Boolean) : [];
+    const matchAllTags = this.route.snapshot.queryParamMap.get('matchAllTags') === 'true';
+    const excludeTags = this.route.snapshot.queryParamMap.get('excludeTags') === 'true';
 
-    this.testRunService.startTestRun(this.crosswordId, mode, resume).subscribe({
+    this.testRunService.startTestRun(this.crosswordId, mode, resume, tagIds, matchAllTags, excludeTags).subscribe({
       next: (resp) => {
         this.terms = resp.terms;
         this.currentIndex = resp.resumedIndex ?? 0;
@@ -140,5 +146,21 @@ export class CrosswordTestRunComponent implements OnInit, OnDestroy {
 
   private focusInput() {
     this.answerInputEl?.nativeElement?.focus();
+  }
+
+  insertGreekLetter(letter: string) {
+    const input = this.answerInputEl?.nativeElement;
+    if (!input) {
+      this.answer += letter;
+      return;
+    }
+    const start = input.selectionStart ?? this.answer.length;
+    const end = input.selectionEnd ?? this.answer.length;
+    this.answer = this.answer.slice(0, start) + letter + this.answer.slice(end);
+    setTimeout(() => {
+      input.focus();
+      const caret = start + letter.length;
+      input.setSelectionRange(caret, caret);
+    }, 0);
   }
 }

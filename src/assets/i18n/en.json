@@ -19,7 +19,8 @@
     "STREAK": "day streak",
     "METRICS": "Progress",
     "INBOX": "Inbox",
-    "INBOX_EMPTY": "No pending requests."
+    "INBOX_EMPTY": "No pending requests.",
+    "FAVOURITES": "Favourites"
   },
   "LOGIN": {
     "SIGN_IN": "Sign in",
@@ -81,7 +82,9 @@
     "NEW_PASSWORD_PLACEHOLDER": "Enter new password",
     "CONFIRM_PASSWORD": "Confirm new password",
     "CONFIRM_PASSWORD_PLACEHOLDER": "Repeat new password",
-    "SAVING": "Saving…"
+    "SAVING": "Saving…",
+    "PREFERENCES": "Preferences",
+    "SHOW_FAVOURITES_TAB": "Show Favourites section in the sidebar"
   },
   "TEST_VIEW": {
     "START_TEST": "Start test",
@@ -101,6 +104,9 @@
     "TAG_EXCLUDE": "Exclude",
     "TAG_MATCH_ANY": "Match any (OR)",
     "TAG_MATCH_ALL": "Match all (AND)",
+    "DISTRIBUTION_RANDOM": "Random distribution",
+    "DISTRIBUTION_MAX_PER_TAG": "Max per tag",
+    "MAX_PER_TAG_LABEL": "Max questions per tag",
     "NO_LIMIT": "No limit",
     "TIME_LIMIT_ON": "Time limit",
     "MINUTES": "min",
@@ -133,7 +139,14 @@
     "NEXT": "Next",
     "SUBMIT": "Submit",
     "FINISH_REVIEW": "Finish Review",
-    "LOADING": "Loading question..."
+    "LOADING": "Loading question...",
+    "REPORT_QUESTION": "Report question",
+    "REPORTED": "Reported",
+    "REPORT_MESSAGE_PLACEHOLDER": "What's wrong with this question? (optional)",
+    "REPORT_ANONYMOUS": "Send anonymously",
+    "SUBMIT_REPORT": "Submit report",
+    "SUBMITTING": "Submitting…",
+    "CANCEL": "Cancel"
   },
   "CLOSED_QUESTION": {
     "MULTIPLE_HINT": "You can select multiple answers."
@@ -162,7 +175,13 @@
     "FINISH_TEST": "Finish Test",
     "SUBMIT_EXAM": "Submit Exam",
     "FINISHING": "Finishing…",
-    "LOADING": "Loading questions…"
+    "LOADING": "Loading questions…",
+    "REPORT_QUESTION": "Report question",
+    "REPORTED": "Reported",
+    "REPORT_MESSAGE_PLACEHOLDER": "What's wrong with this question? (optional)",
+    "REPORT_ANONYMOUS": "Send anonymously",
+    "SUBMIT_REPORT": "Submit report",
+    "CANCEL": "Cancel"
   },
   "CROSSWORD_VIEW": {
     "UNFINISHED": "You have an unfinished game",
@@ -500,7 +519,17 @@
     "GROUP": "Group",
     "ACTIONS": "Actions",
     "APPROVE": "Approve",
-    "DENY": "Deny"
+    "DENY": "Deny",
+    "QUESTION_REPORTS": "Question Reports",
+    "REPORTER": "Reporter",
+    "TEST": "Test",
+    "QUESTION": "Question",
+    "MESSAGE": "Message",
+    "ANONYMOUS": "Anonymous",
+    "RESOLVE": "Resolve",
+    "REPORT_DETAIL_TITLE": "Question report",
+    "DATE": "Date",
+    "GO_TO_QUESTION": "Go to question"
   },
   "METRICS": {
     "TITLE": "My Progress",

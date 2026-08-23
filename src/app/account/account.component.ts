@@ -88,6 +88,14 @@ export class AccountComponent implements OnInit {
     });
   }
 
+  toggleShowFavouritesTab(): void {
+    if (!this.user) return;
+    const next = !this.user.showFavouritesTab;
+    this.accountService.updateShowFavouritesTab(next).subscribe({
+      next: (res) => { this.user = res; }
+    });
+  }
+
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];

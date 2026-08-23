@@ -19,7 +19,8 @@
     "STREAK": "dni z rzędu",
     "METRICS": "Postępy",
     "INBOX": "Skrzynka",
-    "INBOX_EMPTY": "Brak oczekujących próśb."
+    "INBOX_EMPTY": "Brak oczekujących próśb.",
+    "FAVOURITES": "Ulubione"
   },
   "LOGIN": {
     "SIGN_IN": "Zaloguj się",
@@ -81,7 +82,9 @@
     "NEW_PASSWORD_PLACEHOLDER": "Wpisz nowe hasło",
     "CONFIRM_PASSWORD": "Potwierdź nowe hasło",
     "CONFIRM_PASSWORD_PLACEHOLDER": "Powtórz nowe hasło",
-    "SAVING": "Zapisywanie…"
+    "SAVING": "Zapisywanie…",
+    "PREFERENCES": "Preferencje",
+    "SHOW_FAVOURITES_TAB": "Pokaż sekcję Ulubione w panelu bocznym"
   },
   "TEST_VIEW": {
     "START_TEST": "Rozpocznij test",
@@ -101,6 +104,9 @@
     "TAG_EXCLUDE": "Wyklucz",
     "TAG_MATCH_ANY": "Dowolny (OR)",
     "TAG_MATCH_ALL": "Wszystkie (AND)",
+    "DISTRIBUTION_RANDOM": "Losowy rozkład",
+    "DISTRIBUTION_MAX_PER_TAG": "Maks. na tag",
+    "MAX_PER_TAG_LABEL": "Maks. liczba pytań na tag",
     "NO_LIMIT": "Bez limitu",
     "TIME_LIMIT_ON": "Limit czasu",
     "MINUTES": "min",
@@ -133,7 +139,14 @@
     "NEXT": "Następne",
     "SUBMIT": "Zatwierdź",
     "FINISH_REVIEW": "Zakończ przegląd",
-    "LOADING": "Ładowanie pytania..."
+    "LOADING": "Ładowanie pytania...",
+    "REPORT_QUESTION": "Zgłoś pytanie",
+    "REPORTED": "Zgłoszono",
+    "REPORT_MESSAGE_PLACEHOLDER": "Co jest nie tak z tym pytaniem? (opcjonalnie)",
+    "REPORT_ANONYMOUS": "Wyślij anonimowo",
+    "SUBMIT_REPORT": "Wyślij zgłoszenie",
+    "SUBMITTING": "Wysyłanie…",
+    "CANCEL": "Anuluj"
   },
   "CLOSED_QUESTION": {
     "MULTIPLE_HINT": "Możesz wybrać wiele odpowiedzi."
@@ -162,7 +175,13 @@
     "FINISH_TEST": "Zakończ test",
     "SUBMIT_EXAM": "Wyślij egzamin",
     "FINISHING": "Kończenie…",
-    "LOADING": "Ładowanie pytań…"
+    "LOADING": "Ładowanie pytań…",
+    "REPORT_QUESTION": "Zgłoś pytanie",
+    "REPORTED": "Zgłoszono",
+    "REPORT_MESSAGE_PLACEHOLDER": "Co jest nie tak z tym pytaniem? (opcjonalnie)",
+    "REPORT_ANONYMOUS": "Wyślij anonimowo",
+    "SUBMIT_REPORT": "Wyślij zgłoszenie",
+    "CANCEL": "Anuluj"
   },
   "CROSSWORD_VIEW": {
     "UNFINISHED": "Masz niedokończoną grę",
@@ -500,7 +519,17 @@
     "GROUP": "Grupa",
     "ACTIONS": "Akcje",
     "APPROVE": "Zatwierdź",
-    "DENY": "Odrzuć"
+    "DENY": "Odrzuć",
+    "QUESTION_REPORTS": "Zgłoszenia pytań",
+    "REPORTER": "Zgłaszający",
+    "TEST": "Test",
+    "QUESTION": "Pytanie",
+    "MESSAGE": "Wiadomość",
+    "ANONYMOUS": "Anonimowo",
+    "RESOLVE": "Rozwiąż",
+    "REPORT_DETAIL_TITLE": "Zgłoszenie pytania",
+    "DATE": "Data",
+    "GO_TO_QUESTION": "Przejdź do pytania"
   },
   "METRICS": {
     "TITLE": "Moje postępy",

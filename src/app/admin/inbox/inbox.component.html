@@ -9,7 +9,7 @@
   </div>
 
   <ng-container *ngIf="!loading">
-    <div class="empty-state" *ngIf="requests.length === 0">
+    <div class="empty-state" *ngIf="requests.length === 0 && reports.length === 0">
       <span class="empty-icon">✅</span>
       <p>{{ 'INBOX.EMPTY' | translate }}</p>
     </div>
@@ -45,5 +45,88 @@
         </tbody>
       </table>
     </div>
+
+    <div class="section-header" *ngIf="reports.length > 0">{{ 'INBOX.QUESTION_REPORTS' | translate }}</div>
+
+    <div class="table-wrap" *ngIf="reports.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'INBOX.REPORTER' | translate }}</th>
+            <th>{{ 'INBOX.TEST' | translate }}</th>
+            <th>{{ 'INBOX.QUESTION' | translate }}</th>
+            <th>{{ 'INBOX.MESSAGE' | translate }}</th>
+            <th class="actions-col">{{ 'INBOX.ACTIONS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let report of reports" class="report-row" (click)="openReportDetail(report)">
+            <td class="username-cell">
+              <span *ngIf="!report.anonymous">{{ report.reporterUsername }}</span>
+              <span class="anon-badge" *ngIf="report.anonymous">{{ 'INBOX.ANONYMOUS' | translate }}</span>
+            </td>
+            <td><span class="group-badge">{{ report.testName }}</span></td>
+            <td class="preview-cell">{{ report.questionPreview }}</td>
+            <td class="preview-cell">{{ report.message || '—' }}</td>
+            <td class="actions-cell" (click)="$event.stopPropagation()">
+              <button class="btn-approve"
+                      [disabled]="actionInProgress === report.id"
+                      (click)="resolveReport(report)">
+                {{ 'INBOX.RESOLVE' | translate }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </ng-container>
+
+  <!-- Report detail modal -->
+  <div class="modal-overlay" *ngIf="viewingReport" (click)="closeReportDetail()">
+    <div class="report-detail-dialog" (click)="$event.stopPropagation()">
+      <div class="report-detail-header">
+        <h3>{{ 'INBOX.REPORT_DETAIL_TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeReportDetail()">✕</button>
+      </div>
+
+      <div class="report-detail-meta">
+        <div class="meta-row">
+          <span class="meta-label">{{ 'INBOX.REPORTER' | translate }}</span>
+          <span class="meta-value">
+            <span *ngIf="!viewingReport.anonymous">{{ viewingReport.reporterUsername }}</span>
+            <span class="anon-badge" *ngIf="viewingReport.anonymous">{{ 'INBOX.ANONYMOUS' | translate }}</span>
+          </span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">{{ 'INBOX.TEST' | translate }}</span>
+          <span class="meta-value">{{ viewingReport.testName }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">{{ 'INBOX.DATE' | translate }}</span>
+          <span class="meta-value">{{ viewingReport.createdAt | date:'medium' }}</span>
+        </div>
+      </div>
+
+      <div class="report-detail-section">
+        <div class="report-detail-label">{{ 'INBOX.QUESTION' | translate }}</div>
+        <div class="report-detail-text">{{ viewingReport.questionPreview }}</div>
+      </div>
+
+      <div class="report-detail-section">
+        <div class="report-detail-label">{{ 'INBOX.MESSAGE' | translate }}</div>
+        <div class="report-detail-text">{{ viewingReport.message || '—' }}</div>
+      </div>
+
+      <div class="report-detail-actions">
+        <button class="btn-approve" (click)="goToQuestion(viewingReport)">
+          {{ 'INBOX.GO_TO_QUESTION' | translate }}
+        </button>
+        <button class="btn-approve"
+                [disabled]="actionInProgress === viewingReport.id"
+                (click)="resolveReport(viewingReport)">
+          {{ 'INBOX.RESOLVE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

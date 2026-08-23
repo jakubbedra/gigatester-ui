@@ -14,10 +14,14 @@ import { CrosswordService } from '../service/crossword.service';
 import { SubjectGroupAccessService } from '../service/subject-group-access.service';
 import { CrosswordSummaryResponse, TestSummaryResponse } from '../models/models.d';
 import { InboxRequest } from '../admin/inbox/inbox.component';
+import { PinService, PinnedEntityType } from '../service/pin.service';
+import { QuestionReportService } from '../service/question-report.service';
 
 interface Item {
   name: string;
   id: string;
+  type: PinnedEntityType;
+  pinned?: boolean;
 }
 
 interface Subject {
@@ -42,11 +46,15 @@ interface UniversityYear {
 })
 export class SidebarComponent implements OnInit, OnDestroy {
   universityYears: UniversityYear[] = [];
+  favourites: Item[] = [];
   openMenuId: string | null = null;
   currentStreak = 0;
   longestStreak = 0;
   inboxRequests: InboxRequest[] = [];
   inboxLoading = false;
+  questionReportCount = 0;
+
+  private pinnedKeys = new Set<string>();
 
   private static readonly REFRESH_INTERVAL_MS = 30000;
   private refreshSub?: Subscription;
@@ -54,7 +62,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private eventSub?: Subscription;
 
   get pendingCount(): number {
-    return this.inboxRequests.length;
+    return this.inboxRequests.length + this.questionReportCount;
   }
 
   constructor(
@@ -68,11 +76,17 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private streakService: StreakService,
     private permissionService: PermissionService,
     private sidebarRefreshService: SidebarRefreshService,
+    private pinService: PinService,
+    private questionReportService: QuestionReportService,
     public lang: LanguageService
   ) {}
 
   get isModerator(): boolean {
     return this.permissionService.isStaff();
+  }
+
+  get showFavouritesTab(): boolean {
+    return this.authService.getUser()?.showFavouritesTab !== false;
   }
 
   get isAdmin(): boolean {
@@ -133,7 +147,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   private afterUserRefresh() {
-    this.loadData();
+    this.pinService.getPins().subscribe({
+      next: pins => {
+        this.pinnedKeys = new Set(pins.map(p => `${p.entityType}:${p.entityId}`));
+        this.loadData();
+      },
+      error: () => {
+        this.pinnedKeys = new Set();
+        this.loadData();
+      }
+    });
     if (this.isModerator) {
       this.loadInbox();
     }
@@ -166,6 +189,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: reqs => { this.inboxRequests = reqs; this.inboxLoading = false; },
       error: () => { this.inboxLoading = false; }
+    });
+    this.questionReportService.getReportsForInbox().subscribe({
+      next: reports => this.questionReportCount = reports.length,
+      error: () => {}
     });
   }
 
@@ -204,6 +231,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
         this.universityYears.flatMap(y => y.subjects.map(s => [s.id, s.expanded] as const))
       );
 
+      const isPinned = (type: PinnedEntityType, id: string) => this.pinnedKeys.has(`${type}:${id}`);
+
       this.universityYears = groups.map((g: any) => ({
         id: g.id,
         name: g.name,
@@ -217,15 +246,36 @@ export class SidebarComponent implements OnInit, OnDestroy {
             expanded: prevSubjectExpanded.get(subject.id) ?? false,
             tests: allTests
               .filter((t: TestSummaryResponse) => subject.tests.includes(t.id))
-              .map((t: TestSummaryResponse) => ({ name: t.name, id: t.id }))
+              .map((t: TestSummaryResponse) => ({ name: t.name, id: t.id, type: 'TEST' as PinnedEntityType, pinned: isPinned('TEST', t.id) }))
               .sort((a: Item, b: Item) => a.name.localeCompare(b.name)),
             crosswords: allCrosswords
               .filter((c: CrosswordSummaryResponse) => (subject.crosswords ?? []).includes(c.id))
-              .map((c: CrosswordSummaryResponse) => ({ name: c.name, id: c.id }))
+              .map((c: CrosswordSummaryResponse) => ({ name: c.name, id: c.id, type: 'CROSSWORD' as PinnedEntityType, pinned: isPinned('CROSSWORD', c.id) }))
               .sort((a: Item, b: Item) => a.name.localeCompare(b.name))
           };
         }).filter(Boolean)
       }));
+
+      const pinnedTests: Item[] = allTests
+        .filter((t: TestSummaryResponse) => isPinned('TEST', t.id))
+        .map((t: TestSummaryResponse) => ({ name: t.name, id: t.id, type: 'TEST' as PinnedEntityType, pinned: true }));
+      const pinnedCrosswords: Item[] = allCrosswords
+        .filter((c: CrosswordSummaryResponse) => isPinned('CROSSWORD', c.id))
+        .map((c: CrosswordSummaryResponse) => ({ name: c.name, id: c.id, type: 'CROSSWORD' as PinnedEntityType, pinned: true }));
+      this.favourites = [...pinnedTests, ...pinnedCrosswords].sort((a, b) => a.name.localeCompare(b.name));
+    });
+  }
+
+  togglePin(event: Event, item: Item) {
+    event.stopPropagation();
+    const wasPinned = !!item.pinned;
+    const action = wasPinned
+      ? this.pinService.unpin(item.type, item.id)
+      : this.pinService.pin(item.type, item.id);
+    action.subscribe(() => {
+      if (wasPinned) this.pinnedKeys.delete(`${item.type}:${item.id}`);
+      else this.pinnedKeys.add(`${item.type}:${item.id}`);
+      this.loadData();
     });
   }
 

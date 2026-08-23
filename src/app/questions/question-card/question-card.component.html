@@ -60,6 +60,11 @@
             <span class="score-label">{{ 'QUESTION_CARD.SCORE' | translate }}</span>
             <span class="score-value">{{ questionScore() }} / {{ questionMaxScore() }}</span>
           </div>
+
+          <button type="button" class="report-question-btn" *ngIf="canReport()"
+                  [disabled]="isReported()" (click)="openReport()">
+            {{ isReported() ? ('QUESTION_CARD.REPORTED' | translate) : ('QUESTION_CARD.REPORT_QUESTION' | translate) }}
+          </button>
         </div>
 
         <div class="side-card" *ngIf="isLearningMode()">
@@ -143,4 +148,23 @@
       </div>
     </div>
   </ng-template>
+
+  <!-- Report question modal -->
+  <div class="modal-overlay" *ngIf="reportOpen" (click)="cancelReport()">
+    <div class="report-dialog" (click)="$event.stopPropagation()">
+      <h3 class="report-title">{{ 'QUESTION_CARD.REPORT_QUESTION' | translate }}</h3>
+      <textarea class="report-textarea" rows="4" [(ngModel)]="reportMessage"
+                [placeholder]="'QUESTION_CARD.REPORT_MESSAGE_PLACEHOLDER' | translate"></textarea>
+      <label class="report-anon-row">
+        <input type="checkbox" [(ngModel)]="reportAnonymous" />
+        {{ 'QUESTION_CARD.REPORT_ANONYMOUS' | translate }}
+      </label>
+      <div class="report-actions">
+        <button class="btn-secondary" (click)="cancelReport()">{{ 'QUESTION_CARD.CANCEL' | translate }}</button>
+        <button class="btn-primary" [disabled]="reportSubmitting" (click)="submitReport()">
+          {{ reportSubmitting ? ('QUESTION_CARD.SUBMITTING' | translate) : ('QUESTION_CARD.SUBMIT_REPORT' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

@@ -37,6 +37,8 @@ export class TestViewComponent implements OnInit {
   availableClosed = 0;
   availableOpen = 0;
   availableStatement = 0;
+  distributionMode: 'RANDOM' | 'MAX_PER_TAG' = 'RANDOM';
+  maxPerTag = 1;
 
   constructor(
     private fb: FormBuilder,
@@ -170,6 +172,8 @@ export class TestViewComponent implements OnInit {
       tagIds: this.selectedTags.map(t => t.id),
       excludeTags: this.excludeTags,
       matchAllTags: this.matchAllTags,
+      distributionMode: this.distributionMode,
+      maxPerTag: this.distributionMode === 'MAX_PER_TAG' ? this.maxPerTag : 0,
       timeLimitMs: formVals.timeLimitEnabled ? timeLimitMinutes * 60000 : 0
     };
     this.testStateService.createTestState(this.testId, state).subscribe({
@@ -231,9 +235,19 @@ export class TestViewComponent implements OnInit {
     if (this.selectedTags.length > 0) this.refreshCounts();
   }
 
+  setDistributionMode(mode: 'RANDOM' | 'MAX_PER_TAG') {
+    this.distributionMode = mode;
+    if (this.selectedTags.length > 0) this.refreshCounts();
+  }
+
+  onMaxPerTagChange() {
+    if (this.distributionMode === 'MAX_PER_TAG' && this.selectedTags.length > 0) this.refreshCounts();
+  }
+
   private refreshCounts() {
     const tagIds = this.selectedTags.map(t => t.id);
-    this.testService.getQuestionCounts(this.testId, tagIds, this.excludeTags, this.matchAllTags).subscribe(counts => {
+    const maxPerTag = this.distributionMode === 'MAX_PER_TAG' ? this.maxPerTag : 0;
+    this.testService.getQuestionCounts(this.testId, tagIds, this.excludeTags, this.matchAllTags, maxPerTag).subscribe(counts => {
       this.availableClosed = counts.closedQuestionsCount;
       this.availableOpen = counts.openQuestionsCount;
       this.availableStatement = counts.statementQuestionsCount;

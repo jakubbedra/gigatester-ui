@@ -12,6 +12,7 @@ export interface AuthUser {
   assignedRoleName?: string | null;
   permissions?: Permission[];
   profilePictureUrl?: string | null;
+  showFavouritesTab?: boolean;
 }
 
 export interface AuthResponse {

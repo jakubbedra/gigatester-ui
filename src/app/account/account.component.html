@@ -48,6 +48,15 @@
     </ng-container>
   </div>
 
+  <!-- Preferences -->
+  <div class="card">
+    <div class="card-title">{{ 'ACCOUNT.PREFERENCES' | translate }}</div>
+    <label class="toggle-row">
+      <input type="checkbox" [checked]="user.showFavouritesTab" (change)="toggleShowFavouritesTab()" />
+      {{ 'ACCOUNT.SHOW_FAVOURITES_TAB' | translate }}
+    </label>
+  </div>
+
   <!-- Change password -->
   <div class="card" *ngIf="user.username !== 'admin'">
     <div class="card-title">{{ 'ACCOUNT.CHANGE_PASSWORD' | translate }}</div>

@@ -39,6 +39,11 @@
           {{ entry.state.score }} / {{ entry.question.points }} pts
         </span>
         <span class="q-badge answered" *ngIf="entry.state?.answered && !isInReview()">✓ {{ 'ALL_AT_ONCE.ANSWERED' | translate }}</span>
+        <button type="button" class="q-report-btn" *ngIf="canReport(entry)"
+                [disabled]="reportedEntryIds.has(entry.question.id)"
+                (click)="openReport(entry)">
+          {{ reportedEntryIds.has(entry.question.id) ? ('ALL_AT_ONCE.REPORTED' | translate) : ('ALL_AT_ONCE.REPORT_QUESTION' | translate) }}
+        </button>
       </div>
 
       <!-- Question content -->
@@ -118,6 +123,25 @@
             (click)="finishExamReview()">
       {{ submitting ? ('ALL_AT_ONCE.FINISHING' | translate) : ('ALL_AT_ONCE.FINISH_REVIEW' | translate) }}
     </button>
+  </div>
+
+  <!-- Report question modal -->
+  <div class="modal-overlay" *ngIf="reportingEntry" (click)="cancelReport()">
+    <div class="report-dialog" (click)="$event.stopPropagation()">
+      <h3 class="report-title">{{ 'ALL_AT_ONCE.REPORT_QUESTION' | translate }}</h3>
+      <textarea class="report-textarea" rows="4" [(ngModel)]="reportMessage"
+                [placeholder]="'ALL_AT_ONCE.REPORT_MESSAGE_PLACEHOLDER' | translate"></textarea>
+      <label class="report-anon-row">
+        <input type="checkbox" [(ngModel)]="reportAnonymous" />
+        {{ 'ALL_AT_ONCE.REPORT_ANONYMOUS' | translate }}
+      </label>
+      <div class="report-actions">
+        <button class="btn-secondary" (click)="cancelReport()">{{ 'ALL_AT_ONCE.CANCEL' | translate }}</button>
+        <button class="btn-primary" [disabled]="reportSubmitting" (click)="submitReport()">
+          {{ reportSubmitting ? ('ALL_AT_ONCE.SUBMITTING' | translate) : ('ALL_AT_ONCE.SUBMIT_REPORT' | translate) }}
+        </button>
+      </div>
+    </div>
   </div>
 
 </div>

@@ -59,6 +59,7 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
   private pollSub: Subscription | null = null;
 
   private readonly GENERATION_TIMEOUT_MS = 60_000;
+  maxWordLimit = 30;
 
   constructor(
     private fb: FormBuilder,
@@ -111,8 +112,16 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
     this.testRunService.getInProgressRun(this.crosswordId).subscribe(run => this.inProgressRun = run);
   }
 
+  /** Starting a run is always a "reset": it's the full (or tag-filtered) pool, never reduced by past runs. */
   startTestRun(mode: 'ALL' | 'WRONG_ONLY') {
-    this.router.navigate(['/crosswords', this.crosswordId, 'test-run'], { queryParams: { mode } });
+    this.router.navigate(['/crosswords', this.crosswordId, 'test-run'], {
+      queryParams: {
+        mode,
+        tagIds: this.selectedTagIds.size > 0 ? Array.from(this.selectedTagIds).join(',') : undefined,
+        matchAllTags: this.matchAllTags,
+        excludeTags: this.excludeTags
+      }
+    });
   }
 
   continueTestRun() {
@@ -123,7 +132,7 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
   }
 
   generateFromWrongAnswers() {
-    if (!this.latestRun?.wrongTermIds?.length) return;
+    if (!this.latestRun?.cumulativeWrongTermIds?.length) return;
     this.generating = true;
     this.generatingError = '';
     this.generatingProgress = 0;
@@ -131,7 +140,7 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
     this.crosswordStateService.startGeneration({
       crosswordId: this.crosswordId,
       numberOfWords: this.wrongWordCount,
-      termIdFilter: this.latestRun.wrongTermIds,
+      termIdFilter: this.latestRun.cumulativeWrongTermIds,
       tagFilter: this.selectedTagIds.size > 0 ? Array.from(this.selectedTagIds) : undefined,
       tagFilterMode: this.excludeTags ? 'EXCLUDE' : 'INCLUDE',
       matchAllTags: this.matchAllTags,
@@ -191,6 +200,11 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.crosswordService.getConfig().subscribe({
+      next: (config) => { this.maxWordLimit = config.maxWordLimit; this.updateWordCount(); },
+      error: () => {}
+    });
+
     this.route.paramMap.subscribe(params => {
       this.crosswordId = params.get('id')!;
 
@@ -201,10 +215,11 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
           (t.tags ?? []).forEach(tag => tagMap.set(tag.id, tag))
         );
         this.allTags = Array.from(tagMap.values()).sort((a, b) => a.key.localeCompare(b.key));
+        const initialCount = Math.min(crossword.terms.length, this.maxWordLimit);
         this.form = this.fb.group({
           numberOfWords: [
-            crossword.terms.length,
-            [Validators.required, Validators.min(1), Validators.max(crossword.terms.length)]
+            initialCount,
+            [Validators.required, Validators.min(1), Validators.max(initialCount)]
           ]
         });
       });
@@ -235,14 +250,34 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
 
   get termCount(): number {
     if (!this.crossword) return 0;
-    if (this.selectedTagIds.size === 0) return this.crossword.terms.length;
+    const available = this.selectedTagIds.size === 0
+      ? this.crossword.terms.length
+      : this.crossword.terms.filter(t => this.matchesTagFilter(t)).length;
+    return Math.min(available, this.maxWordLimit);
+  }
+
+  /** Cumulative wrong-answer pool (crossword-generation target), tag-filtered and capped by maxWordLimit. */
+  get filteredWrongTermCount(): number {
+    if (!this.latestRun?.cumulativeWrongTermIds?.length) return 0;
+    const available = (() => {
+      if (!this.crossword) return this.latestRun!.cumulativeWrongTermIds.length;
+      const wrongIds = new Set(this.latestRun!.cumulativeWrongTermIds);
+      return this.crossword.terms.filter(t => wrongIds.has(t.id) && this.matchesTagFilter(t)).length;
+    })();
+    return Math.min(available, this.maxWordLimit);
+  }
+
+  /** Test-run pool size, tag-filtered — unlike termCount, not capped by maxWordLimit (that cap is a crossword-generation constraint, not a test-run one). */
+  get testRunWordCount(): number {
+    if (!this.crossword) return 0;
     return this.crossword.terms.filter(t => this.matchesTagFilter(t)).length;
   }
 
-  get filteredWrongTermCount(): number {
-    if (!this.latestRun?.wrongTermIds?.length) return 0;
-    if (!this.crossword) return this.latestRun.wrongTermCount;
-    const wrongIds = new Set(this.latestRun.wrongTermIds);
+  /** Cumulative wrong-answer pool, narrowed to the tag filter if one is active — uncapped. */
+  get testRunWrongCount(): number {
+    if (!this.latestRun?.cumulativeWrongTermIds?.length) return 0;
+    if (!this.crossword) return this.latestRun.cumulativeWrongTermIds.length;
+    const wrongIds = new Set(this.latestRun.cumulativeWrongTermIds);
     return this.crossword.terms.filter(t => wrongIds.has(t.id) && this.matchesTagFilter(t)).length;
   }
 
@@ -274,12 +309,12 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
 
   private updateWordCount() {
     const max = this.termCount;
-    this.form.get('numberOfWords')?.setValidators([Validators.required, Validators.min(1), Validators.max(max)]);
-    this.form.get('numberOfWords')?.setValue(max);
-    this.form.get('numberOfWords')?.updateValueAndValidity();
+    this.form?.get('numberOfWords')?.setValidators([Validators.required, Validators.min(1), Validators.max(max)]);
+    this.form?.get('numberOfWords')?.setValue(max);
+    this.form?.get('numberOfWords')?.updateValueAndValidity();
 
     const wrongMax = this.filteredWrongTermCount;
-    if (this.latestRun?.wrongTermIds?.length) {
+    if (this.latestRun?.cumulativeWrongTermIds?.length) {
       this.wrongWordCount = Math.min(this.wrongWordCount || wrongMax, wrongMax);
     }
   }

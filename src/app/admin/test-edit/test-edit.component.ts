@@ -113,6 +113,11 @@ export class TestEditComponent implements OnInit {
       this.testName = test.name;
       this.testAuthors = test.authors ?? [];
       this.loadPage(true);
+
+      const questionId = this.route.snapshot.queryParamMap.get('questionId');
+      if (questionId) {
+        this.questionsService.getQuestion(questionId).subscribe(q => this.openEdit(q as QuestionDtoUnion));
+      }
     });
     this.searchSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(() => {
       this.page = 0;

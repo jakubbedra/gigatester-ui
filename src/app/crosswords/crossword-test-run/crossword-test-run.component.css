@@ -121,6 +121,31 @@
 }
 .tr-input:focus { border-color: var(--c-7b6df5); }
 
+/* Greek letter shortcuts */
+.tr-greek-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.tr-greek-btn {
+  flex: 1;
+  background: var(--c-141414);
+  border: 1.5px solid var(--c-333333);
+  border-radius: 8px;
+  color: var(--c-e0e0e0);
+  font-size: 17px;
+  font-weight: 600;
+  padding: 8px 0;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.tr-greek-btn:hover {
+  background: var(--c-1e1e1e);
+  border-color: var(--c-7b6df5);
+}
+
 /* Buttons */
 .tr-btn {
   width: 100%;

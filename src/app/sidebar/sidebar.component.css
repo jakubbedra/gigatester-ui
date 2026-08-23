@@ -300,6 +300,33 @@
   margin-left: 8px;
 }
 
+/* ── Pin toggle ────────────────────────────────────────────────────────── */
+.pin-btn {
+  background: transparent;
+  border: none;
+  color: transparent;
+  font-size: 13px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.menu-row:hover .pin-btn {
+  color: var(--c-555577);
+}
+
+.pin-btn:hover {
+  background: var(--a-15);
+  color: var(--c-9b8ff5) !important;
+}
+
+.pin-btn.pinned {
+  color: #e0b64c;
+}
+
 /* ── Context menu trigger ──────────────────────────────────────────────── */
 .context-wrapper {
   position: relative;

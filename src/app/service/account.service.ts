@@ -12,6 +12,7 @@ export interface UserResponse {
   assignedRoleName?: string | null;
   profilePictureUrl: string | null;
   bio: string | null;
+  showFavouritesTab: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -39,6 +40,12 @@ export class AccountService {
 
   updateBio(bio: string): Observable<UserResponse> {
     return this.http.put<UserResponse>(`${this.baseUrl}/me/bio`, { bio });
+  }
+
+  updateShowFavouritesTab(show: boolean): Observable<UserResponse> {
+    return this.http.put<UserResponse>(`${this.baseUrl}/me/settings/favourites-tab`, { show }).pipe(
+      tap(res => this.authService.updateStoredUser(res))
+    );
   }
 
   getUserById(id: string): Observable<UserResponse> {

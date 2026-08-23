@@ -26,6 +26,8 @@ export interface TestRunResult {
   wrongTermCount: number;
   totalTerms: number;
   createdAt: string;
+  /** Cumulative wrong-answer pool across all runs — distinct from wrongTermIds, which is just this one run. */
+  cumulativeWrongTermIds: string[];
 }
 
 export interface TestRunProgress {
@@ -40,8 +42,15 @@ export class CrosswordTestRunService {
 
   constructor(private http: HttpClient) {}
 
-  startTestRun(crosswordId: string, mode: 'ALL' | 'WRONG_ONLY', resume = false): Observable<StartTestRunResponse> {
-    return this.http.post<StartTestRunResponse>(`${BASE}/${crosswordId}/test-runs/start`, { mode, resume });
+  startTestRun(
+    crosswordId: string,
+    mode: 'ALL' | 'WRONG_ONLY',
+    resume = false,
+    tagIds: string[] = [],
+    matchAllTags = false,
+    excludeTags = false
+  ): Observable<StartTestRunResponse> {
+    return this.http.post<StartTestRunResponse>(`${BASE}/${crosswordId}/test-runs/start`, { mode, resume, tagIds, matchAllTags, excludeTags });
   }
 
   getInProgressRun(crosswordId: string): Observable<TestRunProgress | null> {

@@ -60,6 +60,145 @@
   margin: 0;
 }
 
+.report-row {
+  cursor: pointer;
+}
+
+/* ── Report detail modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+}
+
+.report-detail-dialog {
+  background: var(--c-1e1e1e);
+  border: 1px solid var(--c-3a3a3a);
+  border-radius: 16px;
+  padding: 28px 32px;
+  width: 480px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.report-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.report-detail-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--c-e0e0e0);
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  color: var(--c-888888);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-close:hover { background: var(--c-2a2a2a); color: var(--c-cccccc); }
+
+.report-detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  background: var(--c-181818);
+  border: 1px solid var(--c-2a2a2a);
+  border-radius: 10px;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.meta-label {
+  color: var(--c-666666);
+  font-weight: 600;
+}
+
+.meta-value {
+  color: var(--c-cccccc);
+  text-align: right;
+}
+
+.report-detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.report-detail-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--c-666666);
+}
+
+.report-detail-text {
+  font-size: 14px;
+  color: var(--c-e0e0e0);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.report-detail-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.report-detail-actions .btn-approve {
+  flex: none;
+}
+
+.section-header {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--c-666666);
+  margin: 32px 0 12px;
+}
+
+.anon-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-888888);
+  font-style: italic;
+}
+
+.preview-cell {
+  color: var(--c-999999);
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .table-wrap {
   background: var(--c-1e1e1e);
   border: 1px solid var(--c-2e2e2e);

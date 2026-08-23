@@ -21,6 +21,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {QuestionStateService} from "../../service/question-state.service";
 import {Observable, of} from "rxjs";
 import {switchMap} from "rxjs/operators";
+import {QuestionReportService} from "../../service/question-report.service";
 
 @Component({
   selector: 'app-question-card',
@@ -45,12 +46,19 @@ export class QuestionCardComponent implements OnInit, OnDestroy {
 
   @ViewChild('questionTextContainer') questionTextContainer!: ElementRef;
 
+  reportOpen = false;
+  reportMessage = '';
+  reportAnonymous = false;
+  reportSubmitting = false;
+  reportedQuestionIds = new Set<string>();
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private testStateService: TestStateService,
     private questionStateService: QuestionStateService,
-    private questionService: QuestionsService
+    private questionService: QuestionsService,
+    private questionReportService: QuestionReportService
   ) { }
 
   ngOnInit() {
@@ -301,6 +309,44 @@ export class QuestionCardComponent implements OnInit, OnDestroy {
 
   isExamMode() : boolean {
     return this.testState!.mode === TestModeDto.EXAM;
+  }
+
+  canReport(): boolean {
+    if (this.isExamMode()) return this.isInReview();
+    if (this.isLearningMode()) return this.questionSubmitted();
+    return false;
+  }
+
+  isReported(): boolean {
+    return !!this.question && this.reportedQuestionIds.has(this.question.id);
+  }
+
+  openReport() {
+    this.reportOpen = true;
+    this.reportMessage = '';
+    this.reportAnonymous = false;
+  }
+
+  cancelReport() {
+    this.reportOpen = false;
+  }
+
+  submitReport() {
+    if (!this.question || !this.testState || this.reportSubmitting) return;
+    this.reportSubmitting = true;
+    this.questionReportService.createReport(
+      this.question.id,
+      this.testState.testId,
+      this.reportMessage.trim(),
+      this.reportAnonymous
+    ).subscribe({
+      next: () => {
+        this.reportedQuestionIds.add(this.question!.id);
+        this.reportSubmitting = false;
+        this.reportOpen = false;
+      },
+      error: () => { this.reportSubmitting = false; }
+    });
   }
 
 }

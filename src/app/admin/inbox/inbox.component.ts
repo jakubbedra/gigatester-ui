@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { SubjectGroupService } from '../../service/subject-group.service';
 import { SubjectGroupAccessService, AccessRequestResponse } from '../../service/subject-group-access.service';
+import { QuestionReportService, QuestionReportResponse } from '../../service/question-report.service';
 
 export interface InboxRequest extends AccessRequestResponse {
   groupName: string;
@@ -15,16 +17,52 @@ export interface InboxRequest extends AccessRequestResponse {
 })
 export class InboxComponent implements OnInit {
   requests: InboxRequest[] = [];
+  reports: QuestionReportResponse[] = [];
   loading = true;
   actionInProgress: string | null = null;
+  viewingReport: QuestionReportResponse | null = null;
 
   constructor(
     private groupService: SubjectGroupService,
-    private accessService: SubjectGroupAccessService
+    private accessService: SubjectGroupAccessService,
+    private questionReportService: QuestionReportService,
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.load();
+    this.loadReports();
+  }
+
+  loadReports() {
+    this.questionReportService.getReportsForInbox().subscribe({
+      next: reports => this.reports = reports,
+      error: () => {}
+    });
+  }
+
+  openReportDetail(report: QuestionReportResponse) {
+    this.viewingReport = report;
+  }
+
+  closeReportDetail() {
+    this.viewingReport = null;
+  }
+
+  goToQuestion(report: QuestionReportResponse) {
+    this.router.navigate(['/admin/tests', report.testId, 'edit'], { queryParams: { questionId: report.questionId } });
+  }
+
+  resolveReport(report: QuestionReportResponse) {
+    this.actionInProgress = report.id;
+    this.questionReportService.resolveReport(report.id).subscribe({
+      next: () => {
+        this.reports = this.reports.filter(r => r.id !== report.id);
+        if (this.viewingReport?.id === report.id) this.viewingReport = null;
+        this.actionInProgress = null;
+      },
+      error: () => { this.actionInProgress = null; }
+    });
   }
 
   load() {

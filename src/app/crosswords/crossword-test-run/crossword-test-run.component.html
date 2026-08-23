@@ -44,6 +44,10 @@
         autocapitalize="off"
         spellcheck="false"
       />
+      <div class="tr-greek-row">
+        <button type="button" class="tr-greek-btn" *ngFor="let letter of greekLetters" (click)="insertGreekLetter(letter)">{{ letter }}</button>
+      </div>
+
       <button class="tr-btn primary" [disabled]="!answer.trim()" (click)="submit()">{{ 'CROSSWORD_TEST_RUN.SUBMIT' | translate }}</button>
     </ng-container>
 
