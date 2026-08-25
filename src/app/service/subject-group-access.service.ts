@@ -15,6 +15,7 @@ export interface AccessRequestResponse {
   userId: string;
   username: string;
   groupId: string;
+  groupName: string | null;
   status: AccessStatus;
 }
 
@@ -47,5 +48,9 @@ export class SubjectGroupAccessService {
 
   revoke(requestId: string): Observable<void> {
     return this.http.delete<void>(`${this.base}/access-requests/${requestId}`);
+  }
+
+  getAllAccessRequests(): Observable<AccessRequestResponse[]> {
+    return this.http.get<AccessRequestResponse[]>(`${this.base}/all-access-requests`);
   }
 }

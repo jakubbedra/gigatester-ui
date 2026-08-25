@@ -3,6 +3,190 @@
   min-height: 100%;
   box-sizing: border-box;
   color: var(--c-e0e0e0);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--c-2e2e2e);
+  background: transparent;
+  color: var(--c-888888);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.tab-btn:hover {
+  background: var(--c-252525);
+  color: var(--c-cccccc);
+}
+
+.tab-btn.active {
+  background: var(--a-1);
+  border-color: var(--a-2);
+  color: var(--c-c0b0ff);
+}
+
+.tab-count {
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(200, 176, 255, 0.2);
+  color: var(--c-c0b0ff);
+  border-radius: 10px;
+  padding: 2px 7px;
+}
+
+/* ── Show-resolved toggle ── */
+.toggle-row {
+  display: flex;
+  margin-bottom: 16px;
+}
+
+.btn-toggle {
+  background: transparent;
+  border: 1px solid var(--c-3a3a3a);
+  color: var(--c-888888);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-toggle:hover:not(:disabled) {
+  background: var(--c-2a2a2a);
+  color: var(--c-cccccc);
+}
+
+.btn-toggle:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Status badges ── */
+.status-badge {
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 3px 10px;
+}
+
+.status-pending {
+  background: rgba(255, 180, 50, 0.1);
+  color: #ffb432;
+  border: 1px solid rgba(255, 180, 50, 0.25);
+}
+
+.status-approved {
+  background: rgba(80, 200, 120, 0.12);
+  color: var(--c-50c878);
+  border: 1px solid rgba(80, 200, 120, 0.25);
+}
+
+.status-denied {
+  background: rgba(240, 80, 80, 0.1);
+  color: var(--c-f07070);
+  border: 1px solid rgba(240, 80, 80, 0.2);
+}
+
+.resolved-row {
+  opacity: 0.55;
+}
+
+.resolved-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-666666);
+  font-style: italic;
+}
+
+/* ── Comment notifications ── */
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--c-1e1e1e);
+  border: 1px solid var(--c-2e2e2e);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.notification-item:hover {
+  background: var(--c-252525);
+  border-color: var(--c-3a3a3a);
+}
+
+.notification-item.unread {
+  border-color: var(--a-2);
+  background: var(--a-1);
+}
+
+.notification-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-c0b0ff);
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.notification-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notification-title {
+  font-size: 14px;
+  color: var(--c-cccccc);
+}
+
+.commenter-name {
+  font-weight: 700;
+  color: var(--c-c0b0ff);
+}
+
+.subject-name {
+  font-weight: 700;
+  color: var(--c-cccccc);
+}
+
+.notification-preview {
+  font-size: 13px;
+  color: var(--c-888888);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 600px;
+}
+
+.notification-meta {
+  font-size: 11px;
+  color: var(--c-555555);
 }
 
 .page-header {
@@ -205,7 +389,8 @@
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  max-width: 860px;
+  width: 100%;
+  overflow-x: auto;
 }
 
 table {
@@ -267,10 +452,11 @@ td {
 
 .actions-cell {
   text-align: right;
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  align-items: center;
+  white-space: nowrap;
+}
+
+.actions-cell > * + * {
+  margin-left: 8px;
 }
 
 .actions-cell button {

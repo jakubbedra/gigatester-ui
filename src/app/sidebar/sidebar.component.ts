@@ -16,6 +16,7 @@ import { CrosswordSummaryResponse, TestSummaryResponse } from '../models/models.
 import { InboxRequest } from '../admin/inbox/inbox.component';
 import { PinService, PinnedEntityType } from '../service/pin.service';
 import { QuestionReportService } from '../service/question-report.service';
+import { CommentNotificationService } from '../service/comment-notification.service';
 
 interface Item {
   name: string;
@@ -53,6 +54,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   inboxRequests: InboxRequest[] = [];
   inboxLoading = false;
   questionReportCount = 0;
+  notificationCount = 0;
 
   private pinnedKeys = new Set<string>();
 
@@ -62,7 +64,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private eventSub?: Subscription;
 
   get pendingCount(): number {
-    return this.inboxRequests.length + this.questionReportCount;
+    return this.inboxRequests.length + this.questionReportCount + this.notificationCount;
   }
 
   constructor(
@@ -78,6 +80,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private sidebarRefreshService: SidebarRefreshService,
     private pinService: PinService,
     private questionReportService: QuestionReportService,
+    private notificationService: CommentNotificationService,
     public lang: LanguageService
   ) {}
 
@@ -171,27 +174,19 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   loadInbox() {
     this.inboxLoading = true;
-    this.subjectGroupService.getSubjectGroups().pipe(
-      switchMap(res => {
-        const groups = res.subjectGroups;
-        if (groups.length === 0) return of([] as InboxRequest[]);
-        return forkJoin(
-          groups.map(g =>
-            this.accessService.getAccessRequests(g.id).pipe(
-              map(reqs => reqs
-                .filter(r => r.status === 'PENDING')
-                .map(r => ({ ...r, groupName: g.name }))
-              )
-            )
-          )
-        ).pipe(map(nested => ([] as InboxRequest[]).concat(...nested)));
-      })
-    ).subscribe({
-      next: reqs => { this.inboxRequests = reqs; this.inboxLoading = false; },
+    this.accessService.getAllAccessRequests().subscribe({
+      next: reqs => {
+        this.inboxRequests = reqs.filter(r => r.status === 'PENDING');
+        this.inboxLoading = false;
+      },
       error: () => { this.inboxLoading = false; }
     });
     this.questionReportService.getReportsForInbox().subscribe({
-      next: reports => this.questionReportCount = reports.length,
+      next: reports => this.questionReportCount = reports.filter(r => !r.resolved).length,
+      error: () => {}
+    });
+    this.notificationService.getUnreadCount().subscribe({
+      next: res => this.notificationCount = res.count,
       error: () => {}
     });
   }
@@ -269,13 +264,24 @@ export class SidebarComponent implements OnInit, OnDestroy {
   togglePin(event: Event, item: Item) {
     event.stopPropagation();
     const wasPinned = !!item.pinned;
+    const key = `${item.type}:${item.id}`;
     const action = wasPinned
       ? this.pinService.unpin(item.type, item.id)
       : this.pinService.pin(item.type, item.id);
-    action.subscribe(() => {
-      if (wasPinned) this.pinnedKeys.delete(`${item.type}:${item.id}`);
-      else this.pinnedKeys.add(`${item.type}:${item.id}`);
-      this.loadData();
+    action.subscribe({
+      next: () => {
+        if (wasPinned) {
+          this.pinnedKeys.delete(key);
+          item.pinned = false;
+          this.favourites = this.favourites.filter(f => !(f.id === item.id && f.type === item.type));
+        } else {
+          this.pinnedKeys.add(key);
+          item.pinned = true;
+          const favItem: Item = { name: item.name, id: item.id, type: item.type, pinned: true };
+          this.favourites = [...this.favourites, favItem].sort((a, b) => a.name.localeCompare(b.name));
+        }
+      },
+      error: () => {}
     });
   }
 

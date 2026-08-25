@@ -4,81 +4,173 @@
     <p class="page-subtitle">{{ 'INBOX.SUBTITLE' | translate }}</p>
   </div>
 
+  <!-- Tab navigation -->
+  <div class="tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'access'" (click)="setTab('access')">
+      {{ 'INBOX.TAB_ACCESS' | translate }}
+      <span class="tab-count" *ngIf="pendingRequests.length > 0">{{ pendingRequests.length }}</span>
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'reports'" (click)="setTab('reports')">
+      {{ 'INBOX.TAB_REPORTS' | translate }}
+      <span class="tab-count" *ngIf="pendingReports.length > 0">{{ pendingReports.length }}</span>
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'notifications'" (click)="setTab('notifications')">
+      {{ 'INBOX.TAB_NOTIFICATIONS' | translate }}
+      <span class="tab-count" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+    </button>
+  </div>
+
   <div class="loading-state" *ngIf="loading">
     <div class="spinner"></div>
   </div>
 
   <ng-container *ngIf="!loading">
-    <div class="empty-state" *ngIf="requests.length === 0 && reports.length === 0">
-      <span class="empty-icon">✅</span>
-      <p>{{ 'INBOX.EMPTY' | translate }}</p>
-    </div>
 
-    <div class="table-wrap" *ngIf="requests.length > 0">
-      <table>
-        <thead>
-          <tr>
-            <th>{{ 'INBOX.USER' | translate }}</th>
-            <th>{{ 'INBOX.GROUP' | translate }}</th>
-            <th class="actions-col">{{ 'INBOX.ACTIONS' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let req of requests">
-            <td class="username-cell">{{ req.username }}</td>
-            <td>
-              <span class="group-badge">{{ req.groupName }}</span>
-            </td>
-            <td class="actions-cell">
-              <button class="btn-approve"
-                      [disabled]="actionInProgress === req.id"
-                      (click)="approve(req)">
-                {{ 'INBOX.APPROVE' | translate }}
-              </button>
-              <button class="btn-deny"
-                      [disabled]="actionInProgress === req.id"
-                      (click)="deny(req)">
-                {{ 'INBOX.DENY' | translate }}
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <!-- ── Access Requests tab ── -->
+    <ng-container *ngIf="activeTab === 'access'">
+      <div class="empty-state" *ngIf="allRequests.length === 0">
+        <span class="empty-icon">✅</span>
+        <p>{{ 'INBOX.EMPTY' | translate }}</p>
+      </div>
 
-    <div class="section-header" *ngIf="reports.length > 0">{{ 'INBOX.QUESTION_REPORTS' | translate }}</div>
+      <ng-container *ngIf="allRequests.length > 0">
+        <div class="toggle-row" *ngIf="resolvedRequestsCount > 0">
+          <button class="btn-toggle" (click)="showResolvedRequests = !showResolvedRequests">
+            {{ showResolvedRequests ? ('INBOX.HIDE_RESOLVED' | translate) : ('INBOX.SHOW_RESOLVED' | translate) + ' (' + resolvedRequestsCount + ')' }}
+          </button>
+        </div>
 
-    <div class="table-wrap" *ngIf="reports.length > 0">
-      <table>
-        <thead>
-          <tr>
-            <th>{{ 'INBOX.REPORTER' | translate }}</th>
-            <th>{{ 'INBOX.TEST' | translate }}</th>
-            <th>{{ 'INBOX.QUESTION' | translate }}</th>
-            <th>{{ 'INBOX.MESSAGE' | translate }}</th>
-            <th class="actions-col">{{ 'INBOX.ACTIONS' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let report of reports" class="report-row" (click)="openReportDetail(report)">
-            <td class="username-cell">
-              <span *ngIf="!report.anonymous">{{ report.reporterUsername }}</span>
-              <span class="anon-badge" *ngIf="report.anonymous">{{ 'INBOX.ANONYMOUS' | translate }}</span>
-            </td>
-            <td><span class="group-badge">{{ report.testName }}</span></td>
-            <td class="preview-cell">{{ report.questionPreview }}</td>
-            <td class="preview-cell">{{ report.message || '—' }}</td>
-            <td class="actions-cell" (click)="$event.stopPropagation()">
-              <button class="btn-approve"
-                      [disabled]="actionInProgress === report.id"
-                      (click)="resolveReport(report)">
-                {{ 'INBOX.RESOLVE' | translate }}
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+        <div class="empty-state" *ngIf="displayedRequests.length === 0">
+          <span class="empty-icon">✅</span>
+          <p>{{ 'INBOX.NO_PENDING' | translate }}</p>
+        </div>
+
+        <div class="table-wrap" *ngIf="displayedRequests.length > 0">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ 'INBOX.USER' | translate }}</th>
+                <th>{{ 'INBOX.GROUP' | translate }}</th>
+                <th>{{ 'INBOX.STATUS' | translate }}</th>
+                <th class="actions-col">{{ 'INBOX.ACTIONS' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let req of displayedRequests" [class.resolved-row]="req.status !== 'PENDING'">
+                <td class="username-cell">{{ req.username }}</td>
+                <td><span class="group-badge">{{ req.groupName }}</span></td>
+                <td>
+                  <span class="status-badge status-pending" *ngIf="req.status === 'PENDING'">{{ 'INBOX.STATUS_PENDING' | translate }}</span>
+                  <span class="status-badge status-approved" *ngIf="req.status === 'APPROVED'">{{ 'INBOX.STATUS_APPROVED' | translate }}</span>
+                  <span class="status-badge status-denied" *ngIf="req.status === 'DENIED'">{{ 'INBOX.STATUS_DENIED' | translate }}</span>
+                </td>
+                <td class="actions-cell">
+                  <ng-container *ngIf="req.status === 'PENDING'">
+                    <button class="btn-approve" [disabled]="actionInProgress === req.id" (click)="approve(req)">
+                      {{ 'INBOX.APPROVE' | translate }}
+                    </button>
+                    <button class="btn-deny" [disabled]="actionInProgress === req.id" (click)="deny(req)">
+                      {{ 'INBOX.DENY' | translate }}
+                    </button>
+                  </ng-container>
+                  <span class="resolved-label" *ngIf="req.status !== 'PENDING'">{{ 'INBOX.RESOLVED' | translate }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <!-- ── Question Reports tab ── -->
+    <ng-container *ngIf="activeTab === 'reports'">
+      <div class="empty-state" *ngIf="allReports.length === 0">
+        <span class="empty-icon">✅</span>
+        <p>{{ 'INBOX.EMPTY' | translate }}</p>
+      </div>
+
+      <ng-container *ngIf="allReports.length > 0">
+        <div class="toggle-row" *ngIf="resolvedReportsCount > 0">
+          <button class="btn-toggle" (click)="showResolvedReports = !showResolvedReports">
+            {{ showResolvedReports ? ('INBOX.HIDE_RESOLVED' | translate) : ('INBOX.SHOW_RESOLVED' | translate) + ' (' + resolvedReportsCount + ')' }}
+          </button>
+        </div>
+
+        <div class="empty-state" *ngIf="displayedReports.length === 0">
+          <span class="empty-icon">✅</span>
+          <p>{{ 'INBOX.NO_PENDING' | translate }}</p>
+        </div>
+
+        <div class="table-wrap" *ngIf="displayedReports.length > 0">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ 'INBOX.REPORTER' | translate }}</th>
+                <th>{{ 'INBOX.TEST' | translate }}</th>
+                <th>{{ 'INBOX.QUESTION' | translate }}</th>
+                <th>{{ 'INBOX.MESSAGE' | translate }}</th>
+                <th class="actions-col">{{ 'INBOX.ACTIONS' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let report of displayedReports"
+                  class="report-row"
+                  [class.resolved-row]="report.resolved"
+                  (click)="openReportDetail(report)">
+                <td class="username-cell">
+                  <span *ngIf="!report.anonymous">{{ report.reporterUsername }}</span>
+                  <span class="anon-badge" *ngIf="report.anonymous">{{ 'INBOX.ANONYMOUS' | translate }}</span>
+                </td>
+                <td><span class="group-badge">{{ report.testName }}</span></td>
+                <td class="preview-cell">{{ report.questionPreview }}</td>
+                <td class="preview-cell">{{ report.message || '—' }}</td>
+                <td class="actions-cell" (click)="$event.stopPropagation()">
+                  <button class="btn-approve"
+                          *ngIf="!report.resolved"
+                          [disabled]="actionInProgress === report.id"
+                          (click)="resolveReport(report)">
+                    {{ 'INBOX.RESOLVE' | translate }}
+                  </button>
+                  <span class="resolved-label" *ngIf="report.resolved">{{ 'INBOX.RESOLVED' | translate }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <!-- ── Comment Notifications tab ── -->
+    <ng-container *ngIf="activeTab === 'notifications'">
+      <div class="empty-state" *ngIf="notifications.length === 0">
+        <span class="empty-icon">🔔</span>
+        <p>{{ 'INBOX.NO_NOTIFICATIONS' | translate }}</p>
+      </div>
+
+      <ng-container *ngIf="notifications.length > 0">
+        <div class="toggle-row">
+          <button class="btn-toggle" (click)="markAllRead()" [disabled]="unreadCount === 0">
+            {{ 'INBOX.MARK_ALL_READ' | translate }}
+          </button>
+        </div>
+
+        <div class="notifications-list">
+          <div *ngFor="let n of notifications" class="notification-item" [class.unread]="!n.read" (click)="markRead(n)">
+            <div class="notification-dot" *ngIf="!n.read"></div>
+            <div class="notification-body">
+              <div class="notification-title">
+                <span class="commenter-name">{{ n.commenterUsername || ('INBOX.UNKNOWN_USER' | translate) }}</span>
+                {{ 'INBOX.COMMENTED_ON' | translate }}
+                <span class="subject-name">{{ n.subjectName }}</span>
+              </div>
+              <div class="notification-preview" *ngIf="n.commentPreview">{{ n.commentPreview }}</div>
+              <div class="notification-meta">{{ n.createdAt | date:'medium' }}</div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+
   </ng-container>
 
   <!-- Report detail modal -->
@@ -105,6 +197,10 @@
           <span class="meta-label">{{ 'INBOX.DATE' | translate }}</span>
           <span class="meta-value">{{ viewingReport.createdAt | date:'medium' }}</span>
         </div>
+        <div class="meta-row" *ngIf="viewingReport.resolved">
+          <span class="meta-label">{{ 'INBOX.STATUS' | translate }}</span>
+          <span class="status-badge status-approved">{{ 'INBOX.RESOLVED' | translate }}</span>
+        </div>
       </div>
 
       <div class="report-detail-section">
@@ -122,10 +218,12 @@
           {{ 'INBOX.GO_TO_QUESTION' | translate }}
         </button>
         <button class="btn-approve"
+                *ngIf="!viewingReport.resolved"
                 [disabled]="actionInProgress === viewingReport.id"
                 (click)="resolveReport(viewingReport)">
           {{ 'INBOX.RESOLVE' | translate }}
         </button>
+        <span class="resolved-label" *ngIf="viewingReport.resolved">{{ 'INBOX.RESOLVED' | translate }}</span>
       </div>
     </div>
   </div>

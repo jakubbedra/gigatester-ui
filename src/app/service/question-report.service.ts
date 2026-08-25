@@ -13,6 +13,7 @@ export interface QuestionReportResponse {
   anonymous: boolean;
   message: string | null;
   createdAt: string;
+  resolved: boolean;
 }
 
 @Injectable({ providedIn: 'root' })

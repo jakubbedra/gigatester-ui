@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { forkJoin, of } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
-import { SubjectGroupService } from '../../service/subject-group.service';
 import { SubjectGroupAccessService, AccessRequestResponse } from '../../service/subject-group-access.service';
 import { QuestionReportService, QuestionReportResponse } from '../../service/question-report.service';
+import { CommentNotificationService, CommentNotificationResponse } from '../../service/comment-notification.service';
 
-export interface InboxRequest extends AccessRequestResponse {
-  groupName: string;
-}
+export type InboxRequest = AccessRequestResponse;
+
+export type InboxTab = 'access' | 'reports' | 'notifications';
 
 @Component({
   selector: 'app-inbox',
@@ -16,85 +14,83 @@ export interface InboxRequest extends AccessRequestResponse {
   styleUrls: ['./inbox.component.css']
 })
 export class InboxComponent implements OnInit {
-  requests: InboxRequest[] = [];
-  reports: QuestionReportResponse[] = [];
+  activeTab: InboxTab = 'access';
   loading = true;
   actionInProgress: string | null = null;
   viewingReport: QuestionReportResponse | null = null;
 
+  allRequests: InboxRequest[] = [];
+  showResolvedRequests = false;
+
+  allReports: QuestionReportResponse[] = [];
+  showResolvedReports = false;
+
+  notifications: CommentNotificationResponse[] = [];
+
   constructor(
-    private groupService: SubjectGroupService,
     private accessService: SubjectGroupAccessService,
     private questionReportService: QuestionReportService,
+    private notificationService: CommentNotificationService,
     private router: Router
   ) {}
 
-  ngOnInit() {
-    this.load();
-    this.loadReports();
+  ngOnInit() { this.load(); }
+
+  get pendingRequests(): InboxRequest[] {
+    return this.allRequests.filter(r => r.status === 'PENDING');
   }
 
-  loadReports() {
-    this.questionReportService.getReportsForInbox().subscribe({
-      next: reports => this.reports = reports,
-      error: () => {}
-    });
+  get displayedRequests(): InboxRequest[] {
+    return this.showResolvedRequests ? this.allRequests : this.pendingRequests;
   }
 
-  openReportDetail(report: QuestionReportResponse) {
-    this.viewingReport = report;
+  get resolvedRequestsCount(): number {
+    return this.allRequests.filter(r => r.status !== 'PENDING').length;
   }
 
-  closeReportDetail() {
-    this.viewingReport = null;
+  get pendingReports(): QuestionReportResponse[] {
+    return this.allReports.filter(r => !r.resolved);
   }
 
-  goToQuestion(report: QuestionReportResponse) {
-    this.router.navigate(['/admin/tests', report.testId, 'edit'], { queryParams: { questionId: report.questionId } });
+  get displayedReports(): QuestionReportResponse[] {
+    return this.showResolvedReports ? this.allReports : this.pendingReports;
   }
 
-  resolveReport(report: QuestionReportResponse) {
-    this.actionInProgress = report.id;
-    this.questionReportService.resolveReport(report.id).subscribe({
-      next: () => {
-        this.reports = this.reports.filter(r => r.id !== report.id);
-        if (this.viewingReport?.id === report.id) this.viewingReport = null;
-        this.actionInProgress = null;
-      },
-      error: () => { this.actionInProgress = null; }
-    });
+  get resolvedReportsCount(): number {
+    return this.allReports.filter(r => r.resolved).length;
   }
+
+  get unreadCount(): number {
+    return this.notifications.filter(n => !n.read).length;
+  }
+
+  setTab(tab: InboxTab) { this.activeTab = tab; }
 
   load() {
     this.loading = true;
-    this.groupService.getSubjectGroups().pipe(
-      switchMap(res => {
-        const groups = res.subjectGroups;
-        if (groups.length === 0) return of([] as InboxRequest[]);
-        return forkJoin(
-          groups.map(g =>
-            this.accessService.getAccessRequests(g.id).pipe(
-              map(reqs => reqs
-                .filter(r => r.status === 'PENDING')
-                .map(r => ({ ...r, groupName: g.name }))
-              )
-            )
-          )
-        ).pipe(map(nested => ([] as InboxRequest[]).concat(...nested)));
-      })
-    ).subscribe({
-      next: reqs => { this.requests = reqs; this.loading = false; },
-      error: () => { this.loading = false; }
+    let done = 0;
+    const check = () => { if (++done === 3) this.loading = false; };
+
+    this.accessService.getAllAccessRequests().subscribe({
+      next: reqs => { this.allRequests = reqs; check(); },
+      error: () => check()
+    });
+
+    this.questionReportService.getReportsForInbox().subscribe({
+      next: reports => { this.allReports = reports; check(); },
+      error: () => check()
+    });
+
+    this.notificationService.getNotifications().subscribe({
+      next: ns => { this.notifications = ns; check(); },
+      error: () => check()
     });
   }
 
   approve(req: InboxRequest) {
     this.actionInProgress = req.id;
     this.accessService.approve(req.id).subscribe({
-      next: () => {
-        this.requests = this.requests.filter(r => r.id !== req.id);
-        this.actionInProgress = null;
-      },
+      next: () => { req.status = 'APPROVED'; this.actionInProgress = null; },
       error: () => { this.actionInProgress = null; }
     });
   }
@@ -102,11 +98,43 @@ export class InboxComponent implements OnInit {
   deny(req: InboxRequest) {
     this.actionInProgress = req.id;
     this.accessService.deny(req.id).subscribe({
+      next: () => { req.status = 'DENIED'; this.actionInProgress = null; },
+      error: () => { this.actionInProgress = null; }
+    });
+  }
+
+  openReportDetail(report: QuestionReportResponse) { this.viewingReport = report; }
+  closeReportDetail() { this.viewingReport = null; }
+
+  goToQuestion(report: QuestionReportResponse) {
+    this.router.navigate(['/admin/tests', report.testId, 'edit'], { queryParams: { questionId: report.questionId } });
+  }
+
+  resolveReport(report: QuestionReportResponse) {
+    if (report.resolved || this.actionInProgress === report.id) return;
+    this.actionInProgress = report.id;
+    this.questionReportService.resolveReport(report.id).subscribe({
       next: () => {
-        this.requests = this.requests.filter(r => r.id !== req.id);
+        report.resolved = true;
         this.actionInProgress = null;
+        if (this.viewingReport?.id === report.id) this.closeReportDetail();
       },
       error: () => { this.actionInProgress = null; }
+    });
+  }
+
+  markRead(notification: CommentNotificationResponse) {
+    if (notification.read) return;
+    this.notificationService.markRead(notification.id).subscribe({
+      next: () => { notification.read = true; },
+      error: () => {}
+    });
+  }
+
+  markAllRead() {
+    this.notificationService.markAllRead().subscribe({
+      next: () => { this.notifications.forEach(n => n.read = true); },
+      error: () => {}
     });
   }
 }
