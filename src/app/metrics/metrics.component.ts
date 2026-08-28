@@ -17,6 +17,15 @@ export class MetricsComponent implements OnInit {
   selectedTestId: string = '';
   rankingSortBy: string = 'accuracy';
   testFilterOpen = false;
+  selectedMode: '' | 'EXAM' | 'LEARNING' = '';
+
+  readonly timeframes = [
+    { value: '7', labelKey: 'METRICS.TIMEFRAME_7D' },
+    { value: '30', labelKey: 'METRICS.TIMEFRAME_30D' },
+    { value: '90', labelKey: 'METRICS.TIMEFRAME_90D' },
+    { value: '', labelKey: 'METRICS.TIMEFRAME_ALL' },
+  ];
+  selectedTimeframe: string = '';
 
   constructor(
     private metricsService: MetricsService,
@@ -28,15 +37,35 @@ export class MetricsComponent implements OnInit {
     this.loadRanking();
   }
 
+  private get fromDate(): string | undefined {
+    if (!this.selectedTimeframe) return undefined;
+    const days = Number(this.selectedTimeframe);
+    const d = new Date();
+    d.setDate(d.getDate() - days);
+    return d.toISOString().slice(0, 10);
+  }
+
   loadProgress() {
-    this.metricsService.getProgress(this.selectedTestId || undefined).subscribe(p => this.progress = p);
+    this.metricsService.getProgress(this.selectedTestId || undefined, this.selectedMode || undefined, this.fromDate).subscribe(p => this.progress = p);
   }
 
   loadRanking() {
-    this.metricsService.getRanking(this.selectedTestId || undefined, this.rankingSortBy).subscribe(r => this.ranking = r);
+    this.metricsService.getRanking(this.selectedTestId || undefined, this.rankingSortBy, this.selectedMode || undefined, this.fromDate).subscribe(r => this.ranking = r);
   }
 
   onTestFilterChange() {
+    this.loadProgress();
+    this.loadRanking();
+  }
+
+  onModeFilterChange(mode: '' | 'EXAM' | 'LEARNING') {
+    this.selectedMode = mode;
+    this.loadProgress();
+    this.loadRanking();
+  }
+
+  onTimeframeChange(timeframe: string) {
+    this.selectedTimeframe = timeframe;
     this.loadProgress();
     this.loadRanking();
   }
@@ -90,7 +119,10 @@ export class MetricsComponent implements OnInit {
 
   get chartDays(): DailyStatDto[] {
     if (!this.progress) return [];
-    return this.progress.dailyStats.slice(-30);
+    // Backend already scopes dailyStats to the selected timeframe; only cap
+    // it client-side when "All time" is selected, so a long history doesn't
+    // render as an unreadably dense chart.
+    return this.selectedTimeframe ? this.progress.dailyStats : this.progress.dailyStats.slice(-90);
   }
 
   // SVG line chart — 600×120 viewBox

@@ -104,8 +104,11 @@
     "TAG_EXCLUDE": "Exclude",
     "TAG_MATCH_ANY": "Match any (OR)",
     "TAG_MATCH_ALL": "Match all (AND)",
+    "DISTRIBUTION_MODE": "Question selection mode",
     "DISTRIBUTION_RANDOM": "Random distribution",
     "DISTRIBUTION_MAX_PER_TAG": "Max per tag",
+    "DISTRIBUTION_WORST": "Worst performing",
+    "DISTRIBUTION_WORST_HINT": "Picks the questions you've answered wrong most often.",
     "MAX_PER_TAG_LABEL": "Max questions per tag",
     "NO_LIMIT": "No limit",
     "TIME_LIMIT_ON": "Time limit",
@@ -555,7 +558,7 @@
     "PASS_RATE": "Pass Rate",
     "ACCURACY": "Accuracy",
     "QUESTIONS_CORRECT": "Questions Correct",
-    "DAILY_CHART": "Tests per Day (last 30 days)",
+    "DAILY_CHART": "Tests per Day",
     "PASSED": "Passed",
     "TAKEN": "Taken",
     "FAILED": "Failed",
@@ -568,6 +571,15 @@
     "SORT_BY": "Sort by",
     "SORT_ACCURACY": "Accuracy",
     "SORT_STREAK": "Streak 🔥",
-    "SORT_POINTS": "Points"
+    "SORT_POINTS": "Points",
+    "FILTER_MODE": "Mode",
+    "MODE_ALL": "All",
+    "MODE_EXAM": "Exam",
+    "MODE_LEARNING": "Learning",
+    "FILTER_TIMEFRAME": "Timeframe",
+    "TIMEFRAME_7D": "7 days",
+    "TIMEFRAME_30D": "30 days",
+    "TIMEFRAME_90D": "90 days",
+    "TIMEFRAME_ALL": "All time"
   }
 }

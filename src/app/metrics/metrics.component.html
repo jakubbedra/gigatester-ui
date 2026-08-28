@@ -24,6 +24,29 @@
     </div>
   </div>
 
+  <!-- Test mode filter -->
+  <div class="sort-row">
+    <span class="sort-label">{{ 'METRICS.FILTER_MODE' | translate }}</span>
+    <button class="sort-btn" [class.active]="selectedMode === ''" (click)="onModeFilterChange('')">
+      {{ 'METRICS.MODE_ALL' | translate }}
+    </button>
+    <button class="sort-btn" [class.active]="selectedMode === 'EXAM'" (click)="onModeFilterChange('EXAM')">
+      {{ 'METRICS.MODE_EXAM' | translate }}
+    </button>
+    <button class="sort-btn" [class.active]="selectedMode === 'LEARNING'" (click)="onModeFilterChange('LEARNING')">
+      {{ 'METRICS.MODE_LEARNING' | translate }}
+    </button>
+  </div>
+
+  <!-- Timeframe filter -->
+  <div class="sort-row">
+    <span class="sort-label">{{ 'METRICS.FILTER_TIMEFRAME' | translate }}</span>
+    <button class="sort-btn" *ngFor="let tf of timeframes"
+            [class.active]="selectedTimeframe === tf.value" (click)="onTimeframeChange(tf.value)">
+      {{ tf.labelKey | translate }}
+    </button>
+  </div>
+
   <div class="tab-bar">
     <button class="tab-btn" [class.active]="activeTab === 'progress'" (click)="activeTab = 'progress'">
       {{ 'METRICS.TAB_PROGRESS' | translate }}

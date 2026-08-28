@@ -37,7 +37,7 @@ export class TestViewComponent implements OnInit {
   availableClosed = 0;
   availableOpen = 0;
   availableStatement = 0;
-  distributionMode: 'RANDOM' | 'MAX_PER_TAG' = 'RANDOM';
+  distributionMode: 'RANDOM' | 'MAX_PER_TAG' | 'WORST' = 'RANDOM';
   maxPerTag = 1;
 
   constructor(
@@ -224,10 +224,12 @@ export class TestViewComponent implements OnInit {
     const idx = this.selectedTags.findIndex(t => t.id === tag.id);
     if (idx === -1) this.selectedTags = [...this.selectedTags, tag];
     else this.selectedTags = this.selectedTags.filter(t => t.id !== tag.id);
+    if (this.distributionMode === 'MAX_PER_TAG' && this.selectedTags.length === 0) this.distributionMode = 'RANDOM';
     this.refreshCounts();
   }
 
   onExcludeToggle() {
+    if (this.distributionMode === 'MAX_PER_TAG' && this.excludeTags) this.distributionMode = 'RANDOM';
     if (this.selectedTags.length > 0) this.refreshCounts();
   }
 
@@ -235,9 +237,9 @@ export class TestViewComponent implements OnInit {
     if (this.selectedTags.length > 0) this.refreshCounts();
   }
 
-  setDistributionMode(mode: 'RANDOM' | 'MAX_PER_TAG') {
+  setDistributionMode(mode: 'RANDOM' | 'MAX_PER_TAG' | 'WORST') {
     this.distributionMode = mode;
-    if (this.selectedTags.length > 0) this.refreshCounts();
+    this.refreshCounts();
   }
 
   onMaxPerTagChange() {
@@ -247,7 +249,8 @@ export class TestViewComponent implements OnInit {
   private refreshCounts() {
     const tagIds = this.selectedTags.map(t => t.id);
     const maxPerTag = this.distributionMode === 'MAX_PER_TAG' ? this.maxPerTag : 0;
-    this.testService.getQuestionCounts(this.testId, tagIds, this.excludeTags, this.matchAllTags, maxPerTag).subscribe(counts => {
+    const worstOnly = this.distributionMode === 'WORST';
+    this.testService.getQuestionCounts(this.testId, tagIds, this.excludeTags, this.matchAllTags, maxPerTag, worstOnly).subscribe(counts => {
       this.availableClosed = counts.closedQuestionsCount;
       this.availableOpen = counts.openQuestionsCount;
       this.availableStatement = counts.statementQuestionsCount;

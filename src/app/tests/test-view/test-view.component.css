@@ -336,6 +336,11 @@ input[type="number"] {
   color: #fff;
 }
 
+.tag-mode-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .max-per-tag-field {
   display: flex;
   align-items: center;

@@ -105,8 +105,8 @@
     <div class="tr-from-run" *ngIf="latestRun && filteredWrongTermCount > 0 && !generating">
       <div class="tr-from-run-header">
         <span class="tr-from-run-tag">{{ 'CROSSWORD_VIEW.LAST_TEST_RUN' | translate }}</span>
-        <span class="tr-from-run-score">{{ latestRun.totalTerms - latestRun.wrongTermCount }}/{{ latestRun.totalTerms }} {{ 'CROSSWORD_VIEW.CORRECT' | translate }}</span>
-        <span class="tr-from-run-wrong">{{ latestRun.wrongTermCount }} {{ 'CROSSWORD_VIEW.WRONG' | translate }}</span>
+        <span class="tr-from-run-score">{{ testRunWordCount - testRunWrongCount }}/{{ testRunWordCount }} {{ 'CROSSWORD_VIEW.CORRECT' | translate }}</span>
+        <span class="tr-from-run-wrong">{{ testRunWrongCount }} {{ 'CROSSWORD_VIEW.WRONG' | translate }}</span>
       </div>
       <div class="tr-from-run-body">
         <div class="tr-word-count-field">
@@ -254,11 +254,11 @@
         <!-- Previous run summary -->
         <div class="tr-prev-run" *ngIf="latestRun">
           <div class="tr-prev-label">{{ 'CROSSWORD_VIEW.LAST_RUN' | translate }}</div>
-          <div class="tr-prev-score">{{ latestRun.totalTerms - latestRun.wrongTermCount }} / {{ latestRun.totalTerms }} {{ 'CROSSWORD_VIEW.CORRECT' | translate }}</div>
-          <div class="tr-prev-wrong" *ngIf="latestRun.wrongTermCount > 0">
-            {{ latestRun.wrongTermCount }} {{ (latestRun.wrongTermCount === 1 ? 'CROSSWORD_VIEW.WRONG_ANSWER' : 'CROSSWORD_VIEW.WRONG_ANSWERS') | translate }}
+          <div class="tr-prev-score">{{ testRunWordCount - testRunWrongCount }} / {{ testRunWordCount }} {{ 'CROSSWORD_VIEW.CORRECT' | translate }}</div>
+          <div class="tr-prev-wrong" *ngIf="testRunWrongCount > 0">
+            {{ testRunWrongCount }} {{ (testRunWrongCount === 1 ? 'CROSSWORD_VIEW.WRONG_ANSWER' : 'CROSSWORD_VIEW.WRONG_ANSWERS') | translate }}
           </div>
-          <div class="tr-prev-perfect" *ngIf="latestRun.wrongTermCount === 0">{{ 'CROSSWORD_VIEW.PERFECT_SCORE' | translate }}</div>
+          <div class="tr-prev-perfect" *ngIf="testRunWrongCount === 0">{{ 'CROSSWORD_VIEW.PERFECT_SCORE' | translate }}</div>
         </div>
 
         <!-- Generating crossword from wrong answers -->

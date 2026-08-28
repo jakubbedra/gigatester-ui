@@ -314,7 +314,7 @@ export interface TestStateRequest {
     tagIds?: string[];
     excludeTags?: boolean;
     matchAllTags?: boolean;
-    distributionMode?: 'RANDOM' | 'MAX_PER_TAG';
+    distributionMode?: 'RANDOM' | 'MAX_PER_TAG' | 'WORST';
     maxPerTag?: number;
 }
 

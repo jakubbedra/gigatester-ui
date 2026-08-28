@@ -34,7 +34,7 @@ export class TestService {
     return this.http.delete<void>(`${this.baseUrl}/${testId}`);
   }
 
-  getQuestionCounts(testId: string, tagIds: string[], excludeTags = false, matchAllTags = false, maxPerTag = 0): Observable<{ closedQuestionsCount: number; openQuestionsCount: number; statementQuestionsCount: number }> {
+  getQuestionCounts(testId: string, tagIds: string[], excludeTags = false, matchAllTags = false, maxPerTag = 0, worstOnly = false): Observable<{ closedQuestionsCount: number; openQuestionsCount: number; statementQuestionsCount: number }> {
     let params: any = {};
     if (tagIds.length) {
       params['tagIds'] = tagIds;
@@ -42,6 +42,7 @@ export class TestService {
       params['matchAllTags'] = matchAllTags;
       if (maxPerTag > 0) params['maxPerTag'] = maxPerTag;
     }
+    if (worstOnly) params['worstOnly'] = true;
     return this.http.get<any>(`${this.baseUrl}/${testId}/question-counts`, { params });
   }
 

@@ -104,8 +104,11 @@
     "TAG_EXCLUDE": "Wyklucz",
     "TAG_MATCH_ANY": "Dowolny (OR)",
     "TAG_MATCH_ALL": "Wszystkie (AND)",
+    "DISTRIBUTION_MODE": "Sposób wyboru pytań",
     "DISTRIBUTION_RANDOM": "Losowy rozkład",
     "DISTRIBUTION_MAX_PER_TAG": "Maks. na tag",
+    "DISTRIBUTION_WORST": "Najsłabsze wyniki",
+    "DISTRIBUTION_WORST_HINT": "Wybiera pytania, na które najczęściej odpowiadasz błędnie.",
     "MAX_PER_TAG_LABEL": "Maks. liczba pytań na tag",
     "NO_LIMIT": "Bez limitu",
     "TIME_LIMIT_ON": "Limit czasu",
@@ -555,7 +558,7 @@
     "PASS_RATE": "Skuteczność",
     "ACCURACY": "Dokładność",
     "QUESTIONS_CORRECT": "Poprawne odpowiedzi",
-    "DAILY_CHART": "Testy dziennie (ostatnie 30 dni)",
+    "DAILY_CHART": "Testy dziennie",
     "PASSED": "Zdane",
     "TAKEN": "Podjęte",
     "FAILED": "Niezdane",
@@ -568,6 +571,15 @@
     "SORT_BY": "Sortuj wg",
     "SORT_ACCURACY": "Skuteczność",
     "SORT_STREAK": "Seria 🔥",
-    "SORT_POINTS": "Punkty"
+    "SORT_POINTS": "Punkty",
+    "FILTER_MODE": "Tryb",
+    "MODE_ALL": "Wszystkie",
+    "MODE_EXAM": "Egzamin",
+    "MODE_LEARNING": "Nauka",
+    "FILTER_TIMEFRAME": "Zakres czasu",
+    "TIMEFRAME_7D": "7 dni",
+    "TIMEFRAME_30D": "30 dni",
+    "TIMEFRAME_90D": "90 dni",
+    "TIMEFRAME_ALL": "Cały czas"
   }
 }

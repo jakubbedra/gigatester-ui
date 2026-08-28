@@ -51,16 +51,22 @@ export class MetricsService {
 
   constructor(private http: HttpClient) {}
 
-  getProgress(testId?: string): Observable<ProgressResponse> {
+  getProgress(testId?: string, mode?: 'EXAM' | 'LEARNING', from?: string, to?: string): Observable<ProgressResponse> {
     let params = new HttpParams();
     if (testId) params = params.set('testId', testId);
+    if (mode) params = params.set('mode', mode);
+    if (from) params = params.set('from', from);
+    if (to) params = params.set('to', to);
     return this.http.get<ProgressResponse>(`${this.base}/progress`, { params });
   }
 
-  getRanking(testId?: string, sortBy?: string): Observable<RankingEntryDto[]> {
+  getRanking(testId?: string, sortBy?: string, mode?: 'EXAM' | 'LEARNING', from?: string, to?: string): Observable<RankingEntryDto[]> {
     let params = new HttpParams();
     if (testId) params = params.set('testId', testId);
     if (sortBy) params = params.set('sortBy', sortBy);
+    if (mode) params = params.set('mode', mode);
+    if (from) params = params.set('from', from);
+    if (to) params = params.set('to', to);
     return this.http.get<RankingEntryDto[]>(`${this.base}/ranking`, { params });
   }
 }
