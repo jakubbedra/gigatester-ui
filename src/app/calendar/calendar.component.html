@@ -44,8 +44,10 @@
           <li class="day-event-item" *ngFor="let e of dayEventsList">
             <div class="day-event-header" (click)="toggleExpandEvent(e.id)">
               <span class="day-event-caret" [class.open]="expandedEventId === e.id">›</span>
-              <span class="day-event-title">{{ e.title }}</span>
-              <span class="group-badge small">{{ e.calendarGroupName }}</span>
+              <div class="day-event-heading">
+                <span class="day-event-title" [title]="e.title">{{ e.title }}</span>
+                <span class="group-badge small">{{ e.calendarGroupName }}</span>
+              </div>
             </div>
 
             <div class="day-event-details" *ngIf="expandedEventId === e.id">
@@ -103,6 +105,7 @@
             <div class="day-events">
               <div class="event-pill" *ngFor="let e of day.events.slice(0, 3)"
                    [class.linked]="e.links?.length"
+                   [title]="e.title"
                    (click)="openDayEventsFocused(day.date, day.events, e, $event)">
                 {{ e.title }}
               </div>
