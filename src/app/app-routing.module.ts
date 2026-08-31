@@ -22,6 +22,8 @@ import { RolesListComponent } from './admin/roles-list/roles-list.component';
 import { AiGeneratorComponent } from './admin/ai-generator/ai-generator.component';
 import { InboxComponent } from './admin/inbox/inbox.component';
 import { MetricsComponent } from './metrics/metrics.component';
+import { CalendarComponent } from './calendar/calendar.component';
+import { JoinGroupComponent } from './calendar/join-group/join-group.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { AdminGuard } from './guard/admin.guard';
 import { AuthGuard } from './guard/auth.guard';
@@ -33,6 +35,8 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'account', component: AccountComponent, canActivate: [AuthGuard] },
   { path: 'metrics', component: MetricsComponent, canActivate: [AuthGuard] },
+  { path: 'calendar', component: CalendarComponent, canActivate: [AuthGuard] },
+  { path: 'calendar/join/:token', component: JoinGroupComponent, canActivate: [AuthGuard] },
   { path: 'tests/:id', component: TestViewComponent, canActivate: [AuthGuard] },
   { path: 'tests/:id/executions', component: QuestionCardComponent, canActivate: [AuthGuard] },
   { path: 'tests/:id/executions/all', component: AllAtOnceComponent, canActivate: [AuthGuard] },
@@ -48,7 +52,7 @@ const routes: Routes = [
   { path: 'admin/tests', component: TestsListComponent, canActivate: [AuthGuard, ModeratorGuard] },
   { path: 'admin/tests/:id/edit', component: TestEditComponent, canActivate: [AuthGuard, ModeratorGuard] },
   { path: 'admin/ai-generator', component: AiGeneratorComponent, canActivate: [AuthGuard, ModeratorGuard] },
-  { path: 'admin/inbox', component: InboxComponent, canActivate: [AuthGuard, ModeratorGuard] },
+  { path: 'admin/inbox', component: InboxComponent, canActivate: [AuthGuard] },
   { path: 'crosswords/states/:id', component: CrosswordPlayComponent, canActivate: [AuthGuard] },
   { path: 'crosswords/sessions/:id', component: CrosswordMultiplayerPlayComponent, canActivate: [AuthGuard] },
   { path: 'crosswords/:id/test-run', component: CrosswordTestRunComponent, canActivate: [AuthGuard] },

@@ -17,6 +17,7 @@ import { InboxRequest } from '../admin/inbox/inbox.component';
 import { PinService, PinnedEntityType } from '../service/pin.service';
 import { QuestionReportService } from '../service/question-report.service';
 import { CommentNotificationService } from '../service/comment-notification.service';
+import { CalendarService } from '../service/calendar.service';
 
 interface Item {
   name: string;
@@ -55,6 +56,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   inboxLoading = false;
   questionReportCount = 0;
   notificationCount = 0;
+  inviteCount = 0;
 
   private pinnedKeys = new Set<string>();
 
@@ -64,7 +66,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private eventSub?: Subscription;
 
   get pendingCount(): number {
-    return this.inboxRequests.length + this.questionReportCount + this.notificationCount;
+    return this.inboxRequests.length + this.questionReportCount + this.notificationCount + this.inviteCount;
   }
 
   constructor(
@@ -81,6 +83,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private pinService: PinService,
     private questionReportService: QuestionReportService,
     private notificationService: CommentNotificationService,
+    private calendarService: CalendarService,
     public lang: LanguageService
   ) {}
 
@@ -163,6 +166,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     if (this.isModerator) {
       this.loadInbox();
     }
+    this.loadInvites();
   }
 
   private refreshStreak() {
@@ -187,6 +191,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
     });
     this.notificationService.getUnreadCount().subscribe({
       next: res => this.notificationCount = res.count,
+      error: () => {}
+    });
+  }
+
+  loadInvites() {
+    this.calendarService.getMyInvites().subscribe({
+      next: invites => this.inviteCount = invites.length,
       error: () => {}
     });
   }

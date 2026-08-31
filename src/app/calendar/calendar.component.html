@@ -1,0 +1,246 @@
+<div class="calendar-page">
+
+  <div class="calendar-layout">
+
+    <!-- ── Groups panel ── -->
+    <aside class="groups-panel">
+      <div class="groups-panel-header">
+        <h2>{{ 'CALENDAR.GROUPS' | translate }}</h2>
+        <button type="button" class="btn-icon" *ngIf="isStaff" (click)="openCreateGroup()" title="Add group">+</button>
+      </div>
+
+      <div class="groups-filter-actions">
+        <button type="button" class="link-btn" (click)="selectAllGroups()">{{ 'CALENDAR.SELECT_ALL' | translate }}</button>
+        <button type="button" class="link-btn" (click)="clearGroupFilter()">{{ 'CALENDAR.SELECT_NONE' | translate }}</button>
+      </div>
+
+      <div class="empty-hint" *ngIf="!loading && groups.length === 0">{{ 'CALENDAR.NO_GROUPS' | translate }}</div>
+
+      <ul class="group-list">
+        <li class="group-item" *ngFor="let g of groups">
+          <label class="group-check-row">
+            <input type="checkbox" [checked]="selectedGroupIds.has(g.id)" (change)="toggleGroupFilter(g.id)" />
+            <span class="group-name">{{ g.name }}</span>
+            <span class="group-owner" *ngIf="!g.owner">@{{ g.ownerUsername }}</span>
+          </label>
+          <div class="group-actions" *ngIf="g.canManage">
+            <button type="button" class="btn-tiny" (click)="openMembers(g, $event)" title="Members">👥 {{ g.memberCount }}</button>
+            <button type="button" class="btn-tiny" (click)="openEditGroup(g, $event)" title="Rename">✎</button>
+            <button type="button" class="btn-tiny danger" (click)="deleteGroup(g, $event)" title="Delete">✕</button>
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Day events panel ── -->
+      <div class="day-events-panel" *ngIf="dayEventsDate">
+        <div class="day-events-panel-header">
+          <h3>{{ dayEventsDate | date:'fullDate' }}</h3>
+          <button type="button" class="btn-icon" (click)="closeDayEventsPanel()" title="Close">✕</button>
+        </div>
+
+        <div class="empty-hint" *ngIf="dayEventsList.length === 0">{{ 'CALENDAR.NO_EVENTS_ON_DAY' | translate }}</div>
+
+        <ul class="day-events-list">
+          <li class="day-event-item" *ngFor="let e of dayEventsList">
+            <div class="day-event-header" (click)="toggleExpandEvent(e.id)">
+              <span class="day-event-caret" [class.open]="expandedEventId === e.id">›</span>
+              <span class="day-event-title">{{ e.title }}</span>
+              <span class="group-badge small">{{ e.calendarGroupName }}</span>
+            </div>
+
+            <div class="day-event-details" *ngIf="expandedEventId === e.id">
+              <div class="detail-time">
+                {{ e.startTime | date:'shortTime' }}
+                <ng-container *ngIf="e.endTime"> – {{ e.endTime | date:'shortTime' }}</ng-container>
+              </div>
+              <p class="detail-description" *ngIf="e.description">{{ e.description }}</p>
+              <p class="detail-description empty-hint" *ngIf="!e.description">{{ 'CALENDAR.NO_DESCRIPTION' | translate }}</p>
+
+              <div class="day-event-actions">
+                <button class="btn-secondary" *ngIf="e.canManage" (click)="openEditEvent(e, $event)">
+                  {{ 'CALENDAR.EDIT' | translate }}
+                </button>
+                <button class="btn-primary" *ngFor="let link of e.links" (click)="goToLinkedResource(link)">
+                  {{ 'CALENDAR.GO_TO' | translate }} {{ link.linkName || (link.linkType === 'TEST' ? ('CALENDAR.LINK_TEST' | translate) : ('CALENDAR.LINK_CROSSWORD' | translate)) }}
+                </button>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <button class="btn-secondary add-event-btn" *ngIf="manageableGroups.length > 0" (click)="dayEventsAddNew()">
+          + {{ 'CALENDAR.ADD_NEW' | translate }}
+        </button>
+      </div>
+    </aside>
+
+    <!-- ── Month grid ── -->
+    <main class="calendar-main">
+      <div class="calendar-toolbar">
+        <div class="month-nav">
+          <button type="button" class="nav-btn" (click)="prevMonth()">‹</button>
+          <span class="month-label">{{ monthLabel }}</span>
+          <button type="button" class="nav-btn" (click)="nextMonth()">›</button>
+          <button type="button" class="today-btn" (click)="today()">{{ 'CALENDAR.TODAY' | translate }}</button>
+        </div>
+        <button type="button" class="btn-primary" *ngIf="manageableGroups.length > 0" (click)="openCreateEvent()">
+          + {{ 'CALENDAR.ADD_EVENT' | translate }}
+        </button>
+      </div>
+
+      <div class="weekday-header">
+        <span *ngFor="let d of ['MON','TUE','WED','THU','FRI','SAT','SUN']">{{ 'CALENDAR.' + d | translate }}</span>
+      </div>
+
+      <div class="month-grid">
+        <div class="week-row" *ngFor="let week of weeks">
+          <div class="day-cell" *ngFor="let day of week"
+               [class.out-of-month]="!day.inMonth"
+               [class.today]="day.isToday"
+               (click)="openDayEvents(day.date, day.events)"
+               (contextmenu)="onDayContextMenu($event, day.date)">
+            <span class="day-number">{{ day.date.getDate() }}</span>
+            <div class="day-events">
+              <div class="event-pill" *ngFor="let e of day.events.slice(0, 3)"
+                   [class.linked]="e.links?.length"
+                   (click)="openDayEventsFocused(day.date, day.events, e, $event)">
+                {{ e.title }}
+              </div>
+              <div class="event-more" *ngIf="day.events.length > 3">+{{ day.events.length - 3 }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ══ Group create/edit modal ══ -->
+  <div class="modal-overlay" *ngIf="showGroupModal" (click)="closeGroupModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <h3>{{ (editingGroup ? 'CALENDAR.EDIT_GROUP' : 'CALENDAR.ADD_GROUP') | translate }}</h3>
+      <input class="text-input" type="text" [(ngModel)]="groupModalName" [placeholder]="'CALENDAR.GROUP_NAME_PLACEHOLDER' | translate" />
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="closeGroupModal()">{{ 'CALENDAR.CANCEL' | translate }}</button>
+        <button class="btn-primary" [disabled]="!groupModalName.trim() || groupModalSaving" (click)="saveGroup()">
+          {{ groupModalSaving ? ('CALENDAR.SAVING' | translate) : ('CALENDAR.SAVE' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Members modal ══ -->
+  <div class="modal-overlay" *ngIf="showMembersModal" (click)="closeMembersModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <h3>{{ 'CALENDAR.MEMBERS_OF' | translate }} "{{ membersGroup?.name }}"</h3>
+
+      <div class="invite-row">
+        <input class="text-input" type="text" [(ngModel)]="inviteUsername" [placeholder]="'CALENDAR.USERNAME_PLACEHOLDER' | translate"
+               (keydown.enter)="inviteMember()" />
+        <button class="btn-primary" [disabled]="!inviteUsername.trim() || memberActionInProgress" (click)="inviteMember()">
+          {{ 'CALENDAR.INVITE' | translate }}
+        </button>
+      </div>
+
+      <ul class="member-list">
+        <li class="member-row" *ngFor="let m of members">
+          <span>{{ m.username }}</span>
+          <button type="button" class="btn-tiny danger" (click)="removeMember(m)">✕</button>
+        </li>
+        <li class="empty-hint" *ngIf="members.length === 0">{{ 'CALENDAR.NO_MEMBERS' | translate }}</li>
+      </ul>
+
+      <div class="invite-link-section">
+        <h4>{{ 'CALENDAR.INVITE_LINK' | translate }}</h4>
+        <p class="invite-link-hint">{{ 'CALENDAR.INVITE_LINK_HINT' | translate }}</p>
+
+        <button class="btn-secondary" *ngIf="!inviteLinkUrl" [disabled]="inviteLinkLoading" (click)="generateInviteLink()">
+          {{ 'CALENDAR.GENERATE_INVITE_LINK' | translate }}
+        </button>
+
+        <div class="invite-link-display" *ngIf="inviteLinkUrl">
+          <img *ngIf="inviteQrDataUrl" [src]="inviteQrDataUrl" class="invite-qr" alt="QR code" />
+          <div class="invite-link-row">
+            <input #inviteLinkInput class="text-input" type="text" [value]="inviteLinkUrl" readonly (click)="inviteLinkInput.select()" />
+            <button class="btn-tiny" (click)="copyInviteLink()">{{ (inviteLinkCopied ? 'CALENDAR.COPIED' : 'CALENDAR.COPY') | translate }}</button>
+          </div>
+          <button class="btn-secondary danger-text" [disabled]="inviteLinkLoading" (click)="regenerateInviteLink()">
+            {{ 'CALENDAR.REGENERATE_INVITE_LINK' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="closeMembersModal()">{{ 'CALENDAR.CLOSE' | translate }}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Event create/edit modal ══ -->
+  <div class="modal-overlay" *ngIf="showEventModal" (click)="closeEventModal()">
+    <div class="modal-box event-modal" (click)="$event.stopPropagation()">
+      <h3>{{ (editingEvent ? 'CALENDAR.EDIT_EVENT' : 'CALENDAR.ADD_EVENT') | translate }}</h3>
+
+      <label class="field-label">{{ 'CALENDAR.GROUP' | translate }}</label>
+      <select class="text-input" [(ngModel)]="eventForm.calendarGroupId">
+        <option *ngFor="let g of manageableGroups" [value]="g.id">{{ g.name }}</option>
+      </select>
+
+      <label class="field-label">{{ 'CALENDAR.EVENT_TITLE' | translate }}</label>
+      <input class="text-input" type="text" [(ngModel)]="eventForm.title" [placeholder]="'CALENDAR.EVENT_TITLE_PLACEHOLDER' | translate" />
+
+      <label class="field-label">{{ 'CALENDAR.DESCRIPTION' | translate }}</label>
+      <textarea class="text-input" rows="3" [(ngModel)]="eventForm.description"></textarea>
+
+      <div class="datetime-row">
+        <div>
+          <label class="field-label">{{ 'CALENDAR.START' | translate }}</label>
+          <div class="datetime-controls">
+            <input class="text-input" type="date" [(ngModel)]="eventForm.startDate" />
+            <input class="text-input" type="time" [(ngModel)]="eventForm.startTimeOfDay" />
+          </div>
+        </div>
+        <div>
+          <label class="field-label">{{ 'CALENDAR.END_OPTIONAL' | translate }}</label>
+          <div class="datetime-controls">
+            <input class="text-input" type="date" [(ngModel)]="eventForm.endDate" />
+            <input class="text-input" type="time" [(ngModel)]="eventForm.endTimeOfDay" />
+          </div>
+        </div>
+      </div>
+
+      <label class="field-label">{{ 'CALENDAR.LINK_TO' | translate }}</label>
+      <div class="link-row" *ngFor="let link of eventForm.links; let i = index">
+        <select class="text-input" [(ngModel)]="link.linkType" (change)="onLinkTypeChange(i)">
+          <option value="">{{ 'CALENDAR.LINK_NONE' | translate }}</option>
+          <option value="TEST">{{ 'CALENDAR.LINK_TEST' | translate }}</option>
+          <option value="CROSSWORD">{{ 'CALENDAR.LINK_CROSSWORD' | translate }}</option>
+        </select>
+        <select class="text-input" *ngIf="link.linkType" [(ngModel)]="link.linkId">
+          <option value="" disabled>{{ 'CALENDAR.SELECT_RESOURCE' | translate }}</option>
+          <option *ngFor="let opt of linkOptionsFor(link.linkType)" [value]="opt.id">{{ opt.name }}</option>
+        </select>
+        <button type="button" class="btn-tiny danger" (click)="removeEventLink(i)">✕</button>
+      </div>
+      <button type="button" class="btn-secondary add-link-btn" (click)="addEventLink()">
+        + {{ 'CALENDAR.ADD_LINK' | translate }}
+      </button>
+
+      <div class="modal-actions">
+        <button class="btn-danger" *ngIf="editingEvent" (click)="deleteEvent()">{{ 'CALENDAR.DELETE' | translate }}</button>
+        <span class="spacer"></span>
+        <button class="btn-secondary" (click)="closeEventModal()">{{ 'CALENDAR.CANCEL' | translate }}</button>
+        <button class="btn-primary" [disabled]="!eventForm.title.trim() || !eventForm.startDate || eventSaving" (click)="saveEvent()">
+          {{ eventSaving ? ('CALENDAR.SAVING' | translate) : ('CALENDAR.SAVE' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Day context menu ══ -->
+  <ul class="context-menu" *ngIf="contextMenu"
+      [style.left.px]="contextMenu.x" [style.top.px]="contextMenu.y"
+      (click)="$event.stopPropagation()" (contextmenu)="$event.preventDefault(); $event.stopPropagation()">
+    <li (click)="contextMenuAddNew()">{{ 'CALENDAR.ADD_NEW' | translate }}</li>
+  </ul>
+
+</div>

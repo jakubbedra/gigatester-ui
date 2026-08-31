@@ -13,10 +13,19 @@
   <nav class="menu">
     <ul>
       <li class="home-link-item">
+        <a routerLink="/admin/inbox" class="home-link">
+          📬 {{ 'SIDEBAR.INBOX' | translate }}
+          <span class="inbox-badge" *ngIf="pendingCount > 0">{{ pendingCount }}</span>
+        </a>
+      </li>
+      <li class="home-link-item">
         <a routerLink="/home" class="home-link">🏠 {{ 'SIDEBAR.HOME' | translate }}</a>
       </li>
       <li class="home-link-item">
         <a routerLink="/metrics" class="home-link">📊 {{ 'SIDEBAR.METRICS' | translate }}</a>
+      </li>
+      <li class="home-link-item">
+        <a routerLink="/calendar" class="home-link">📅 {{ 'SIDEBAR.CALENDAR' | translate }}</a>
       </li>
       <li class="admin-links" *ngIf="isModerator">
         <span class="admin-link" (click)="navigateToSubjectGroups($event)">{{ 'SIDEBAR.GROUPS' | translate }}</span>
@@ -26,10 +35,6 @@
         <span class="admin-link" *ngIf="isAdmin" (click)="navigateToUsers()">{{ 'SIDEBAR.USERS' | translate }}</span>
         <span class="admin-link" *ngIf="isAdmin" (click)="navigateToRoles()">{{ 'SIDEBAR.ROLES' | translate }}</span>
         <span class="admin-link" routerLink="/admin/ai-generator">✨ {{ 'SIDEBAR.AI_GENERATOR' | translate }}</span>
-        <span class="admin-link inbox-link" routerLink="/admin/inbox">
-          📬 {{ 'SIDEBAR.INBOX' | translate }}
-          <span class="inbox-badge" *ngIf="pendingCount > 0">{{ pendingCount }}</span>
-        </span>
       </li>
 
       <li *ngIf="showFavouritesTab && favourites.length > 0">

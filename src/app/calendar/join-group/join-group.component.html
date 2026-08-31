@@ -1,0 +1,36 @@
+<div class="join-page">
+  <div class="join-card" *ngIf="!loading">
+    <ng-container *ngIf="!error">
+      <h2>{{ 'CALENDAR.JOIN_GROUP_TITLE' | translate }}</h2>
+
+      <ng-container *ngIf="!joined">
+        <p class="join-prompt">
+          {{ 'CALENDAR.JOIN_GROUP_PROMPT' | translate }}
+          <strong>{{ preview?.groupName }}</strong>
+          {{ 'CALENDAR.JOIN_GROUP_BY' | translate }}
+          <strong>{{ preview?.ownerUsername }}</strong>.
+        </p>
+
+        <p class="already-member" *ngIf="preview?.alreadyMember">{{ 'CALENDAR.JOIN_GROUP_ALREADY' | translate }}</p>
+
+        <button class="btn-primary" *ngIf="!preview?.alreadyMember" [disabled]="joining" (click)="join()">
+          {{ 'CALENDAR.JOIN_GROUP_BUTTON' | translate }}
+        </button>
+        <button class="btn-primary" *ngIf="preview?.alreadyMember" (click)="goToCalendar()">
+          {{ 'CALENDAR.JOIN_GROUP_GO_TO_CALENDAR' | translate }}
+        </button>
+      </ng-container>
+
+      <ng-container *ngIf="joined">
+        <p class="join-success">✅ {{ 'CALENDAR.JOIN_GROUP_SUCCESS' | translate }} <strong>{{ preview?.groupName }}</strong>.</p>
+        <button class="btn-primary" (click)="goToCalendar()">{{ 'CALENDAR.JOIN_GROUP_GO_TO_CALENDAR' | translate }}</button>
+      </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="error">
+      <h2>{{ 'CALENDAR.JOIN_GROUP_TITLE' | translate }}</h2>
+      <p class="join-error">⚠️ {{ 'CALENDAR.JOIN_GROUP_INVALID' | translate }}</p>
+      <button class="btn-primary" (click)="goToCalendar()">{{ 'CALENDAR.JOIN_GROUP_GO_TO_CALENDAR' | translate }}</button>
+    </ng-container>
+  </div>
+</div>

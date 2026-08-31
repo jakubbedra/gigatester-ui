@@ -1,0 +1,41 @@
+.join-page {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.join-card {
+  background: var(--c-181818);
+  border: 1px solid var(--c-2a2a2a);
+  border-radius: 14px;
+  padding: 32px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+}
+
+.join-card h2 {
+  margin: 0 0 16px;
+}
+
+.join-prompt {
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.already-member {
+  color: var(--c-999);
+  margin-bottom: 16px;
+}
+
+.join-success {
+  color: #4caf7d;
+  margin-bottom: 20px;
+}
+
+.join-error {
+  color: #f05050;
+  margin-bottom: 20px;
+}

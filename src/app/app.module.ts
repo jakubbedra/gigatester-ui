@@ -44,6 +44,8 @@ import { LatexPipe } from './pipes/latex.pipe';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { CrosswordMultiplayerPlayComponent } from './crosswords/crossword-multiplayer-play/crossword-multiplayer-play.component';
 import { CrosswordTestRunComponent } from './crosswords/crossword-test-run/crossword-test-run.component';
+import { CalendarComponent } from './calendar/calendar.component';
+import { JoinGroupComponent } from './calendar/join-group/join-group.component';
 
 @NgModule({
   declarations: [
@@ -78,6 +80,8 @@ import { CrosswordTestRunComponent } from './crosswords/crossword-test-run/cross
     UserProfileComponent,
     CrosswordMultiplayerPlayComponent,
     CrosswordTestRunComponent,
+    CalendarComponent,
+    JoinGroupComponent,
   ],
   imports: [
     BrowserModule,

@@ -6,17 +6,21 @@
 
   <!-- Tab navigation -->
   <div class="tabs">
-    <button class="tab-btn" [class.active]="activeTab === 'access'" (click)="setTab('access')">
+    <button class="tab-btn" *ngIf="isStaff" [class.active]="activeTab === 'access'" (click)="setTab('access')">
       {{ 'INBOX.TAB_ACCESS' | translate }}
       <span class="tab-count" *ngIf="pendingRequests.length > 0">{{ pendingRequests.length }}</span>
     </button>
-    <button class="tab-btn" [class.active]="activeTab === 'reports'" (click)="setTab('reports')">
+    <button class="tab-btn" *ngIf="isStaff" [class.active]="activeTab === 'reports'" (click)="setTab('reports')">
       {{ 'INBOX.TAB_REPORTS' | translate }}
       <span class="tab-count" *ngIf="pendingReports.length > 0">{{ pendingReports.length }}</span>
     </button>
     <button class="tab-btn" [class.active]="activeTab === 'notifications'" (click)="setTab('notifications')">
       {{ 'INBOX.TAB_NOTIFICATIONS' | translate }}
       <span class="tab-count" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'invites'" (click)="setTab('invites')">
+      {{ 'INBOX.TAB_INVITES' | translate }}
+      <span class="tab-count" *ngIf="invites.length > 0">{{ invites.length }}</span>
     </button>
   </div>
 
@@ -169,6 +173,40 @@
           </div>
         </div>
       </ng-container>
+    </ng-container>
+
+    <!-- ── Calendar Invites tab ── -->
+    <ng-container *ngIf="activeTab === 'invites'">
+      <div class="empty-state" *ngIf="invites.length === 0">
+        <span class="empty-icon">📅</span>
+        <p>{{ 'INBOX.NO_INVITES' | translate }}</p>
+      </div>
+
+      <div class="table-wrap" *ngIf="invites.length > 0">
+        <table>
+          <thead>
+            <tr>
+              <th>{{ 'INBOX.GROUP' | translate }}</th>
+              <th>{{ 'INBOX.INVITED_BY' | translate }}</th>
+              <th class="actions-col">{{ 'INBOX.ACTIONS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let invite of invites">
+              <td><span class="group-badge">{{ invite.groupName }}</span></td>
+              <td class="username-cell">{{ invite.ownerUsername }}</td>
+              <td class="actions-cell">
+                <button class="btn-approve" [disabled]="inviteActionInProgress === invite.id" (click)="acceptInvite(invite)">
+                  {{ 'INBOX.ACCEPT' | translate }}
+                </button>
+                <button class="btn-deny" [disabled]="inviteActionInProgress === invite.id" (click)="declineInvite(invite)">
+                  {{ 'INBOX.DECLINE' | translate }}
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </ng-container>
 
   </ng-container>

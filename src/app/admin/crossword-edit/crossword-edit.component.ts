@@ -145,7 +145,7 @@ export class CrosswordEditComponent implements OnInit {
     });
   }
 
-  private persist() {
+  private persist(focusTerm?: string) {
     this.saving = true;
     this.crosswordService.updateCrossword(this.id, {
       name: this.crosswordName.trim(),
@@ -156,17 +156,37 @@ export class CrosswordEditComponent implements OnInit {
         tagIds: (t.tags ?? []).map(tag => tag.id)
       }))
     }).subscribe({
-      next: () => { this.saving = false; },
+      next: () => { this.saving = false; this.reloadTerms(focusTerm); },
       error: () => { this.saving = false; }
+    });
+  }
+
+  /**
+   * Re-fetches the crossword after a save so the list always reflects what the
+   * server actually persisted, rather than the client's optimistic local copy.
+   * The backend doesn't guarantee term order, so without this a term could look
+   * "missing" after a page reload simply because it landed on a different page.
+   * When `focusTerm` is given (the term text just added/edited), the filter box
+   * is set to it so it's immediately visible regardless of where it landed.
+   */
+  private reloadTerms(focusTerm?: string) {
+    this.crosswordService.getCrossword(this.id).subscribe(cw => {
+      this.terms = cw.terms.map(t => ({ ...t, tags: t.tags ?? [] }));
+      if (focusTerm?.trim()) {
+        this.filterText = focusTerm.trim();
+        this.filterIn = 'term';
+      }
+      this.currentPage = 0;
     });
   }
 
   save() {
     if (!this.crosswordName.trim()) return;
+    const savedTerm = this.editDraft?.term;
     if (this.editingIndex !== null && this.editDraft) {
       this.applyDraft();
     }
-    this.persist();
+    this.persist(savedTerm);
   }
 
   openEdit(index: number) {
@@ -188,8 +208,9 @@ export class CrosswordEditComponent implements OnInit {
   }
 
   confirmEdit() {
+    const savedTerm = this.editDraft?.term;
     this.applyDraft();
-    this.persist();
+    this.persist(savedTerm);
   }
 
   cancelEdit() {
