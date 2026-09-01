@@ -3,6 +3,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { registerLocaleData } from '@angular/common';
+import localePl from '@angular/common/locales/pl';
+
+// Registered once at module load so `date` pipes can render Polish month/day
+// names when passed the 'pl' locale explicitly (Angular's default LOCALE_ID
+// stays 'en-US' — this only makes the 'pl' data available on request).
+registerLocaleData(localePl, 'pl');
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
