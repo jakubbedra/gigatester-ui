@@ -145,7 +145,7 @@ export class CrosswordEditComponent implements OnInit {
     });
   }
 
-  private persist(focusTerm?: string) {
+  private persist() {
     this.saving = true;
     this.crosswordService.updateCrossword(this.id, {
       name: this.crosswordName.trim(),
@@ -156,7 +156,7 @@ export class CrosswordEditComponent implements OnInit {
         tagIds: (t.tags ?? []).map(tag => tag.id)
       }))
     }).subscribe({
-      next: () => { this.saving = false; this.reloadTerms(focusTerm); },
+      next: () => { this.saving = false; this.reloadTerms(); },
       error: () => { this.saving = false; }
     });
   }
@@ -166,27 +166,20 @@ export class CrosswordEditComponent implements OnInit {
    * server actually persisted, rather than the client's optimistic local copy.
    * The backend doesn't guarantee term order, so without this a term could look
    * "missing" after a page reload simply because it landed on a different page.
-   * When `focusTerm` is given (the term text just added/edited), the filter box
-   * is set to it so it's immediately visible regardless of where it landed.
    */
-  private reloadTerms(focusTerm?: string) {
+  private reloadTerms() {
     this.crosswordService.getCrossword(this.id).subscribe(cw => {
       this.terms = cw.terms.map(t => ({ ...t, tags: t.tags ?? [] }));
-      if (focusTerm?.trim()) {
-        this.filterText = focusTerm.trim();
-        this.filterIn = 'term';
-      }
-      this.currentPage = 0;
+      this.currentPage = Math.min(this.currentPage, this.totalPages - 1);
     });
   }
 
   save() {
     if (!this.crosswordName.trim()) return;
-    const savedTerm = this.editDraft?.term;
     if (this.editingIndex !== null && this.editDraft) {
       this.applyDraft();
     }
-    this.persist(savedTerm);
+    this.persist();
   }
 
   openEdit(index: number) {
@@ -208,9 +201,8 @@ export class CrosswordEditComponent implements OnInit {
   }
 
   confirmEdit() {
-    const savedTerm = this.editDraft?.term;
     this.applyDraft();
-    this.persist(savedTerm);
+    this.persist();
   }
 
   cancelEdit() {

@@ -11,6 +11,7 @@ import { TestService } from '../service/test.service';
 import { CrosswordService } from '../service/crossword.service';
 import { PermissionService } from '../service/permission.service';
 import { ToastService } from '../service/toast.service';
+import { LanguageService } from '../service/language.service';
 import { TestSummaryResponse, CrosswordSummaryResponse } from '../models/models.d';
 import * as QRCode from 'qrcode';
 
@@ -85,8 +86,14 @@ export class CalendarComponent implements OnInit {
     private crosswordService: CrosswordService,
     public permissionService: PermissionService,
     private toastService: ToastService,
-    private router: Router
+    private router: Router,
+    public lang: LanguageService
   ) {}
+
+  /** Locale for `date` pipes — Angular's DatePipe needs an exact registered locale id, not just the app's 'pl'/'en' language code. */
+  get dateLocale(): string {
+    return this.lang.current() === 'pl' ? 'pl' : 'en-US';
+  }
 
   ngOnInit() {
     this.loadGroups();

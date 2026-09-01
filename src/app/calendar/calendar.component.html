@@ -34,7 +34,7 @@
       <!-- ── Day events panel ── -->
       <div class="day-events-panel" *ngIf="dayEventsDate">
         <div class="day-events-panel-header">
-          <h3>{{ dayEventsDate | date:'fullDate' }}</h3>
+          <h3>{{ dayEventsDate | date:'fullDate':undefined:dateLocale }}</h3>
           <button type="button" class="btn-icon" (click)="closeDayEventsPanel()" title="Close">✕</button>
         </div>
 
@@ -52,8 +52,8 @@
 
             <div class="day-event-details" *ngIf="expandedEventId === e.id">
               <div class="detail-time">
-                {{ e.startTime | date:'shortTime' }}
-                <ng-container *ngIf="e.endTime"> – {{ e.endTime | date:'shortTime' }}</ng-container>
+                {{ e.startTime | date:'shortTime':undefined:dateLocale }}
+                <ng-container *ngIf="e.endTime"> – {{ e.endTime | date:'shortTime':undefined:dateLocale }}</ng-container>
               </div>
               <p class="detail-description" *ngIf="e.description">{{ e.description }}</p>
               <p class="detail-description empty-hint" *ngIf="!e.description">{{ 'CALENDAR.NO_DESCRIPTION' | translate }}</p>
