@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CdkDragEnd, CdkDragMove } from '@angular/cdk/drag-drop';
+import { CdkDragEnd, CdkDragMove, CdkDragStart, DragRef, Point } from '@angular/cdk/drag-drop';
 import { CrosswordStateClueResponse, CrosswordStateResponse } from '../../models/models.d';
 import { CrosswordStateService } from '../../service/crossword-state.service';
 import { CrosswordStateUpdateRequest } from '../../models/models.d';
@@ -44,6 +44,13 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
   placedCount = 0;
   isDragging = false;
   hoveredCell: string | null = null;
+  /** Only true while the in-progress drag was started by touch — lets a mouse drag stay 1:1 with the cursor. */
+  isTouchDrag = false;
+  /**
+   * On touch, the tile is rendered this many px above the finger while dragging so it
+   * doesn't sit under the fingertip, blocking the view of the cell it's about to land on.
+   */
+  private readonly touchDragLiftPx = 56;
   cellSize = 38;
   mobileCellSize = 32;
   isSubmitting = false;
@@ -200,13 +207,23 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
     return result;
   }
 
-  onDragStarted() {
+  onDragStarted(event: CdkDragStart) {
     this.isDragging = true;
     this.hoveredCell = null;
+    this.isTouchDrag = typeof TouchEvent !== 'undefined' && event.event instanceof TouchEvent;
+  }
+
+  /** Renders the dragged tile lifted above the finger on touch, so it doesn't hide the target cell underneath it. */
+  dragConstrainPosition = (point: Point, _dragRef: DragRef, _dimensions: ClientRect, _pickupPositionInElement: Point): Point => {
+    return this.isTouchDrag ? { x: point.x, y: point.y - this.touchDragLiftPx } : point;
+  };
+
+  private liftedY(y: number): number {
+    return this.isTouchDrag ? y - this.touchDragLiftPx : y;
   }
 
   onDragMoved(event: CdkDragMove) {
-    const target = document.elementFromPoint(event.pointerPosition.x, event.pointerPosition.y) as HTMLElement | null;
+    const target = document.elementFromPoint(event.pointerPosition.x, this.liftedY(event.pointerPosition.y)) as HTMLElement | null;
     const cellEl = target?.closest<HTMLElement>('[data-cell-row]');
     if (cellEl) {
       const row = parseInt(cellEl.dataset['cellRow']!);
@@ -225,7 +242,7 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
 
     const el = event.source.element.nativeElement as HTMLElement;
     el.style.visibility = 'hidden';
-    const target = document.elementFromPoint(event.dropPoint.x, event.dropPoint.y) as HTMLElement | null;
+    const target = document.elementFromPoint(event.dropPoint.x, this.liftedY(event.dropPoint.y)) as HTMLElement | null;
     el.style.visibility = '';
 
     const cellEl = target?.closest<HTMLElement>('[data-cell-row]');

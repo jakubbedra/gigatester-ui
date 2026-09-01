@@ -93,7 +93,8 @@
                  [class.empty-slot]="letter === ''"
                  cdkDrag
                  [cdkDragDisabled]="letter === ''"
-                 (cdkDragStarted)="onDragStarted()"
+                 [cdkDragConstrainPosition]="dragConstrainPosition"
+                 (cdkDragStarted)="onDragStarted($event)"
                  (cdkDragMoved)="onDragMoved($event)"
                  (cdkDragEnded)="onDrop($event, letter, i)">
               <span *ngIf="letter !== ''">{{ letter }}</span>

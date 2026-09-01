@@ -107,7 +107,8 @@
                 <div *ngIf="letter"
                      cdkDrag
                      [cdkDragDisabled]="isSubmitting"
-                     (cdkDragStarted)="onDragStarted()"
+                     [cdkDragConstrainPosition]="dragConstrainPosition"
+                     (cdkDragStarted)="onDragStarted($event)"
                      (cdkDragMoved)="onDragMoved($event)"
                      (cdkDragEnded)="onDrop($event, letter, i)"
                      class="letter-tile">
