@@ -238,8 +238,33 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
 
   onDrop(event: CdkDragEnd, letter: string, handIndex: number) {
     this.isDragging = false;
+    // Capture before clearing — hoveredCell is the most reliable indicator on mobile
+    // because elementFromPoint can be blocked by the CDK drag preview still in the DOM.
+    const targetCell = this.hoveredCell;
     this.hoveredCell = null;
 
+    const tryPlace = (row: number, col: number): boolean => {
+      const key = `${row},${col}`;
+      if (this.state.currentGrid[row * this.state.width + col] === '_' && !this.placedLetters.has(key)) {
+        this.placedLetters.set(key, { letter, handIndex });
+        this.placedCount++;
+        this.handLetters = this.handLetters.map((l, i) => i === handIndex ? '' : l);
+        return true;
+      }
+      return false;
+    };
+
+    // Primary path: use cell tracked during drag moves (works on both mouse and touch).
+    if (targetCell) {
+      const [row, col] = targetCell.split(',').map(Number);
+      if (tryPlace(row, col)) {
+        event.source._dragRef.reset();
+        return;
+      }
+    }
+
+    // Fallback: re-derive from the drop point coordinates (covers rapid drops where
+    // onDragMoved didn't fire for the final frame).
     const el = event.source.element.nativeElement as HTMLElement;
     el.style.visibility = 'hidden';
     const target = document.elementFromPoint(event.dropPoint.x, this.liftedY(event.dropPoint.y)) as HTMLElement | null;
@@ -249,14 +274,7 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
     if (cellEl) {
       const row = parseInt(cellEl.dataset['cellRow']!);
       const col = parseInt(cellEl.dataset['cellCol']!);
-      const key = `${row},${col}`;
-      const gridChar = this.state.currentGrid[row * this.state.width + col];
-      const alreadyPlaced = this.placedLetters.has(key);
-
-      if (gridChar === '_' && !alreadyPlaced) {
-        this.placedLetters.set(key, { letter, handIndex });
-        this.placedCount++;
-        this.handLetters = this.handLetters.map((l, i) => i === handIndex ? '' : l);
+      if (tryPlace(row, col)) {
         event.source._dragRef.reset();
         return;
       }
