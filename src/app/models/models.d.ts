@@ -86,6 +86,7 @@ export interface QuestionsResponse {
 export type ClueType = 'TEXT' | 'URL';
 
 export interface CrosswordTermRequest {
+    id?: string | null;
     term: string;
     clue: string;
     clueType: ClueType;

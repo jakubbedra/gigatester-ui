@@ -150,6 +150,7 @@ export class CrosswordEditComponent implements OnInit {
     this.crosswordService.updateCrossword(this.id, {
       name: this.crosswordName.trim(),
       terms: this.terms.map(t => ({
+        id: t.id || null,
         term: t.term,
         clue: t.clue,
         clueType: t.clueType,
