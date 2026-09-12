@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Subject, from, of } from 'rxjs';
-import { debounceTime, distinctUntilChanged, concatMap, toArray, catchError, delay } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { TestService } from '../../service/test.service';
 import { QuestionsService } from '../../service/question.service';
 import { ImageService } from '../../service/image.service';
@@ -452,30 +452,27 @@ export class TestEditComponent implements OnInit {
     }
 
     this.bulkImporting = true;
-    const failures: { index: number; message: string }[] = [];
 
-    from(parsed).pipe(
-      concatMap((q: any, i: number) =>
-        this.questionsService.addQuestion(q).pipe(
-          delay(150), // a small gap between requests — a tight burst of identical POSTs can trip a host's abuse/rate-limit protection
-          catchError(err => {
-            failures.push({ index: i, message: this.extractHttpErrorMessage(err) });
-            return of(null);
-          })
-        )
-      ),
-      toArray()
-    ).subscribe((results: any[]) => {
-      const newIds = results.filter(r => r != null).map(r => r.id ?? r);
-      this.bulkImporting = false;
-      this.bulkResult = { successCount: newIds.length, failures };
+    // One request for the whole batch instead of N sequential POSTs — besides being
+    // simpler, a tight burst of near-identical requests was tripping Railway's edge
+    // abuse/rate-limit protection (a bare 403 with an empty body, from "railway-hikari",
+    // never reaching the app) even though each request was individually valid.
+    this.questionsService.addQuestions(parsed).subscribe({
+      next: (res) => {
+        this.bulkImporting = false;
+        this.bulkResult = { successCount: res.createdIds.length, failures: res.failures };
 
-      if (newIds.length === 0 || !this.test) return;
-      this.test.questions = [...newIds, ...this.test.questions];
-      this.testService.updateTest(this.test.id, this.buildTestRequest(this.test.questions)).subscribe(() => {
-        this.page = 0;
-        this.loadPage();
-      });
+        if (res.createdIds.length === 0 || !this.test) return;
+        this.test.questions = [...res.createdIds, ...this.test.questions];
+        this.testService.updateTest(this.test.id, this.buildTestRequest(this.test.questions)).subscribe(() => {
+          this.page = 0;
+          this.loadPage();
+        });
+      },
+      error: (err) => {
+        this.bulkImporting = false;
+        this.bulkError = this.extractHttpErrorMessage(err);
+      }
     });
   }
 

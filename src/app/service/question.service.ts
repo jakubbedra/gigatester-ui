@@ -4,6 +4,11 @@ import { Observable } from 'rxjs';
 import {ClosedQuestionDto, OpenQuestionDto, QuestionDto} from '../models/models.d';
 import {Environment} from "../../../environment";
 
+export interface BulkAddQuestionsResponse {
+  createdIds: string[];
+  failures: { index: number; message: string }[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class QuestionsService {
 
@@ -13,6 +18,11 @@ export class QuestionsService {
 
   addQuestion(q: QuestionDto): Observable<any> {
     return this.http.post(this.baseUrl, q);
+  }
+
+  /** One request for the whole batch — every question is attempted independently server-side. */
+  addQuestions(questions: QuestionDto[]): Observable<BulkAddQuestionsResponse> {
+    return this.http.post<BulkAddQuestionsResponse>(`${this.baseUrl}/bulk`, { questions });
   }
 
   getQuestions(): Observable<QuestionDto[]> {
