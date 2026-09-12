@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subject, from, of } from 'rxjs';
-import { debounceTime, distinctUntilChanged, concatMap, toArray, catchError } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, concatMap, toArray, catchError, delay } from 'rxjs/operators';
 import { TestService } from '../../service/test.service';
 import { QuestionsService } from '../../service/question.service';
 import { ImageService } from '../../service/image.service';
@@ -457,11 +457,9 @@ export class TestEditComponent implements OnInit {
     from(parsed).pipe(
       concatMap((q: any, i: number) =>
         this.questionsService.addQuestion(q).pipe(
+          delay(150), // a small gap between requests — a tight burst of identical POSTs can trip a host's abuse/rate-limit protection
           catchError(err => {
-            failures.push({
-              index: i,
-              message: err?.error?.message || err?.message || `HTTP ${err?.status ?? '?'}`
-            });
+            failures.push({ index: i, message: this.extractHttpErrorMessage(err) });
             return of(null);
           })
         )
@@ -479,6 +477,23 @@ export class TestEditComponent implements OnInit {
         this.loadPage();
       });
     });
+  }
+
+  /**
+   * Pulls the most useful message out of an HttpErrorResponse. `err.error` can be our
+   * own JSON error body, plain text, or (e.g. from a host-level block/WAF page in front
+   * of the API) an HTML document — in which case Angular's generic err.message ("Http
+   * failure response for ...") tells you nothing, so surface a snippet of the real body.
+   */
+  private extractHttpErrorMessage(err: any): string {
+    const body = err?.error;
+    if (typeof body === 'string' && body.trim()) {
+      const stripped = body.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+      return `HTTP ${err?.status ?? '?'}: ${stripped.slice(0, 200)}`;
+    }
+    if (body?.message) return `HTTP ${err?.status ?? '?'}: ${body.message}`;
+    if (body?.error) return `HTTP ${err?.status ?? '?'}: ${body.error}`;
+    return err?.message || `HTTP ${err?.status ?? '?'}`;
   }
 
   // ── View question JSON ─────────────────────────────────────────────────────
