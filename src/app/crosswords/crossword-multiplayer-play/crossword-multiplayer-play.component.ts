@@ -55,6 +55,10 @@ export class CrosswordMultiplayerPlayComponent implements OnInit, AfterViewInit,
   flashDelay = new Map<string, number>();
   wordToasts: { word: string; points: number }[] = [];
 
+  // ── Word Duel mode ──
+  wordGuess = '';
+  guessResult: { correct: boolean; word: string; points: number } | null = null;
+
   showWinner = false;
 
   @ViewChild('gridScroll') gridScrollEl!: ElementRef<HTMLElement>;
@@ -79,6 +83,7 @@ export class CrosswordMultiplayerPlayComponent implements OnInit, AfterViewInit,
   get isFinished(): boolean { return this.session?.status === 'FINISHED'; }
   get isWaiting(): boolean { return this.session?.status === 'WAITING_FOR_PLAYER'; }
   get isComplete(): boolean { return !!this.session && !this.session.currentGrid.includes('_'); }
+  get isWordsMode(): boolean { return this.session?.mode === 'WORDS'; }
 
   get inviteLink(): string {
     return `${window.location.origin}/crosswords/sessions/${this.sessionId}`;
@@ -459,6 +464,14 @@ export class CrosswordMultiplayerPlayComponent implements OnInit, AfterViewInit,
     }
     this.across = across.sort((a, b) => a.number - b.number);
     this.down = down.sort((a, b) => a.number - b.number);
+
+    // Keep the selected clue pointing at the freshly-built entry so its `solved`
+    // flag stays current as the session polls (Word Duel mode).
+    if (this.selectedClue) {
+      const sel = this.selectedClue;
+      this.selectedClue = [...this.across, ...this.down].find(e =>
+        e.number === sel.number && e.clue.direction === sel.clue.direction) ?? null;
+    }
   }
 
   private wordLength(clue: CrosswordStateClueResponse): number {
@@ -474,12 +487,48 @@ export class CrosswordMultiplayerPlayComponent implements OnInit, AfterViewInit,
 
   selectClue(entry: MpClue) {
     this.selectedClue = entry;
+    this.wordGuess = '';
+    this.guessResult = null;
     this.highlightedCells.clear();
     let r = entry.clue.row, c = entry.clue.column;
     for (let i = 0; i < entry.length; i++) {
       this.highlightedCells.add(`${r},${c}`);
       if (entry.clue.direction === 'ACROSS') c++; else r++;
     }
+  }
+
+  submitWord() {
+    if (this.isSubmitting || !this.isMyTurn || !this.selectedClue) return;
+    const word = this.wordGuess.trim();
+    if (!word || this.selectedClue.clue.solved) return;
+    const termId = this.selectedClue.clue.id;
+
+    this.isSubmitting = true;
+    this.guessResult = null;
+    this.stopPolling();
+    this.multiplayerService.submitWord(this.sessionId, { termId, word }).subscribe({
+      next: (session) => {
+        this.isSubmitting = false;
+        const correct = !!session.lastGuessCorrect;
+        this.guessResult = {
+          correct,
+          word: session.lastGuessWord ?? word,
+          points: session.lastGuessPoints ?? 0
+        };
+        if (correct) {
+          this.sound.playWordComplete();
+          this.wordToasts = [{ word: this.guessResult.word, points: this.guessResult.points }];
+          setTimeout(() => { this.wordToasts = []; }, 2500);
+        }
+        this.wordGuess = '';
+        this.selectedClue = null;
+        this.highlightedCells.clear();
+        this.applySession(session);
+        if (session.status !== 'FINISHED') this.startPolling();
+        setTimeout(() => { this.guessResult = null; }, 4000);
+      },
+      error: () => { this.isSubmitting = false; this.startPolling(); }
+    });
   }
 
   isActive(entry: MpClue): boolean {

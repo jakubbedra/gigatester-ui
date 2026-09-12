@@ -29,6 +29,7 @@ export interface ProgressResponse {
   totalTestsPassed: number;
   totalQuestionsAnswered: number;
   totalQuestionsCorrect: number;
+  totalQuestionsIncorrect: number;
   dailyStats: DailyStatDto[];
   myTests: TestSummaryForMetricsDto[];
   tagStats: TagAccuracyDto[];

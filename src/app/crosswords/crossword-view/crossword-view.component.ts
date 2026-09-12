@@ -39,6 +39,8 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
   botDifficulty: BotDifficulty = BotDifficulty.NORMAL;
 
   mode: 'singleplayer' | 'multiplayer' | 'testrun' = 'singleplayer';
+  singleplayerMode: 'LETTERS' | 'WORDS' = 'LETTERS';
+  multiplayerMode: 'LETTERS' | 'WORDS' = 'LETTERS';
   latestRun: TestRunResult | null = null;
   latestRunLoading = false;
   inProgressRun: TestRunProgress | null = null;
@@ -144,7 +146,8 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
       tagFilter: this.selectedTagIds.size > 0 ? Array.from(this.selectedTagIds) : undefined,
       tagFilterMode: this.excludeTags ? 'EXCLUDE' : 'INCLUDE',
       matchAllTags: this.matchAllTags,
-      botDifficulty: this.botDifficulty
+      botDifficulty: this.botDifficulty,
+      multiplayerMode: this.singleplayerMode
     }).subscribe({
       next: ({ jobId }) => {
         this.currentJobId = jobId;
@@ -177,7 +180,8 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
       numberOfWords: Number(this.form.value.numberOfWords),
       tagFilter: this.selectedTagIds.size > 0 ? Array.from(this.selectedTagIds) : undefined,
       tagFilterMode: this.excludeTags ? 'EXCLUDE' : 'INCLUDE',
-      matchAllTags: this.matchAllTags
+      matchAllTags: this.matchAllTags,
+      multiplayerMode: this.multiplayerMode
     }).subscribe({
       next: (session) => {
         this.creatingMultiplayer = false;
@@ -222,6 +226,9 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
             [Validators.required, Validators.min(1), Validators.max(initialCount)]
           ]
         });
+
+        this.restoreSettings();
+        this.form.get('numberOfWords')?.valueChanges.subscribe(() => this.saveSettings());
       });
 
       this.loadLatestRun();
@@ -297,14 +304,74 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
       this.selectedTagIds.add(tagId);
     }
     this.updateWordCount();
+    this.saveSettings();
   }
 
   onExcludeToggle() {
     this.updateWordCount();
+    this.saveSettings();
   }
 
   onMatchModeToggle() {
     this.updateWordCount();
+    this.saveSettings();
+  }
+
+  setBotDifficulty(d: BotDifficulty) {
+    this.botDifficulty = d;
+    this.saveSettings();
+  }
+
+  setSingleplayerMode(m: 'LETTERS' | 'WORDS') {
+    this.singleplayerMode = m;
+    this.saveSettings();
+  }
+
+  // ── Remembered settings (per crossword, in the browser) ────────────────────
+
+  private settingsKey(): string {
+    return `crossword-settings:${this.crosswordId}`;
+  }
+
+  private saveSettings() {
+    try {
+      localStorage.setItem(this.settingsKey(), JSON.stringify({
+        tagIds: Array.from(this.selectedTagIds),
+        excludeTags: this.excludeTags,
+        matchAllTags: this.matchAllTags,
+        numberOfWords: this.form?.value?.numberOfWords,
+        botDifficulty: this.botDifficulty,
+        mode: this.singleplayerMode
+      }));
+    } catch { /* private browsing / storage disabled — just skip remembering */ }
+  }
+
+  private restoreSettings() {
+    let saved: any = null;
+    try {
+      const raw = localStorage.getItem(this.settingsKey());
+      saved = raw ? JSON.parse(raw) : null;
+    } catch { /* corrupt or inaccessible — ignore, fall back to defaults */ }
+    if (!saved) return;
+
+    if (Array.isArray(saved.tagIds)) {
+      const validIds = new Set(this.allTags.map(t => t.id));
+      this.selectedTagIds = new Set(saved.tagIds.filter((id: string) => validIds.has(id)));
+    }
+    if (typeof saved.excludeTags === 'boolean') this.excludeTags = saved.excludeTags;
+    if (typeof saved.matchAllTags === 'boolean') this.matchAllTags = saved.matchAllTags;
+    if (['EASY', 'NORMAL', 'HARD', 'IMPOSSIBLE'].includes(saved.botDifficulty)) this.botDifficulty = saved.botDifficulty;
+    if (saved.mode === 'LETTERS' || saved.mode === 'WORDS') {
+      this.singleplayerMode = saved.mode;
+      this.multiplayerMode = saved.mode;
+    }
+
+    this.updateWordCount();
+    if (typeof saved.numberOfWords === 'number') {
+      const max = this.termCount;
+      const value = Math.min(Math.max(1, saved.numberOfWords), max);
+      this.form.get('numberOfWords')?.setValue(value);
+    }
   }
 
   private updateWordCount() {
@@ -328,6 +395,7 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
   submit() {
     if (this.form.invalid || this.generating) return;
 
+    this.saveSettings();
     this.generating = true;
     this.generatingError = '';
     this.generatingProgress = 0;
@@ -339,7 +407,8 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
       tagFilter: this.selectedTagIds.size > 0 ? Array.from(this.selectedTagIds) : undefined,
       tagFilterMode: this.excludeTags ? 'EXCLUDE' : 'INCLUDE',
       matchAllTags: this.matchAllTags,
-      botDifficulty: this.botDifficulty
+      botDifficulty: this.botDifficulty,
+      multiplayerMode: this.singleplayerMode
     }).subscribe({
       next: ({ jobId }) => {
         this.currentJobId = jobId;

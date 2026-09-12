@@ -80,7 +80,10 @@
   <!-- Section header -->
   <div class="section-header">
     <h2 class="section-title">{{ 'TEST_EDIT.QUESTIONS' | translate }} <span class="count">{{ totalQuestions }}</span></h2>
-    <button class="btn-add-question" (click)="openAddQuestion()">+ {{ 'TEST_EDIT.ADD_QUESTION' | translate }}</button>
+    <div class="section-header-actions">
+      <button class="btn-bulk-import" (click)="openBulkImport()">{{ '{ }' }} {{ 'TEST_EDIT.BULK_IMPORT' | translate }}</button>
+      <button class="btn-add-question" (click)="openAddQuestion()">+ {{ 'TEST_EDIT.ADD_QUESTION' | translate }}</button>
+    </div>
   </div>
 
   <!-- Search bar -->
@@ -173,6 +176,7 @@
       <div class="row-actions">
         <button class="btn-edit" (click)="openEdit(q)" [title]="'TEST_EDIT.EDIT_QUESTION' | translate">✎</button>
         <button class="btn-duplicate" (click)="duplicateQuestion(q)" title="Duplicate question">⧉</button>
+        <button class="btn-json" (click)="viewQuestionJson(q)" title="View JSON">{{ '{ }' }}</button>
         <button class="btn-remove" (click)="removeQuestion(q.id)" title="Remove from test">✕</button>
       </div>
     </div>
@@ -217,7 +221,10 @@
         {{ 'TEST_EDIT.EDIT_QUESTION' | translate }}
         <span class="type-badge" [class]="'type-' + editDraft.type.toLowerCase()">{{ editDraft.type }}</span>
       </h2>
-      <button class="btn-close" (click)="closeEdit()">✕</button>
+      <div class="modal-header-actions">
+        <button class="btn-json" (click)="viewQuestionJson(editDraft)" title="View JSON">{{ '{ }' }}</button>
+        <button class="btn-close" (click)="closeEdit()">✕</button>
+      </div>
     </div>
 
     <!-- ── Content text ── -->
@@ -632,6 +639,82 @@
       <button class="btn-primary" (click)="createQuestion()" [disabled]="addingQuestion || !addDraft?.content?.text?.trim()">
         {{ addingQuestion ? ('TEST_EDIT.UPLOADING' | translate) : ('TEST_EDIT.ADD_QUESTION_BTN' | translate) }}
       </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     BULK JSON IMPORT MODAL
+     ══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" *ngIf="showBulkImport" (click)="closeBulkImport()">
+  <div class="modal" (click)="stopPropagation($event)">
+
+    <div class="modal-header">
+      <h2 class="modal-title">{{ 'TEST_EDIT.BULK_IMPORT_TITLE' | translate }}</h2>
+      <button class="btn-close" (click)="closeBulkImport()">✕</button>
+    </div>
+
+    <p class="bulk-import-hint">{{ 'TEST_EDIT.BULK_IMPORT_HINT' | translate }}</p>
+
+    <div class="form-group">
+      <textarea rows="14" class="bulk-json-textarea" [(ngModel)]="bulkJsonText"
+                placeholder='[
+  {
+    "type": "CLOSED",
+    "content": { "type": "TEXT", "text": "..." },
+    "points": 1,
+    "multipleChoice": false,
+    "answers": [
+      { "text": "...", "correct": true, "points": 1 },
+      { "text": "...", "correct": false, "points": 0 }
+    ],
+    "tags": []
+  }
+]'></textarea>
+    </div>
+
+    <p class="bulk-error" *ngIf="bulkError">⚠ {{ bulkError }}</p>
+
+    <div class="bulk-result" *ngIf="bulkResult">
+      <p class="bulk-result-success" *ngIf="bulkResult.successCount > 0">
+        ✓ {{ bulkResult.successCount }} {{ 'TEST_EDIT.BULK_IMPORTED' | translate }}
+      </p>
+      <div class="bulk-result-failures" *ngIf="bulkResult.failures.length > 0">
+        <p class="bulk-result-failures-title">✕ {{ bulkResult.failures.length }} {{ 'TEST_EDIT.BULK_FAILED' | translate }}</p>
+        <div class="bulk-failure-row" *ngFor="let f of bulkResult.failures">
+          <span class="bulk-failure-index">#{{ f.index + 1 }}</span>
+          <span class="bulk-failure-message">{{ f.message }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="closeBulkImport()">{{ 'TEST_EDIT.CANCEL' | translate }}</button>
+      <button class="btn-primary" (click)="importBulkJson()" [disabled]="bulkImporting || !bulkJsonText.trim()">
+        {{ bulkImporting ? ('TEST_EDIT.UPLOADING' | translate) : ('TEST_EDIT.BULK_IMPORT_BTN' | translate) }}
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     VIEW JSON MODAL
+     ══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" *ngIf="viewingJson" (click)="closeJsonView()">
+  <div class="modal" (click)="stopPropagation($event)">
+
+    <div class="modal-header">
+      <h2 class="modal-title">{{ 'TEST_EDIT.QUESTION_JSON' | translate }}</h2>
+      <button class="btn-close" (click)="closeJsonView()">✕</button>
+    </div>
+
+    <pre class="json-view">{{ viewingJson }}</pre>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="copyJson()">{{ (jsonCopied ? 'TEST_EDIT.COPIED' : 'TEST_EDIT.COPY') | translate }}</button>
+      <button class="btn-primary" (click)="closeJsonView()">{{ 'TEST_EDIT.CLOSE' | translate }}</button>
     </div>
   </div>
 </div>

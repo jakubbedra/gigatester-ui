@@ -138,6 +138,23 @@ export interface CrosswordStateRequest {
     termIdFilter?: string[];
     botDifficulty?: BotDifficulty;
     matchAllTags?: boolean;
+    /** "LETTERS" (default) or "WORDS" (Word Duel) — applies to both singleplayer and multiplayer. */
+    multiplayerMode?: 'LETTERS' | 'WORDS';
+}
+
+export interface SubmitWordRequest {
+    termId: string;
+    word: string;
+}
+
+export interface WordTurnResultResponse {
+    humanCorrect: boolean;
+    humanWord: string | null;
+    humanPoints: number;
+    botAttempted: boolean;
+    botCorrect: boolean;
+    botWord: string | null;
+    botPoints: number;
 }
 
 export interface CrosswordLetterRequest {
@@ -165,6 +182,7 @@ export interface CrosswordStateClueResponse {
     row: number;
     column: number;
     direction: 'ACROSS' | 'DOWN';
+    solved?: boolean;
 }
 
 export interface TurnCellResult {
@@ -197,6 +215,8 @@ export interface CrosswordStateResponse {
     players: CrosswordPlayerResponse[];
     clues: CrosswordStateClueResponse[];
     lastTurn?: TurnResultResponse;
+    mode?: 'LETTERS' | 'WORDS';
+    lastWordTurn?: WordTurnResultResponse | null;
 }
 
 export interface SubjectGroupRequest {
@@ -483,8 +503,12 @@ export interface MultiplayerSessionResponse {
     player1: MultiplayerPlayerInfo;
     player2: MultiplayerPlayerInfo | null;
     status: 'WAITING_FOR_PLAYER' | 'IN_PROGRESS' | 'FINISHED' | 'ABANDONED';
+    mode?: 'LETTERS' | 'WORDS';
     currentTurnUserId: string;
     myTurn: boolean;
+    lastGuessCorrect?: boolean | null;
+    lastGuessWord?: string | null;
+    lastGuessPoints?: number | null;
     currentGrid: string;
     width: number;
     height: number;
@@ -501,6 +525,7 @@ export interface MultiplayerSessionSummaryResponse {
     crosswordName: string;
     opponent: MultiplayerPlayerInfo | null;
     status: 'WAITING_FOR_PLAYER' | 'IN_PROGRESS' | 'FINISHED' | 'ABANDONED';
+    mode?: 'LETTERS' | 'WORDS';
     myTurn: boolean;
     myScore: number;
     opponentScore: number;

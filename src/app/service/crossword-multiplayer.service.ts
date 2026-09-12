@@ -6,18 +6,26 @@ import { Environment } from '../../../environment';
 
 const BASE = Environment.LOCALHOST_BASE_URL + 'api/v1/crossword-multiplayer-sessions';
 
+export type MultiplayerMode = 'LETTERS' | 'WORDS';
+
 export interface CreateMultiplayerRequest {
   crosswordId: string;
   numberOfWords: number;
   tagFilter?: string[];
   tagFilterMode?: string;
   matchAllTags?: boolean;
+  multiplayerMode?: MultiplayerMode;
 }
 
 export interface SubmitTurnLetter {
   row: number;
   column: number;
   c: string;
+}
+
+export interface SubmitWordRequest {
+  termId: string;
+  word: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -35,6 +43,10 @@ export class CrosswordMultiplayerService {
 
   submitTurn(sessionId: string, letters: SubmitTurnLetter[]): Observable<MultiplayerSessionResponse> {
     return this.http.put<MultiplayerSessionResponse>(`${BASE}/${sessionId}/turn`, letters);
+  }
+
+  submitWord(sessionId: string, request: SubmitWordRequest): Observable<MultiplayerSessionResponse> {
+    return this.http.put<MultiplayerSessionResponse>(`${BASE}/${sessionId}/word`, request);
   }
 
   getSession(sessionId: string): Observable<MultiplayerSessionResponse> {

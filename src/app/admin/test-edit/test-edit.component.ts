@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Subject, from, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, concatMap, toArray, catchError } from 'rxjs/operators';
 import { TestService } from '../../service/test.service';
 import { QuestionsService } from '../../service/question.service';
 import { ImageService } from '../../service/image.service';
@@ -81,6 +81,17 @@ export class TestEditComponent implements OnInit {
   addDraft: any = null;
   addType: 'CLOSED' | 'OPEN' | 'STATEMENT' = 'CLOSED';
   addingQuestion = false;
+
+  // Bulk JSON import
+  showBulkImport = false;
+  bulkJsonText = '';
+  bulkImporting = false;
+  bulkError = '';
+  bulkResult: { successCount: number; failures: { index: number; message: string }[] } | null = null;
+
+  // View JSON modal
+  viewingJson: string | null = null;
+  jsonCopied = false;
 
   // Confirm dialog
   confirmMessage = '';
@@ -404,6 +415,89 @@ export class TestEditComponent implements OnInit {
   cancelAdd() {
     this.showAddModal = false;
     this.addDraft = null;
+  }
+
+  // ── Bulk JSON import ───────────────────────────────────────────────────────
+
+  openBulkImport() {
+    this.bulkJsonText = '';
+    this.bulkError = '';
+    this.bulkResult = null;
+    this.showBulkImport = true;
+  }
+
+  closeBulkImport() {
+    this.showBulkImport = false;
+  }
+
+  importBulkJson() {
+    if (this.bulkImporting || !this.test) return;
+    this.bulkError = '';
+    this.bulkResult = null;
+
+    let parsed: any;
+    try {
+      parsed = JSON.parse(this.bulkJsonText);
+    } catch (e: any) {
+      this.bulkError = 'Invalid JSON: ' + (e?.message ?? 'could not parse the pasted text.');
+      return;
+    }
+    if (!Array.isArray(parsed)) {
+      this.bulkError = 'Expected a JSON array of question objects, e.g. [ { "type": "CLOSED", ... }, ... ].';
+      return;
+    }
+    if (parsed.length === 0) {
+      this.bulkError = 'The array is empty — nothing to import.';
+      return;
+    }
+
+    this.bulkImporting = true;
+    const failures: { index: number; message: string }[] = [];
+
+    from(parsed).pipe(
+      concatMap((q: any, i: number) =>
+        this.questionsService.addQuestion(q).pipe(
+          catchError(err => {
+            failures.push({
+              index: i,
+              message: err?.error?.message || err?.message || `HTTP ${err?.status ?? '?'}`
+            });
+            return of(null);
+          })
+        )
+      ),
+      toArray()
+    ).subscribe((results: any[]) => {
+      const newIds = results.filter(r => r != null).map(r => r.id ?? r);
+      this.bulkImporting = false;
+      this.bulkResult = { successCount: newIds.length, failures };
+
+      if (newIds.length === 0 || !this.test) return;
+      this.test.questions = [...newIds, ...this.test.questions];
+      this.testService.updateTest(this.test.id, this.buildTestRequest(this.test.questions)).subscribe(() => {
+        this.page = 0;
+        this.loadPage();
+      });
+    });
+  }
+
+  // ── View question JSON ─────────────────────────────────────────────────────
+
+  viewQuestionJson(q: any) {
+    this.viewingJson = JSON.stringify(q, null, 2);
+    this.jsonCopied = false;
+  }
+
+  closeJsonView() {
+    this.viewingJson = null;
+  }
+
+  copyJson() {
+    if (!this.viewingJson) return;
+    navigator.clipboard.writeText(this.viewingJson).then(() => {
+      this.jsonCopied = true;
+      setTimeout(() => { this.jsonCopied = false; }, 2000);
+    }).catch(() => {});
   }
 
   // ── Shared answer/statement helpers (work on any draft) ──────────────────

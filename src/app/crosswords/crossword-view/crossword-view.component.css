@@ -356,6 +356,17 @@ input[type="number"] {
 .mp-session-row:hover { border-color: var(--c-7b6df5); background: var(--a-06); }
 .mp-session-info { flex: 1; display: flex; flex-direction: column; gap: 3px; }
 .mp-session-opp { font-size: 13px; font-weight: 600; color: var(--c-e0e0e0); }
+.mp-session-mode {
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--c-9b8ff5);
+  border: 1px solid var(--c-4a3fa0);
+  border-radius: 6px;
+  padding: 1px 6px;
+}
 .mp-session-status { font-size: 11px; color: var(--c-666666); }
 .mp-session-status.my-turn { color: var(--c-7b6df5); font-weight: 600; }
 .mp-session-scores { font-size: 13px; color: var(--c-888888); font-variant-numeric: tabular-nums; }

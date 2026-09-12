@@ -849,3 +849,73 @@
 .cell.flash-bot {
   animation: flash-bot 3s ease-out forwards;
 }
+
+/* ── Word Duel answer card ── */
+.word-card { display: flex; flex-direction: column; gap: 12px; }
+
+.wc-clue {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wc-badge {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--c-7b6df5);
+  flex-shrink: 0;
+}
+
+.wc-text {
+  font-size: 14px;
+  color: var(--c-cfcfcf);
+  flex: 1;
+  min-width: 0;
+}
+
+.wc-len {
+  font-size: 11px;
+  color: var(--c-666666);
+  flex-shrink: 0;
+}
+
+.wc-input-row { display: flex; gap: 10px; }
+
+.wc-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--c-3a3a3a);
+  background: var(--c-141414);
+  color: var(--c-e8e8e8);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  outline: none;
+}
+.wc-input:focus { border-color: var(--c-7b6df5); box-shadow: 0 0 0 2px var(--a-2); }
+.wc-input:disabled { opacity: 0.5; }
+
+.wc-hint,
+.wc-solved {
+  font-size: 13px;
+  color: var(--c-777777);
+}
+.wc-solved { color: #5de05d; font-weight: 700; }
+
+.wc-feedback {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+.wc-feedback.ok  { background: rgba(93,224,93,0.13); color: #5de05d; }
+.wc-feedback.bad { background: rgba(224,93,93,0.12); color: #e05d5d; }
+
+.clue-item.solved .clue-text { color: var(--c-666666); text-decoration: line-through; }
+.clue-solved { font-size: 11px; font-weight: 800; color: #5de05d; flex-shrink: 0; }

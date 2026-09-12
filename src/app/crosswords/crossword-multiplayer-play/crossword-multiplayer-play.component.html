@@ -94,8 +94,8 @@
             </div>
           </div>
 
-          <!-- Hand (your turn) -->
-          <div class="hand-card" *ngIf="isMyTurn">
+          <!-- Hand (your turn) — Letters mode -->
+          <div class="hand-card" *ngIf="!isWordsMode && isMyTurn">
             <div class="hand-header">
               <div class="hand-label">Your hand <span class="hand-hint">— drag or tap a tile, then tap a cell</span></div>
               <button class="submit-btn" [disabled]="isSubmitting || placedCount === 0" (click)="submitTurn()">
@@ -118,6 +118,34 @@
                 </div>
                 <div *ngIf="!letter" class="letter-tile empty-slot"></div>
               </ng-container>
+            </div>
+          </div>
+
+          <!-- Answer entry (your turn) — Word Duel mode -->
+          <div class="hand-card word-card" *ngIf="isWordsMode && isMyTurn">
+            <ng-container *ngIf="selectedClue; else pickClue">
+              <div class="wc-clue">
+                <span class="wc-badge">{{ selectedClue.number }} {{ selectedClue.clue.direction === 'ACROSS' ? 'Across' : 'Down' }}</span>
+                <span class="wc-text" [innerHTML]="selectedClue.clue.clue | latex"></span>
+                <span class="wc-len">{{ selectedClue.length }} letters</span>
+              </div>
+              <div class="wc-input-row" *ngIf="!selectedClue.clue.solved">
+                <input class="wc-input" [(ngModel)]="wordGuess" (keydown.enter)="submitWord()"
+                       [maxlength]="selectedClue.length" autocomplete="off" autocapitalize="characters"
+                       spellcheck="false" placeholder="Type the answer…" [disabled]="isSubmitting" />
+                <button class="submit-btn" [disabled]="isSubmitting || !wordGuess.trim()" (click)="submitWord()">
+                  {{ isSubmitting ? '…' : 'Submit' }}
+                </button>
+              </div>
+              <div class="wc-solved" *ngIf="selectedClue.clue.solved">✓ Already solved</div>
+            </ng-container>
+            <ng-template #pickClue>
+              <div class="wc-hint">Pick a clue from the list, then type your answer.</div>
+            </ng-template>
+            <div class="wc-feedback" *ngIf="guessResult" [class.ok]="guessResult.correct" [class.bad]="!guessResult.correct">
+              {{ guessResult.correct
+                  ? ('✓ ' + guessResult.word + '  +' + guessResult.points + ' pts')
+                  : '✗ Not quite — turn passes' }}
             </div>
           </div>
 
@@ -174,9 +202,11 @@
             <div class="clues-scroll">
               <div *ngFor="let entry of across" class="clue-item"
                    [class.active]="isActive(entry)"
+                   [class.solved]="entry.clue.solved"
                    (click)="selectClue(entry)">
                 <span class="clue-number">{{ entry.number }}</span>
                 <span class="clue-text" [innerHTML]="entry.clue.clue | latex"></span>
+                <span class="clue-solved" *ngIf="entry.clue.solved">✓</span>
                 <span class="clue-len">({{ entry.length }})</span>
               </div>
             </div>
@@ -188,9 +218,11 @@
             <div class="clues-scroll">
               <div *ngFor="let entry of down" class="clue-item"
                    [class.active]="isActive(entry)"
+                   [class.solved]="entry.clue.solved"
                    (click)="selectClue(entry)">
                 <span class="clue-number">{{ entry.number }}</span>
                 <span class="clue-text" [innerHTML]="entry.clue.clue | latex"></span>
+                <span class="clue-solved" *ngIf="entry.clue.solved">✓</span>
                 <span class="clue-len">({{ entry.length }})</span>
               </div>
             </div>

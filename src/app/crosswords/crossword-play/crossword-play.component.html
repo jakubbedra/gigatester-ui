@@ -34,7 +34,7 @@
         <div class="toast-container">
           <div *ngFor="let toast of wordToasts" class="word-toast">
             <span class="toast-word">{{ toast.word }}</span>
-            <span class="toast-pts">+{{ toast.points }} {{ 'CROSSWORD_PLAY.PTS' | translate }}</span>
+            <span class="toast-pts" *ngIf="toast.points > 0">+{{ toast.points }} {{ 'CROSSWORD_PLAY.PTS' | translate }}</span>
           </div>
         </div>
 
@@ -74,7 +74,7 @@
           </div>
         </div>
 
-        <div class="hand-card">
+        <div class="hand-card" *ngIf="!isWordsMode">
           <div class="hand-header">
             <div class="hand-label">{{ 'CROSSWORD_PLAY.YOUR_HAND' | translate }} <span class="hand-hint">— {{ 'CROSSWORD_PLAY.DRAG_HINT' | translate }}</span></div>
             <button *ngIf="!isComplete" class="submit-btn"
@@ -102,6 +102,40 @@
               <div *cdkDragPlaceholder class="tile-placeholder"></div>
             </div>
           </div>
+        </div>
+
+        <!-- Word Duel: type the whole answer instead of dragging letters -->
+        <div class="hand-card word-card" *ngIf="isWordsMode && !isComplete">
+          <ng-container *ngIf="selectedClue; else pickClue">
+            <div class="wc-clue">
+              <span class="wc-badge">{{ selectedClue.number }} {{ selectedClue.clue.direction === 'ACROSS' ? ('CROSSWORD_PLAY.ACROSS' | translate) : ('CROSSWORD_PLAY.DOWN' | translate) }}</span>
+              <span class="wc-text" [innerHTML]="selectedClue.clue.clue | latex"></span>
+              <span class="wc-len">{{ selectedClue.length }}</span>
+            </div>
+            <div class="wc-input-row" *ngIf="!selectedClue.clue.solved">
+              <input class="wc-input" [(ngModel)]="wordGuess" (keydown.enter)="submitWord()"
+                     [maxlength]="selectedClue.length" autocomplete="off" autocapitalize="characters"
+                     spellcheck="false" [placeholder]="'CROSSWORD_PLAY.TYPE_ANSWER' | translate" [disabled]="isSubmitting" />
+              <button class="submit-btn" [disabled]="isSubmitting || !wordGuess.trim()" (click)="submitWord()">
+                {{ isSubmitting ? ('CROSSWORD_PLAY.SUBMITTING' | translate) : ('CROSSWORD_PLAY.SUBMIT_TURN' | translate) }}
+              </button>
+            </div>
+            <div class="wc-solved" *ngIf="selectedClue.clue.solved">✓ {{ 'CROSSWORD_PLAY.ALREADY_SOLVED' | translate }}</div>
+          </ng-container>
+          <ng-template #pickClue>
+            <div class="wc-hint">{{ 'CROSSWORD_PLAY.PICK_CLUE' | translate }}</div>
+          </ng-template>
+          <div class="wc-feedback" *ngIf="guessResult" [class.ok]="guessResult.correct" [class.bad]="!guessResult.correct">
+            {{ guessResult.correct
+                ? ('✓ ' + guessResult.word + '  +' + guessResult.points)
+                : ('✗ ' + ('CROSSWORD_PLAY.NOT_QUITE' | translate)) }}
+          </div>
+        </div>
+
+        <div class="hand-card word-card" *ngIf="isWordsMode && isComplete">
+          <button class="submit-btn complete-btn" (click)="newCrossword()">
+            {{ 'CROSSWORD_PLAY.NEW_CROSSWORD' | translate }}
+          </button>
         </div>
       </div>
 
@@ -137,9 +171,11 @@
             <div *ngFor="let entry of across"
                  class="clue-item"
                  [class.active]="isActive(entry)"
+                 [class.solved]="entry.clue.solved"
                  (click)="selectClue(entry)">
               <span class="clue-number">{{ entry.number }}</span>
               <span class="clue-text" [innerHTML]="entry.clue.clue | latex"></span>
+              <span class="clue-solved" *ngIf="entry.clue.solved">✓</span>
               <span class="clue-len">({{ entry.length }})</span>
             </div>
           </div>
@@ -151,9 +187,11 @@
             <div *ngFor="let entry of down"
                  class="clue-item"
                  [class.active]="isActive(entry)"
+                 [class.solved]="entry.clue.solved"
                  (click)="selectClue(entry)">
               <span class="clue-number">{{ entry.number }}</span>
               <span class="clue-text" [innerHTML]="entry.clue.clue | latex"></span>
+              <span class="clue-solved" *ngIf="entry.clue.solved">✓</span>
               <span class="clue-len">({{ entry.length }})</span>
             </div>
           </div>

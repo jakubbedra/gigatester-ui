@@ -75,11 +75,24 @@
       </div>
 
       <div class="field-section">
+        <div class="field-label">{{ 'CROSSWORD_VIEW.MP_MODE' | translate }}</div>
+        <div class="tag-mode-toggle">
+          <button type="button" class="tag-mode-btn" [class.active]="singleplayerMode === 'LETTERS'"
+                  (click)="setSingleplayerMode('LETTERS')">{{ 'CROSSWORD_VIEW.MP_MODE_LETTERS' | translate }}</button>
+          <button type="button" class="tag-mode-btn" [class.active]="singleplayerMode === 'WORDS'"
+                  (click)="setSingleplayerMode('WORDS')">{{ 'CROSSWORD_VIEW.MP_MODE_WORDS' | translate }}</button>
+        </div>
+        <div class="tag-filter-hint">
+          {{ (singleplayerMode === 'WORDS' ? 'CROSSWORD_VIEW.MP_MODE_WORDS_HINT' : 'CROSSWORD_VIEW.MP_MODE_LETTERS_HINT') | translate }}
+        </div>
+      </div>
+
+      <div class="field-section">
         <div class="field-label">{{ 'CROSSWORD_VIEW.BOT_DIFFICULTY' | translate }}</div>
         <div class="tag-mode-toggle">
           <button type="button" class="tag-mode-btn" *ngFor="let d of botDifficulties"
                   [class.active]="botDifficulty === d.value"
-                  (click)="botDifficulty = d.value">{{ d.labelKey | translate }}</button>
+                  (click)="setBotDifficulty(d.value)">{{ d.labelKey | translate }}</button>
         </div>
       </div>
 
@@ -134,7 +147,10 @@
         <div class="mp-sessions-label">{{ 'CROSSWORD_VIEW.YOUR_ACTIVE_SESSIONS' | translate }}</div>
         <div class="mp-session-row" *ngFor="let s of mySessions" (click)="goToSession(s.id)">
           <div class="mp-session-info">
-            <span class="mp-session-opp">vs {{ s.opponent?.username ?? ('CROSSWORD_VIEW.WAITING_FOR_PLAYER' | translate) }}</span>
+            <span class="mp-session-opp">
+              vs {{ s.opponent?.username ?? ('CROSSWORD_VIEW.WAITING_FOR_PLAYER' | translate) }}
+              <span class="mp-session-mode" *ngIf="s.mode === 'WORDS'">{{ 'CROSSWORD_VIEW.MP_MODE_WORDS' | translate }}</span>
+            </span>
             <span class="mp-session-status" [class.my-turn]="s.myTurn && s.status === 'IN_PROGRESS'">
               {{ (s.status === 'WAITING_FOR_PLAYER' ? 'CROSSWORD_VIEW.WAITING_FOR_OPPONENT' : (s.myTurn ? 'CROSSWORD_VIEW.YOUR_TURN' : 'CROSSWORD_VIEW.OPPONENTS_TURN')) | translate }}
             </span>
@@ -148,6 +164,19 @@
       <div class="mp-create-section">
         <div class="mp-create-title">{{ 'CROSSWORD_VIEW.CREATE_ROOM_TITLE' | translate }}</div>
         <p class="mp-create-hint">{{ 'CROSSWORD_VIEW.CREATE_ROOM_HINT' | translate }}</p>
+
+        <div class="field-section">
+          <div class="field-label">{{ 'CROSSWORD_VIEW.MP_MODE' | translate }}</div>
+          <div class="tag-mode-toggle">
+            <button type="button" class="tag-mode-btn" [class.active]="multiplayerMode === 'LETTERS'"
+                    (click)="multiplayerMode = 'LETTERS'">{{ 'CROSSWORD_VIEW.MP_MODE_LETTERS' | translate }}</button>
+            <button type="button" class="tag-mode-btn" [class.active]="multiplayerMode === 'WORDS'"
+                    (click)="multiplayerMode = 'WORDS'">{{ 'CROSSWORD_VIEW.MP_MODE_WORDS' | translate }}</button>
+          </div>
+          <p class="mp-create-hint">
+            {{ (multiplayerMode === 'WORDS' ? 'CROSSWORD_VIEW.MP_MODE_WORDS_HINT' : 'CROSSWORD_VIEW.MP_MODE_LETTERS_HINT') | translate }}
+          </p>
+        </div>
 
         <!-- Reuse same tag / word-count form -->
         <div class="field-section" *ngIf="allTags.length > 0">

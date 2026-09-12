@@ -61,11 +61,19 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
   flashDelay = new Map<string, number>();
   wordToasts: { word: string; points: number }[] = [];
 
+  // ── Word Duel mode ──
+  wordGuess = '';
+  guessResult: { correct: boolean; word: string; points: number } | null = null;
+
   showWinner = false;
   winner: 'human' | 'bot' | 'tie' | null = null;
 
   get isComplete(): boolean {
     return !!this.state && !this.state.currentGrid.includes('_');
+  }
+
+  get isWordsMode(): boolean {
+    return this.state?.mode === 'WORDS';
   }
 
   @ViewChild('gridScroll') gridScrollEl!: ElementRef<HTMLElement>;
@@ -173,11 +181,84 @@ export class CrosswordPlayComponent implements OnInit, AfterViewInit, OnDestroy 
 
   selectClue(entry: NumberedClue) {
     this.selectedClue = entry;
+    this.wordGuess = '';
+    this.guessResult = null;
     this.highlightedCells.clear();
     let r = entry.clue.row, c = entry.clue.column;
     for (let i = 0; i < entry.length; i++) {
       this.highlightedCells.add(`${r},${c}`);
       if (entry.clue.direction === 'ACROSS') c++; else r++;
+    }
+  }
+
+  submitWord() {
+    if (this.isSubmitting || !this.selectedClue) return;
+    const word = this.wordGuess.trim();
+    if (!word || this.selectedClue.clue.solved) return;
+    const termId = this.selectedClue.clue.id;
+
+    this.isSubmitting = true;
+    this.guessResult = null;
+    this.crosswordStateService.submitWord(this.state.id, { termId, word }).subscribe({
+      next: (updated) => {
+        this.isSubmitting = false;
+        this.state = updated;
+        this.buildClues();
+        this.applyWordFlash(updated, word);
+        this.wordGuess = '';
+        this.selectedClue = null;
+        this.highlightedCells.clear();
+        setTimeout(() => this.updateCellSize(), 0);
+      },
+      error: () => { this.isSubmitting = false; }
+    });
+  }
+
+  private applyWordFlash(updated: CrosswordStateResponse, fallbackWord: string) {
+    const turn = updated.lastWordTurn;
+    if (!turn) return;
+
+    this.guessResult = {
+      correct: turn.humanCorrect,
+      word: turn.humanWord ?? fallbackWord,
+      points: turn.humanPoints
+    };
+
+    const toasts: { word: string; points: number }[] = [];
+    if (turn.humanCorrect) {
+      this.sound.playWordComplete();
+      toasts.push({ word: this.guessResult.word, points: turn.humanPoints });
+    }
+    if (turn.botCorrect && turn.botWord) {
+      toasts.push({ word: `🤖 ${turn.botWord}`, points: turn.botPoints });
+    } else if (turn.botAttempted) {
+      toasts.push({ word: `🤖 ${this.translate.instant('CROSSWORD_PLAY.BOT_MISSED')}`, points: 0 });
+    }
+    if (toasts.length > 0) {
+      this.wordToasts = toasts;
+      setTimeout(() => { this.wordToasts = []; }, 2800);
+    }
+    setTimeout(() => { this.guessResult = null; }, 4000);
+
+    if (this.isComplete) {
+      setTimeout(() => {
+        const h = this.humanPlayer?.points ?? 0;
+        const b = this.botPlayer?.points ?? 0;
+        this.winner = h > b ? 'human' : b > h ? 'bot' : 'tie';
+        setTimeout(() => {
+          this.showWinner = true;
+          if (this.winner === 'human') this.sound.playWin();
+          else if (this.winner === 'bot') this.sound.playLose();
+          else this.sound.playWordComplete();
+        }, 1000);
+        this.streakService.getStreak().subscribe(s => {
+          this.sidebarRefreshService.notify();
+          if (this.streakService.wasJustBumpedToday(s)) {
+            const label = this.translate.instant('SIDEBAR.STREAK');
+            this.toastService.show({ icon: '🔥', message: `${s.currentStreak} ${label}` });
+          }
+        });
+      }, 1500);
     }
   }
 

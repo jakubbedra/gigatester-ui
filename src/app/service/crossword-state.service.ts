@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
 import { interval } from 'rxjs';
-import { CrosswordStateRequest, CrosswordStateResponse, CrosswordStateUpdateRequest } from '../models/models.d';
+import { CrosswordStateRequest, CrosswordStateResponse, CrosswordStateUpdateRequest, SubmitWordRequest } from '../models/models.d';
 import { Environment } from '../../../environment';
 
 export interface GenerationJobResponse { jobId: string; }
@@ -30,6 +30,10 @@ export class CrosswordStateService {
 
   updateCrosswordState(id: string, request: CrosswordStateUpdateRequest): Observable<CrosswordStateResponse> {
     return this.http.put<CrosswordStateResponse>(`${this.baseUrl}/${id}`, request);
+  }
+
+  submitWord(id: string, request: SubmitWordRequest): Observable<CrosswordStateResponse> {
+    return this.http.put<CrosswordStateResponse>(`${this.baseUrl}/${id}/word`, request);
   }
 
   startGeneration(request: CrosswordStateRequest): Observable<GenerationJobResponse> {

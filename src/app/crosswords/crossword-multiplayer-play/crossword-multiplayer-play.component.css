@@ -27,7 +27,7 @@
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.join-error { font-size: 13px; color: var(--c-f07070); margin: 0; }
+.join-error { font-size: 13px; color: #e05d5d; margin: 0; }
 
 /* ── Main card ── */
 .cw-card {
@@ -185,6 +185,73 @@
 .submit-btn:disabled { background: var(--c-2a2a2a); color: var(--c-555555); cursor: not-allowed; }
 
 .hand-tiles { display: flex; gap: 10px; }
+
+/* ── Word Duel answer card ── */
+.word-card { display: flex; flex-direction: column; gap: 12px; }
+
+.wc-clue {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wc-badge {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--c-7b6df5);
+  flex-shrink: 0;
+}
+
+.wc-text {
+  font-size: 14px;
+  color: var(--c-cfcfcf);
+  flex: 1;
+  min-width: 0;
+}
+
+.wc-len {
+  font-size: 11px;
+  color: var(--c-666666);
+  flex-shrink: 0;
+}
+
+.wc-input-row { display: flex; gap: 10px; }
+
+.wc-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--c-3a3a3a);
+  background: var(--c-141414);
+  color: var(--c-e8e8e8);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  outline: none;
+}
+.wc-input:focus { border-color: var(--c-7b6df5); box-shadow: 0 0 0 2px var(--a-2); }
+.wc-input:disabled { opacity: 0.5; }
+
+.wc-hint,
+.wc-solved {
+  font-size: 13px;
+  color: var(--c-777777);
+}
+.wc-solved { color: #5de05d; font-weight: 700; }
+
+.wc-feedback {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+.wc-feedback.ok  { background: rgba(93,224,93,0.13); color: #5de05d; }
+.wc-feedback.bad { background: rgba(224,93,93,0.12); color: #e05d5d; }
 
 .letter-tile {
   width: 48px;
@@ -398,13 +465,16 @@
 .clue-len { font-size: 11px; color: var(--c-444444); flex-shrink: 0; }
 .clue-item.active .clue-len { color: var(--c-6656c0); }
 
+.clue-item.solved .clue-text { color: var(--c-666666); text-decoration: line-through; }
+.clue-solved { font-size: 11px; font-weight: 800; color: #5de05d; flex-shrink: 0; }
+
 .abandon-link {
   background: none; border: none; color: var(--c-3a3a3a);
   font-size: 12px; cursor: pointer; text-align: center;
   margin-top: auto; padding: 4px 0;
   transition: color 0.15s;
 }
-.abandon-link:hover { color: var(--c-f07070); }
+.abandon-link:hover { color: #e05d5d; }
 
 .tab-bar { display: none; }
 
