@@ -169,9 +169,9 @@
           <div class="field-label">{{ 'CROSSWORD_VIEW.MP_MODE' | translate }}</div>
           <div class="tag-mode-toggle">
             <button type="button" class="tag-mode-btn" [class.active]="multiplayerMode === 'LETTERS'"
-                    (click)="multiplayerMode = 'LETTERS'">{{ 'CROSSWORD_VIEW.MP_MODE_LETTERS' | translate }}</button>
+                    (click)="setMultiplayerMode('LETTERS')">{{ 'CROSSWORD_VIEW.MP_MODE_LETTERS' | translate }}</button>
             <button type="button" class="tag-mode-btn" [class.active]="multiplayerMode === 'WORDS'"
-                    (click)="multiplayerMode = 'WORDS'">{{ 'CROSSWORD_VIEW.MP_MODE_WORDS' | translate }}</button>
+                    (click)="setMultiplayerMode('WORDS')">{{ 'CROSSWORD_VIEW.MP_MODE_WORDS' | translate }}</button>
           </div>
           <p class="mp-create-hint">
             {{ (multiplayerMode === 'WORDS' ? 'CROSSWORD_VIEW.MP_MODE_WORDS_HINT' : 'CROSSWORD_VIEW.MP_MODE_LETTERS_HINT') | translate }}

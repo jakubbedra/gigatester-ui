@@ -62,6 +62,7 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
 
   private readonly GENERATION_TIMEOUT_MS = 60_000;
   maxWordLimit = 30;
+  maxWordLimitWords = 30;
 
   constructor(
     private fb: FormBuilder,
@@ -101,6 +102,8 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
     this.mode = m;
     this.newSessionId = null;
     this.multiplayerError = '';
+    // Word Duel and Letters have different word-count caps — re-clamp for whichever tab's mode now applies.
+    this.updateWordCount();
     if (m === 'multiplayer') this.loadMySessions();
     if (m === 'testrun') this.loadLatestRun();
   }
@@ -205,7 +208,11 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.crosswordService.getConfig().subscribe({
-      next: (config) => { this.maxWordLimit = config.maxWordLimit; this.updateWordCount(); },
+      next: (config) => {
+        this.maxWordLimit = config.maxWordLimit;
+        this.maxWordLimitWords = config.maxWordLimitWords;
+        this.updateWordCount();
+      },
       error: () => {}
     });
 
@@ -255,15 +262,21 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
     this.stopPolling();
   }
 
+  /** Word Duel has its own configured cap, separate from Letters mode — pick whichever applies to the active tab. */
+  get activeWordLimit(): number {
+    const relevantMode = this.mode === 'multiplayer' ? this.multiplayerMode : this.singleplayerMode;
+    return relevantMode === 'WORDS' ? this.maxWordLimitWords : this.maxWordLimit;
+  }
+
   get termCount(): number {
     if (!this.crossword) return 0;
     const available = this.selectedTagIds.size === 0
       ? this.crossword.terms.length
       : this.crossword.terms.filter(t => this.matchesTagFilter(t)).length;
-    return Math.min(available, this.maxWordLimit);
+    return Math.min(available, this.activeWordLimit);
   }
 
-  /** Cumulative wrong-answer pool (crossword-generation target), tag-filtered and capped by maxWordLimit. */
+  /** Cumulative wrong-answer pool (crossword-generation target), tag-filtered and capped by the active mode's word limit. */
   get filteredWrongTermCount(): number {
     if (!this.latestRun?.cumulativeWrongTermIds?.length) return 0;
     const available = (() => {
@@ -271,7 +284,7 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
       const wrongIds = new Set(this.latestRun!.cumulativeWrongTermIds);
       return this.crossword.terms.filter(t => wrongIds.has(t.id) && this.matchesTagFilter(t)).length;
     })();
-    return Math.min(available, this.maxWordLimit);
+    return Math.min(available, this.activeWordLimit);
   }
 
   /** Test-run pool size, tag-filtered — unlike termCount, not capped by maxWordLimit (that cap is a crossword-generation constraint, not a test-run one). */
@@ -324,6 +337,13 @@ export class CrosswordViewComponent implements OnInit, OnDestroy {
 
   setSingleplayerMode(m: 'LETTERS' | 'WORDS') {
     this.singleplayerMode = m;
+    this.updateWordCount();
+    this.saveSettings();
+  }
+
+  setMultiplayerMode(m: 'LETTERS' | 'WORDS') {
+    this.multiplayerMode = m;
+    this.updateWordCount();
     this.saveSettings();
   }
 
