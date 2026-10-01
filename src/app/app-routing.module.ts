@@ -25,6 +25,7 @@ import { MetricsComponent } from './metrics/metrics.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { JoinGroupComponent } from './calendar/join-group/join-group.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { GraphLabComponent } from './admin/graph-lab/graph-lab.component';
 import { AdminGuard } from './guard/admin.guard';
 import { AuthGuard } from './guard/auth.guard';
 import { ModeratorGuard } from './guard/moderator.guard';
@@ -47,6 +48,7 @@ const routes: Routes = [
   { path: 'admin/crosswords/:id/edit', component: CrosswordEditComponent, canActivate: [AuthGuard, ModeratorGuard] },
   { path: 'admin/users', component: UsersListComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'admin/roles', component: RolesListComponent, canActivate: [AuthGuard, AdminGuard] },
+  { path: 'admin/graph-lab', component: GraphLabComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'subjects/:id', component: TestsListComponent, canActivate: [AuthGuard] },
   { path: 'tests', component: TestsListComponent, canActivate: [AuthGuard] },
   { path: 'admin/tests', component: TestsListComponent, canActivate: [AuthGuard, ModeratorGuard] },

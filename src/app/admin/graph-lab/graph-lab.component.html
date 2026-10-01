@@ -1,0 +1,224 @@
+<div class="lab-page">
+  <div class="lab-header">
+    <h1 class="lab-title">🕸️ Graph Lab <span class="lab-badge">experimental · admin only</span></h1>
+    <a class="back-link" routerLink="/home">← Back</a>
+  </div>
+
+  <div class="lab-layout">
+
+    <!-- ── Canvas ── -->
+    <svg #svgEl class="canvas"
+         viewBox="0 0 1400 800"
+         (contextmenu)="onCanvasContextMenu($event)"
+         (mousedown)="onCanvasMouseDown($event)">
+
+      <defs>
+        <marker id="arrow-edge" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-head"></path>
+        </marker>
+        <marker id="arrow-hub" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-head hub-arrow-head"></path>
+        </marker>
+      </defs>
+
+      <!-- Simple edges -->
+      <g *ngFor="let e of edges">
+        <ng-container *ngIf="vertexById(e.from) as a">
+          <ng-container *ngIf="vertexById(e.to) as b">
+            <path class="edge-hit" [attr.d]="pathData(a, b)"
+                  (contextmenu)="onEdgeContextMenu($event, e.id)"></path>
+            <ng-container *ngIf="trimmedLine(a, b, vertexRadius, e.kind === 'directedEdge' ? vertexRadius + 3 : vertexRadius) as line">
+              <path class="edge-line" [class.directed]="e.kind === 'directedEdge'"
+                    [attr.d]="pathData({x: line.x1, y: line.y1}, {x: line.x2, y: line.y2})"
+                    [attr.marker-end]="e.kind === 'directedEdge' ? 'url(#arrow-edge)' : null"></path>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </g>
+
+      <!-- Hyperedges: hub (Steiner point) + spokes -->
+      <g *ngFor="let h of hyperedges">
+        <ng-container *ngIf="hubPosition(h) as hub">
+          <ng-container *ngFor="let sid of h.sources">
+            <ng-container *ngIf="vertexById(sid) as sv">
+              <ng-container *ngIf="trimmedLine(sv, hub, vertexRadius, hubRadius) as line">
+                <path class="hyper-spoke source" [attr.d]="pathData({x: line.x1, y: line.y1}, {x: line.x2, y: line.y2})"></path>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+          <ng-container *ngFor="let tid of h.targets">
+            <ng-container *ngIf="vertexById(tid) as tv">
+              <ng-container *ngIf="trimmedLine(hub, tv, hubRadius, vertexRadius + 3) as line">
+                <path class="hyper-spoke target" [attr.d]="pathData({x: line.x1, y: line.y1}, {x: line.x2, y: line.y2})"
+                      marker-end="url(#arrow-hub)"></path>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+
+          <g class="hub-group" [class.moving]="h.id === movingHubId"
+             (mousedown)="onHubMouseDown($event, h.id)"
+             (contextmenu)="onHubContextMenu($event, h.id)">
+            <circle class="hub-hit" [attr.cx]="hub.x" [attr.cy]="hub.y" [attr.r]="hubRadius + 10"></circle>
+            <circle class="hub" [class.selected]="h.id === selectedHyperedgeId"
+                    [attr.cx]="hub.x" [attr.cy]="hub.y" [attr.r]="hubRadius"></circle>
+          </g>
+          <foreignObject *ngIf="h.label" class="hub-label-box"
+                          [attr.x]="hub.x - 90" [attr.y]="hub.y - hubRadius - 10 - (labelFontSize * 2)"
+                          width="180" [attr.height]="(labelFontSize * 2) + 14">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="hub-label" [style.font-size.px]="labelFontSize"
+                 [title]="h.label" [innerHTML]="h.label | latex"></div>
+          </foreignObject>
+        </ng-container>
+      </g>
+
+      <!-- Rubber-band line while dragging a new edge -->
+      <line *ngIf="dragFromId && dragPoint && vertexById(dragFromId) as dv" class="drag-line"
+            [attr.x1]="dv.x" [attr.y1]="dv.y" [attr.x2]="dragPoint.x" [attr.y2]="dragPoint.y"></line>
+
+      <!-- Vertices -->
+      <g *ngFor="let v of vertices" class="vertex-group" [class.moving]="v.id === movingVertexId"
+         (mousedown)="onVertexMouseDown($event, v.id)">
+        <circle class="vertex-ring source-ring" *ngIf="hyperSources.has(v.id)"
+                [attr.cx]="v.x" [attr.cy]="v.y" [attr.r]="vertexRadius + 6"></circle>
+        <circle class="vertex-ring target-ring" *ngIf="hyperTargets.has(v.id)"
+                [attr.cx]="v.x" [attr.cy]="v.y" [attr.r]="vertexRadius + 12"></circle>
+        <circle class="vertex" [class.selected]="v.id === selectedVertexId" [class.vertex-hidden]="!showVertices"
+                [attr.cx]="v.x" [attr.cy]="v.y" [attr.r]="vertexRadius"></circle>
+        <foreignObject class="vertex-label-box"
+                        [attr.x]="v.x - (vertexRadius * 2.6)" [attr.y]="v.y - (vertexRadius * 1.6)"
+                        [attr.width]="vertexRadius * 5.2" [attr.height]="vertexRadius * 3.2">
+          <div xmlns="http://www.w3.org/1999/xhtml" class="vertex-label" [style.font-size.px]="labelFontSize"
+               [title]="v.label || '(unlabeled)'" [innerHTML]="(v.label || '?') | latex"></div>
+        </foreignObject>
+      </g>
+
+    </svg>
+
+    <!-- ── Side panel ── -->
+    <aside class="side-panel">
+
+      <div class="panel-section">
+        <div class="panel-label">Mode</div>
+        <div class="mode-buttons">
+          <button type="button" class="mode-btn" [class.active]="mode === 'edge'" (click)="setMode('edge')">Edge</button>
+          <button type="button" class="mode-btn" [class.active]="mode === 'directedEdge'" (click)="setMode('directedEdge')">Directed edge</button>
+          <button type="button" class="mode-btn" [class.active]="mode === 'hyperedge'" (click)="setMode('hyperedge')">Directed hyperedge</button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-label">Edge style</div>
+        <div class="mode-buttons horizontal">
+          <button type="button" class="mode-btn" [class.active]="edgeStyle === 'straight'" (click)="setEdgeStyle('straight')">Straight</button>
+          <button type="button" class="mode-btn" [class.active]="edgeStyle === 'curved'" (click)="setEdgeStyle('curved')">Curved</button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-label">Display</div>
+        <label class="checkbox-row">
+          <input type="checkbox" [checked]="showVertices" (change)="setShowVertices(!showVertices)" />
+          Show vertices
+        </label>
+        <label class="font-size-row">
+          <span>Label font size</span>
+          <input type="range" min="8" max="28" step="1" [value]="labelFontSize"
+                 (input)="setLabelFontSize(+$any($event.target).value)" />
+          <span class="font-size-value">{{ labelFontSize }}px</span>
+        </label>
+      </div>
+
+      <!-- Mode-specific instructions -->
+      <div class="panel-section hint-box" *ngIf="mode !== 'hyperedge'">
+        Right-click+hold a vertex and drag to another to connect them.
+        {{ mode === 'directedEdge' ? 'The edge points from the vertex you started on.' : '' }}
+      </div>
+
+      <div class="panel-section hint-box" *ngIf="mode === 'hyperedge'">
+        Click vertices to add them as <b>sources</b>. Shift+click to add them as <b>targets</b>. Click again to remove.
+      </div>
+
+      <div class="panel-section hint-box">
+        Left-click+hold a vertex to move it.
+      </div>
+
+      <!-- Hyperedge draft -->
+      <div class="panel-section" *ngIf="mode === 'hyperedge'">
+        <div class="panel-label">Hyperedge draft</div>
+        <div class="draft-group">
+          <div class="draft-title source-title">Sources ({{ hyperSources.size }})</div>
+          <div class="draft-chip-row">
+            <span class="draft-chip source-chip" *ngFor="let id of hyperSources" (click)="removeFromDraft(id)">
+              {{ vertexLabel(id) }} ✕
+            </span>
+            <span class="draft-empty" *ngIf="hyperSources.size === 0">none yet</span>
+          </div>
+        </div>
+        <div class="draft-group">
+          <div class="draft-title target-title">Targets ({{ hyperTargets.size }})</div>
+          <div class="draft-chip-row">
+            <span class="draft-chip target-chip" *ngFor="let id of hyperTargets" (click)="removeFromDraft(id)">
+              {{ vertexLabel(id) }} ✕
+            </span>
+            <span class="draft-empty" *ngIf="hyperTargets.size === 0">none yet</span>
+          </div>
+        </div>
+        <p class="draft-warning" *ngIf="hyperDraftOverlaps">⚠ A vertex is both a source and a target.</p>
+        <div class="draft-actions">
+          <button type="button" class="btn-secondary" (click)="cancelHyperDraft()">Clear</button>
+          <button type="button" class="btn-primary" [disabled]="!hyperDraftReady" (click)="createHyperedge()">Create hyperedge</button>
+        </div>
+      </div>
+
+      <!-- Selected vertex -->
+      <div class="panel-section" *ngIf="selectedVertex as sv">
+        <div class="panel-label">Selected vertex</div>
+        <input #labelInputEl class="label-input" type="text" [(ngModel)]="sv.label" (ngModelChange)="onVertexLabelChange()"
+               placeholder="Label…" />
+        <button type="button" class="btn-danger" (click)="deleteVertex(sv.id)">Delete vertex</button>
+      </div>
+
+      <!-- Selected hyperedge -->
+      <div class="panel-section" *ngIf="selectedHyperedge as sh">
+        <div class="panel-label">Selected hyperedge</div>
+        <input class="label-input" type="text" [(ngModel)]="sh.label" (ngModelChange)="onHyperedgeLabelChange()"
+               placeholder="Label (e.g. enzyme / reaction name)…" />
+        <div class="hyperedge-detail"><b>Sources:</b> {{ hyperedgeSourceLabels(sh) }}</div>
+        <div class="hyperedge-detail"><b>Targets:</b> {{ hyperedgeTargetLabels(sh) }}</div>
+        <div class="draft-actions">
+          <button type="button" class="btn-secondary" *ngIf="sh.hubX !== undefined" (click)="resetHubPosition(sh)">Reset position</button>
+          <button type="button" class="btn-danger" (click)="onHubContextMenu($event, sh.id)">Delete hyperedge</button>
+        </div>
+      </div>
+
+      <!-- Stats + whole-canvas actions -->
+      <div class="panel-section">
+        <div class="panel-label">Graph</div>
+        <div class="stats-row">
+          <span>{{ vertices.length }} vertices</span>
+          <span>{{ edges.length }} edges</span>
+          <span>{{ hyperedges.length }} hyperedges</span>
+        </div>
+        <div class="draft-actions">
+          <button type="button" class="btn-secondary" (click)="exportJson()">Export JSON</button>
+          <button type="button" class="btn-secondary" (click)="triggerImport(fileInput)">Import JSON</button>
+        </div>
+        <input #fileInput type="file" accept="application/json" hidden (change)="onImportFileSelected($event)" />
+        <button type="button" class="btn-danger full-width" (click)="clearCanvas()">Clear canvas</button>
+      </div>
+
+      <!-- Legend -->
+      <div class="panel-section legend">
+        <div class="panel-label">Controls</div>
+        <div>Right-click empty space — add vertex</div>
+        <div>Right-click a vertex (no drag) — delete it</div>
+        <div>Right-click an edge / hub — delete it</div>
+        <div>Left-click+hold a hub — move it (pins it in place)</div>
+        <div>Right-click+hold vertex → vertex — connect (Edge / Directed edge modes)</div>
+        <div>Left-click+hold a vertex — move it</div>
+        <div>Left-click a vertex (no drag) — select &amp; rename it</div>
+      </div>
+
+    </aside>
+  </div>
+</div>

@@ -34,6 +34,7 @@
         <span class="admin-link" (click)="navigateToCrosswords()">{{ 'SIDEBAR.CROSSWORDS' | translate }}</span>
         <span class="admin-link" *ngIf="isAdmin" (click)="navigateToUsers()">{{ 'SIDEBAR.USERS' | translate }}</span>
         <span class="admin-link" *ngIf="isAdmin" (click)="navigateToRoles()">{{ 'SIDEBAR.ROLES' | translate }}</span>
+        <span class="admin-link" *ngIf="isAdmin" routerLink="/admin/graph-lab">🕸️ Graph Lab</span>
         <span class="admin-link" routerLink="/admin/ai-generator">✨ {{ 'SIDEBAR.AI_GENERATOR' | translate }}</span>
       </li>
 

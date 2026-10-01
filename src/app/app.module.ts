@@ -49,6 +49,7 @@ import { AuthInterceptor } from './interceptor/auth.interceptor';
 import { QuillModule } from 'ngx-quill';
 import { LatexPipe } from './pipes/latex.pipe';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { GraphLabComponent } from './admin/graph-lab/graph-lab.component';
 import { CrosswordMultiplayerPlayComponent } from './crosswords/crossword-multiplayer-play/crossword-multiplayer-play.component';
 import { CrosswordTestRunComponent } from './crosswords/crossword-test-run/crossword-test-run.component';
 import { CalendarComponent } from './calendar/calendar.component';
@@ -85,6 +86,7 @@ import { JoinGroupComponent } from './calendar/join-group/join-group.component';
     MetricsComponent,
     LatexPipe,
     UserProfileComponent,
+    GraphLabComponent,
     CrosswordMultiplayerPlayComponent,
     CrosswordTestRunComponent,
     CalendarComponent,
