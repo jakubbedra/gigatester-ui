@@ -32,7 +32,7 @@ export interface CalendarInviteResponse {
   ownerUsername: string;
 }
 
-export type CalendarLinkType = 'TEST' | 'CROSSWORD';
+export type CalendarLinkType = 'TEST' | 'CROSSWORD' | 'GRAPH';
 
 export interface CalendarEventLink {
   linkType: CalendarLinkType;

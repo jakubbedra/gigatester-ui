@@ -9,6 +9,7 @@ import {
 } from '../service/calendar.service';
 import { TestService } from '../service/test.service';
 import { CrosswordService } from '../service/crossword.service';
+import { GraphService, GraphSummary } from '../service/graph.service';
 import { PermissionService } from '../service/permission.service';
 import { ToastService } from '../service/toast.service';
 import { LanguageService } from '../service/language.service';
@@ -38,6 +39,7 @@ export class CalendarComponent implements OnInit {
 
   allTests: TestSummaryResponse[] = [];
   allCrosswords: CrosswordSummaryResponse[] = [];
+  allGraphs: GraphSummary[] = [];
 
   // Group create/edit modal
   showGroupModal = false;
@@ -84,6 +86,7 @@ export class CalendarComponent implements OnInit {
     private calendarService: CalendarService,
     private testService: TestService,
     private crosswordService: CrosswordService,
+    private graphService: GraphService,
     public permissionService: PermissionService,
     private toastService: ToastService,
     private router: Router,
@@ -99,6 +102,7 @@ export class CalendarComponent implements OnInit {
     this.loadGroups();
     this.testService.getTests().subscribe(res => this.allTests = res.tests);
     this.crosswordService.getCrosswords().subscribe(res => this.allCrosswords = res.crosswords);
+    this.graphService.getPlayableGraphs().subscribe(res => this.allGraphs = res);
   }
 
   get isStaff(): boolean {
@@ -454,6 +458,7 @@ export class CalendarComponent implements OnInit {
   linkOptionsFor(linkType: '' | CalendarLinkType): { id: string; name: string }[] {
     if (linkType === 'TEST') return this.allTests.map(t => ({ id: t.id, name: t.name }));
     if (linkType === 'CROSSWORD') return this.allCrosswords.map(c => ({ id: c.id, name: c.name }));
+    if (linkType === 'GRAPH') return this.allGraphs.map(g => ({ id: g.id, name: g.name }));
     return [];
   }
 
@@ -493,6 +498,7 @@ export class CalendarComponent implements OnInit {
 
   goToLinkedResource(link: { linkType: CalendarLinkType; linkId: string }) {
     if (link.linkType === 'TEST') this.router.navigate(['/tests', link.linkId]);
+    else if (link.linkType === 'GRAPH') this.router.navigate(['/graphs/play'], { queryParams: { graphId: link.linkId } });
     else this.router.navigate(['/crosswords', link.linkId]);
   }
 

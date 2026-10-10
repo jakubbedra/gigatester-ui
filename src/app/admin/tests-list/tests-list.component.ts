@@ -1,7 +1,9 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
+import { TranslateService } from '@ngx-translate/core';
+import { GraphService, GraphSummary } from '../../service/graph.service';
 import { TestService } from '../../service/test.service';
 import { CrosswordService } from '../../service/crossword.service';
 import { SubjectsService } from '../../service/subject.service';
@@ -20,6 +22,8 @@ import { AuthorCandidate } from '../../service/subject.service';
 export class TestsListComponent implements OnInit {
   tests: TestSummaryResponse[] = [];
   crosswords: CrosswordSummaryResponse[] = [];
+  graphs: GraphSummary[] = [];
+  subjectGraphIds: string[] = [];
   openMenuId: string | null = null;
 
   subjectName: string | null = null;
@@ -69,6 +73,8 @@ export class TestsListComponent implements OnInit {
   constructor(
     private testService: TestService,
     private crosswordService: CrosswordService,
+    private graphService: GraphService,
+    private translate: TranslateService,
     private subjectsService: SubjectsService,
     private commentService: CommentService,
     private authService: AuthService,
@@ -91,6 +97,10 @@ export class TestsListComponent implements OnInit {
     return this.permissionService.hasPermission(Permission.CROSSWORDS_WRITE);
   }
 
+  get canModifyGraphs(): boolean {
+    return this.permissionService.hasPermission(Permission.GRAPHS_WRITE);
+  }
+
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       this.subjectId = params.get('id') ?? this.route.snapshot.queryParamMap.get('subjectId');
@@ -107,6 +117,7 @@ export class TestsListComponent implements OnInit {
           this.subjectDifficulty = subject.difficulty ?? 0;
           this.subjectTestIds = subject.tests ?? [];
           this.subjectCrosswordIds = subject.crosswords ?? [];
+          this.subjectGraphIds = subject.graphs ?? [];
           this.comments = subject.comments ?? [];
           this.subjectAuthors = subject.authors ?? [];
           const tests$ = subject.tests.length
@@ -115,9 +126,15 @@ export class TestsListComponent implements OnInit {
           const crosswords$ = (subject.crosswords ?? []).length
             ? forkJoin((subject.crosswords ?? []).map(id => this.crosswordService.getCrossword(id)))
             : of([]);
-          return forkJoin([tests$, crosswords$]);
+          const graphs$ = this.subjectGraphIds.length
+            ? this.graphService.getPlayableGraphs().pipe(catchError(() => of([] as GraphSummary[])))
+            : of([] as GraphSummary[]);
+          return forkJoin([tests$, crosswords$, graphs$]);
         })
-      ).subscribe(([tests, crosswords]: any) => {
+      ).subscribe(([tests, crosswords, playableGraphs]: any) => {
+        this.graphs = (playableGraphs as GraphSummary[])
+          .filter(g => this.subjectGraphIds.includes(g.id))
+          .sort((a, b) => a.name.localeCompare(b.name));
         this.tests = tests
           .map((t: any) => ({ id: t.id, name: t.name }))
           .sort((a: TestSummaryResponse, b: TestSummaryResponse) => a.name.localeCompare(b.name));
@@ -131,6 +148,8 @@ export class TestsListComponent implements OnInit {
       this.subjectDifficulty = 0;
       this.subjectTestIds = [];
       this.subjectCrosswordIds = [];
+      this.subjectGraphIds = [];
+      this.graphs = [];
       this.comments = [];
       this.subjectAuthors = [];
       this.testService.getTests().subscribe(res => {
@@ -160,7 +179,8 @@ export class TestsListComponent implements OnInit {
       description: this.subjectDescription ?? '',
       difficulty: value,
       tests: this.subjectTestIds,
-      crosswords: this.subjectCrosswordIds
+      crosswords: this.subjectCrosswordIds,
+      graphs: this.subjectGraphIds
     }).subscribe({ error: () => { this.subjectDifficulty = this.subjectDifficulty; } });
   }
 
@@ -333,6 +353,24 @@ export class TestsListComponent implements OnInit {
     }
   }
 
+  openGraph(id: string) {
+    this.router.navigate(['/graphs/play'], { queryParams: { graphId: id } });
+  }
+
+  editGraph(event: Event, id: string) {
+    event.stopPropagation();
+    this.openMenuId = null;
+    this.router.navigate(['/admin/graph-lab'], { queryParams: { graphId: id } });
+  }
+
+  deleteGraph(event: Event, id: string) {
+    event.stopPropagation();
+    this.openMenuId = null;
+    if (confirm(this.translate.instant('TESTS_LIST.CONFIRM_DELETE_GRAPH'))) {
+      this.graphService.deleteGraph(id).subscribe(() => this.load());
+    }
+  }
+
   canDeleteComment(comment: CommentResponse): boolean {
     if (this.canModify) return true;
     const user = this.authService.getUser();
@@ -369,7 +407,8 @@ export class TestsListComponent implements OnInit {
       description: this.editDescriptionValue,
       difficulty: this.subjectDifficulty,
       tests: this.subjectTestIds,
-      crosswords: this.subjectCrosswordIds
+      crosswords: this.subjectCrosswordIds,
+      graphs: this.subjectGraphIds
     }).subscribe({
       next: () => {
         this.subjectDescription = this.editDescriptionValue;

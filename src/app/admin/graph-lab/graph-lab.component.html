@@ -1,7 +1,7 @@
 <div class="lab-page">
   <div class="lab-header">
-    <h1 class="lab-title">🕸️ Graph Lab <span class="lab-badge">experimental · admin only</span></h1>
-    <a class="back-link" routerLink="/home">← Back</a>
+    <h1 class="lab-title">🕸️ {{ 'GRAPH_LAB.TITLE' | translate }} <span class="lab-badge">{{ 'GRAPH_LAB.BADGE' | translate }}</span></h1>
+    <a class="back-link" routerLink="/home">{{ 'GRAPH_LAB.BACK' | translate }}</a>
   </div>
 
   <div class="lab-layout">
@@ -88,7 +88,7 @@
                         [attr.x]="v.x - (vertexRadius * 2.6)" [attr.y]="v.y - (vertexRadius * 1.6)"
                         [attr.width]="vertexRadius * 5.2" [attr.height]="vertexRadius * 3.2">
           <div xmlns="http://www.w3.org/1999/xhtml" class="vertex-label" [style.font-size.px]="labelFontSize"
-               [title]="v.label || '(unlabeled)'" [innerHTML]="(v.label || '?') | latex"></div>
+               [title]="v.label || ('GRAPH_LAB.UNLABELED' | translate)" [innerHTML]="(v.label || '?') | latex"></div>
         </foreignObject>
       </g>
 
@@ -98,30 +98,30 @@
     <aside class="side-panel">
 
       <div class="panel-section">
-        <div class="panel-label">Mode</div>
+        <div class="panel-label">{{ 'GRAPH_LAB.MODE' | translate }}</div>
         <div class="mode-buttons">
-          <button type="button" class="mode-btn" [class.active]="mode === 'edge'" (click)="setMode('edge')">Edge</button>
-          <button type="button" class="mode-btn" [class.active]="mode === 'directedEdge'" (click)="setMode('directedEdge')">Directed edge</button>
-          <button type="button" class="mode-btn" [class.active]="mode === 'hyperedge'" (click)="setMode('hyperedge')">Directed hyperedge</button>
+          <button type="button" class="mode-btn" [class.active]="mode === 'edge'" (click)="setMode('edge')">{{ 'GRAPH_LAB.MODE_EDGE' | translate }}</button>
+          <button type="button" class="mode-btn" [class.active]="mode === 'directedEdge'" (click)="setMode('directedEdge')">{{ 'GRAPH_LAB.MODE_DIRECTED_EDGE' | translate }}</button>
+          <button type="button" class="mode-btn" [class.active]="mode === 'hyperedge'" (click)="setMode('hyperedge')">{{ 'GRAPH_LAB.MODE_HYPEREDGE' | translate }}</button>
         </div>
       </div>
 
       <div class="panel-section">
-        <div class="panel-label">Edge style</div>
+        <div class="panel-label">{{ 'GRAPH_LAB.EDGE_STYLE' | translate }}</div>
         <div class="mode-buttons horizontal">
-          <button type="button" class="mode-btn" [class.active]="edgeStyle === 'straight'" (click)="setEdgeStyle('straight')">Straight</button>
-          <button type="button" class="mode-btn" [class.active]="edgeStyle === 'curved'" (click)="setEdgeStyle('curved')">Curved</button>
+          <button type="button" class="mode-btn" [class.active]="edgeStyle === 'straight'" (click)="setEdgeStyle('straight')">{{ 'GRAPH_LAB.STYLE_STRAIGHT' | translate }}</button>
+          <button type="button" class="mode-btn" [class.active]="edgeStyle === 'curved'" (click)="setEdgeStyle('curved')">{{ 'GRAPH_LAB.STYLE_CURVED' | translate }}</button>
         </div>
       </div>
 
       <div class="panel-section">
-        <div class="panel-label">Display</div>
+        <div class="panel-label">{{ 'GRAPH_LAB.DISPLAY' | translate }}</div>
         <label class="checkbox-row">
           <input type="checkbox" [checked]="showVertices" (change)="setShowVertices(!showVertices)" />
-          Show vertices
+          {{ 'GRAPH_LAB.SHOW_VERTICES' | translate }}
         </label>
         <label class="font-size-row">
-          <span>Label font size</span>
+          <span>{{ 'GRAPH_LAB.LABEL_FONT_SIZE' | translate }}</span>
           <input type="range" min="8" max="28" step="1" [value]="labelFontSize"
                  (input)="setLabelFontSize(+$any($event.target).value)" />
           <span class="font-size-value">{{ labelFontSize }}px</span>
@@ -130,93 +130,112 @@
 
       <!-- Mode-specific instructions -->
       <div class="panel-section hint-box" *ngIf="mode !== 'hyperedge'">
-        Right-click+hold a vertex and drag to another to connect them.
-        {{ mode === 'directedEdge' ? 'The edge points from the vertex you started on.' : '' }}
+        {{ 'GRAPH_LAB.HINT_CONNECT' | translate }}
+        {{ mode === 'directedEdge' ? ('GRAPH_LAB.HINT_DIRECTED' | translate) : '' }}
       </div>
 
-      <div class="panel-section hint-box" *ngIf="mode === 'hyperedge'">
-        Click vertices to add them as <b>sources</b>. Shift+click to add them as <b>targets</b>. Click again to remove.
-      </div>
+      <div class="panel-section hint-box" *ngIf="mode === 'hyperedge'" [innerHTML]="'GRAPH_LAB.HINT_HYPER' | translate"></div>
 
       <div class="panel-section hint-box">
-        Left-click+hold a vertex to move it.
+        {{ 'GRAPH_LAB.HINT_MOVE' | translate }}
       </div>
 
       <!-- Hyperedge draft -->
       <div class="panel-section" *ngIf="mode === 'hyperedge'">
-        <div class="panel-label">Hyperedge draft</div>
+        <div class="panel-label">{{ 'GRAPH_LAB.HYPEREDGE_DRAFT' | translate }}</div>
         <div class="draft-group">
-          <div class="draft-title source-title">Sources ({{ hyperSources.size }})</div>
+          <div class="draft-title source-title">{{ 'GRAPH_LAB.SOURCES_COUNT' | translate:{count: hyperSources.size} }}</div>
           <div class="draft-chip-row">
             <span class="draft-chip source-chip" *ngFor="let id of hyperSources" (click)="removeFromDraft(id)">
               {{ vertexLabel(id) }} ✕
             </span>
-            <span class="draft-empty" *ngIf="hyperSources.size === 0">none yet</span>
+            <span class="draft-empty" *ngIf="hyperSources.size === 0">{{ 'GRAPH_LAB.NONE_YET' | translate }}</span>
           </div>
         </div>
         <div class="draft-group">
-          <div class="draft-title target-title">Targets ({{ hyperTargets.size }})</div>
+          <div class="draft-title target-title">{{ 'GRAPH_LAB.TARGETS_COUNT' | translate:{count: hyperTargets.size} }}</div>
           <div class="draft-chip-row">
             <span class="draft-chip target-chip" *ngFor="let id of hyperTargets" (click)="removeFromDraft(id)">
               {{ vertexLabel(id) }} ✕
             </span>
-            <span class="draft-empty" *ngIf="hyperTargets.size === 0">none yet</span>
+            <span class="draft-empty" *ngIf="hyperTargets.size === 0">{{ 'GRAPH_LAB.NONE_YET' | translate }}</span>
           </div>
         </div>
-        <p class="draft-warning" *ngIf="hyperDraftOverlaps">⚠ A vertex is both a source and a target.</p>
+        <p class="draft-warning" *ngIf="hyperDraftOverlaps">⚠ {{ 'GRAPH_LAB.OVERLAP_WARNING' | translate }}</p>
         <div class="draft-actions">
-          <button type="button" class="btn-secondary" (click)="cancelHyperDraft()">Clear</button>
-          <button type="button" class="btn-primary" [disabled]="!hyperDraftReady" (click)="createHyperedge()">Create hyperedge</button>
+          <button type="button" class="btn-secondary" (click)="cancelHyperDraft()">{{ 'GRAPH_LAB.CLEAR' | translate }}</button>
+          <button type="button" class="btn-primary" [disabled]="!hyperDraftReady" (click)="createHyperedge()">{{ 'GRAPH_LAB.CREATE_HYPEREDGE' | translate }}</button>
         </div>
       </div>
 
       <!-- Selected vertex -->
       <div class="panel-section" *ngIf="selectedVertex as sv">
-        <div class="panel-label">Selected vertex</div>
+        <div class="panel-label">{{ 'GRAPH_LAB.SELECTED_VERTEX' | translate }}</div>
         <input #labelInputEl class="label-input" type="text" [(ngModel)]="sv.label" (ngModelChange)="onVertexLabelChange()"
-               placeholder="Label…" />
-        <button type="button" class="btn-danger" (click)="deleteVertex(sv.id)">Delete vertex</button>
+               [placeholder]="'GRAPH_LAB.LABEL_PLACEHOLDER' | translate" />
+        <button type="button" class="btn-danger" (click)="deleteVertex(sv.id)">{{ 'GRAPH_LAB.DELETE_VERTEX' | translate }}</button>
       </div>
 
       <!-- Selected hyperedge -->
       <div class="panel-section" *ngIf="selectedHyperedge as sh">
-        <div class="panel-label">Selected hyperedge</div>
+        <div class="panel-label">{{ 'GRAPH_LAB.SELECTED_HYPEREDGE' | translate }}</div>
         <input class="label-input" type="text" [(ngModel)]="sh.label" (ngModelChange)="onHyperedgeLabelChange()"
-               placeholder="Label (e.g. enzyme / reaction name)…" />
-        <div class="hyperedge-detail"><b>Sources:</b> {{ hyperedgeSourceLabels(sh) }}</div>
-        <div class="hyperedge-detail"><b>Targets:</b> {{ hyperedgeTargetLabels(sh) }}</div>
+               [placeholder]="'GRAPH_LAB.HYPEREDGE_LABEL_PLACEHOLDER' | translate" />
+        <div class="hyperedge-detail"><b>{{ 'GRAPH_LAB.SOURCES' | translate }}</b> {{ hyperedgeSourceLabels(sh) }}</div>
+        <div class="hyperedge-detail"><b>{{ 'GRAPH_LAB.TARGETS' | translate }}</b> {{ hyperedgeTargetLabels(sh) }}</div>
         <div class="draft-actions">
-          <button type="button" class="btn-secondary" *ngIf="sh.hubX !== undefined" (click)="resetHubPosition(sh)">Reset position</button>
-          <button type="button" class="btn-danger" (click)="onHubContextMenu($event, sh.id)">Delete hyperedge</button>
+          <button type="button" class="btn-secondary" *ngIf="sh.hubX !== undefined" (click)="resetHubPosition(sh)">{{ 'GRAPH_LAB.RESET_POSITION' | translate }}</button>
+          <button type="button" class="btn-danger" (click)="onHubContextMenu($event, sh.id)">{{ 'GRAPH_LAB.DELETE_HYPEREDGE' | translate }}</button>
         </div>
+      </div>
+
+      <!-- Server save/load -->
+      <div class="panel-section">
+        <div class="panel-label">{{ 'GRAPH_LAB.SAVE_TO_SERVER' | translate }}</div>
+        <input class="label-input" type="text" [(ngModel)]="graphName" [placeholder]="'GRAPH_LAB.GRAPH_NAME_PLACEHOLDER' | translate" />
+        <div class="draft-actions">
+          <button type="button" class="btn-primary" [disabled]="saving" (click)="saveToServer()">
+            {{ (serverGraphId ? 'GRAPH_LAB.SAVE' : 'GRAPH_LAB.SAVE_AS_NEW') | translate }}
+          </button>
+          <button type="button" class="btn-secondary" *ngIf="serverGraphId" [disabled]="saving" (click)="saveAsNewOnServer()">{{ 'GRAPH_LAB.SAVE_AS_COPY' | translate }}</button>
+        </div>
+        <p class="draft-warning" *ngIf="saveError">⚠ {{ saveError }}</p>
+
+        <div class="saved-graph-list" *ngIf="savedGraphs.length > 0">
+          <div class="saved-graph-row" *ngFor="let g of savedGraphs" [class.active]="g.id === serverGraphId">
+            <span class="saved-graph-name" (click)="loadFromServer(g.id)">{{ g.name }}</span>
+            <button type="button" class="saved-graph-delete" (click)="deleteFromServer(g.id)">✕</button>
+          </div>
+        </div>
+        <span class="draft-empty" *ngIf="!loadingGraphs && savedGraphs.length === 0">{{ 'GRAPH_LAB.NO_SAVED_GRAPHS' | translate }}</span>
       </div>
 
       <!-- Stats + whole-canvas actions -->
       <div class="panel-section">
-        <div class="panel-label">Graph</div>
+        <div class="panel-label">{{ 'GRAPH_LAB.GRAPH' | translate }}</div>
         <div class="stats-row">
-          <span>{{ vertices.length }} vertices</span>
-          <span>{{ edges.length }} edges</span>
-          <span>{{ hyperedges.length }} hyperedges</span>
+          <span>{{ 'GRAPH_LAB.VERTICES_COUNT' | translate:{count: vertices.length} }}</span>
+          <span>{{ 'GRAPH_LAB.EDGES_COUNT' | translate:{count: edges.length} }}</span>
+          <span>{{ 'GRAPH_LAB.HYPEREDGES_COUNT' | translate:{count: hyperedges.length} }}</span>
         </div>
         <div class="draft-actions">
-          <button type="button" class="btn-secondary" (click)="exportJson()">Export JSON</button>
-          <button type="button" class="btn-secondary" (click)="triggerImport(fileInput)">Import JSON</button>
+          <button type="button" class="btn-secondary" (click)="exportJson()">{{ 'GRAPH_LAB.EXPORT_JSON' | translate }}</button>
+          <button type="button" class="btn-secondary" (click)="triggerImport(fileInput)">{{ 'GRAPH_LAB.IMPORT_JSON' | translate }}</button>
         </div>
         <input #fileInput type="file" accept="application/json" hidden (change)="onImportFileSelected($event)" />
-        <button type="button" class="btn-danger full-width" (click)="clearCanvas()">Clear canvas</button>
+        <button type="button" class="btn-danger full-width" (click)="clearCanvas()">{{ 'GRAPH_LAB.CLEAR_CANVAS' | translate }}</button>
       </div>
 
       <!-- Legend -->
       <div class="panel-section legend">
-        <div class="panel-label">Controls</div>
-        <div>Right-click empty space — add vertex</div>
-        <div>Right-click a vertex (no drag) — delete it</div>
-        <div>Right-click an edge / hub — delete it</div>
-        <div>Left-click+hold a hub — move it (pins it in place)</div>
-        <div>Right-click+hold vertex → vertex — connect (Edge / Directed edge modes)</div>
-        <div>Left-click+hold a vertex — move it</div>
-        <div>Left-click a vertex (no drag) — select &amp; rename it</div>
+        <div class="panel-label">{{ 'GRAPH_LAB.CONTROLS' | translate }}</div>
+        <div>{{ 'GRAPH_LAB.CTRL_1' | translate }}</div>
+        <div>{{ 'GRAPH_LAB.CTRL_2' | translate }}</div>
+        <div>{{ 'GRAPH_LAB.CTRL_3' | translate }}</div>
+        <div>{{ 'GRAPH_LAB.CTRL_4' | translate }}</div>
+        <div>{{ 'GRAPH_LAB.CTRL_5' | translate }}</div>
+        <div>{{ 'GRAPH_LAB.CTRL_6' | translate }}</div>
+        <div>{{ 'GRAPH_LAB.CTRL_7' | translate }}</div>
       </div>
 
     </aside>

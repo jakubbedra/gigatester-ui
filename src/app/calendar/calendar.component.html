@@ -63,7 +63,7 @@
                   {{ 'CALENDAR.EDIT' | translate }}
                 </button>
                 <button class="btn-primary" *ngFor="let link of e.links" (click)="goToLinkedResource(link)">
-                  {{ 'CALENDAR.GO_TO' | translate }} {{ link.linkName || (link.linkType === 'TEST' ? ('CALENDAR.LINK_TEST' | translate) : ('CALENDAR.LINK_CROSSWORD' | translate)) }}
+                  {{ 'CALENDAR.GO_TO' | translate }} {{ link.linkName || (link.linkType === 'TEST' ? ('CALENDAR.LINK_TEST' | translate) : (link.linkType === 'GRAPH' ? ('CALENDAR.LINK_GRAPH' | translate) : ('CALENDAR.LINK_CROSSWORD' | translate))) }}
                 </button>
               </div>
             </div>
@@ -217,6 +217,7 @@
           <option value="">{{ 'CALENDAR.LINK_NONE' | translate }}</option>
           <option value="TEST">{{ 'CALENDAR.LINK_TEST' | translate }}</option>
           <option value="CROSSWORD">{{ 'CALENDAR.LINK_CROSSWORD' | translate }}</option>
+          <option value="GRAPH">{{ 'CALENDAR.LINK_GRAPH' | translate }}</option>
         </select>
         <select class="text-input" *ngIf="link.linkType" [(ngModel)]="link.linkId">
           <option value="" disabled>{{ 'CALENDAR.SELECT_RESOURCE' | translate }}</option>

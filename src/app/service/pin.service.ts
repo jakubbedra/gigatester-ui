@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Environment } from '../../../environment';
 
-export type PinnedEntityType = 'TEST' | 'CROSSWORD';
+export type PinnedEntityType = 'TEST' | 'CROSSWORD' | 'GRAPH';
 
 export interface PinResponse {
   entityType: PinnedEntityType;

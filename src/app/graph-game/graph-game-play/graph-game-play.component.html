@@ -1,0 +1,119 @@
+<div class="play-page">
+  <div class="play-header">
+    <h1 class="play-title">🕸️ {{ 'GRAPH_GAME.TITLE' | translate }} <span class="play-badge" *ngIf="session">{{ session.graphName }}</span></h1>
+    <a class="back-link" routerLink="/graphs/play">{{ 'GRAPH_GAME.CHOOSE_ANOTHER' | translate }}</a>
+  </div>
+
+  <p class="loading" *ngIf="loading">{{ 'GRAPH_GAME.LOADING' | translate }}</p>
+  <p class="load-error" *ngIf="loadError">{{ loadError }}</p>
+
+  <ng-container *ngIf="session as s">
+    <div class="progress-row">
+      <span>{{ 'GRAPH_GAME.REVEALED' | translate:{solved: s.solvedCount, total: s.totalGuessable} }}</span>
+      <span class="difficulty-tag">{{ 'GRAPH_GAME.DIFF_' + s.difficulty | translate }}</span>
+      <span class="completed-tag" *ngIf="s.completed">🎉 {{ 'GRAPH_GAME.COMPLETE' | translate }}</span>
+    </div>
+
+    <div class="play-layout">
+      <svg class="canvas" viewBox="0 0 1400 800">
+
+        <defs>
+          <marker id="arrow-edge" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-head"></path>
+          </marker>
+          <marker id="arrow-hub" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-head hub-arrow-head"></path>
+          </marker>
+        </defs>
+
+        <!-- Simple edges -->
+        <g *ngFor="let e of s.edges">
+          <ng-container *ngIf="vertexById(e.from) as a">
+            <ng-container *ngIf="vertexById(e.to) as b">
+              <ng-container *ngIf="trimmedLine(a, b, vertexRadius, e.kind === 'directedEdge' ? vertexRadius + 3 : vertexRadius) as line">
+                <path class="edge-line" [class.directed]="e.kind === 'directedEdge'"
+                      [attr.d]="pathData({x: line.x1, y: line.y1}, {x: line.x2, y: line.y2})"
+                      [attr.marker-end]="e.kind === 'directedEdge' ? 'url(#arrow-edge)' : null"></path>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </g>
+
+        <!-- Hyperedges -->
+        <g *ngFor="let h of s.hyperedges">
+          <ng-container *ngIf="hubPosition(h) as hub">
+            <ng-container *ngFor="let sid of h.sources">
+              <ng-container *ngIf="vertexById(sid) as sv">
+                <ng-container *ngIf="trimmedLine(sv, hub, vertexRadius, hubRadius) as line">
+                  <path class="hyper-spoke source" [attr.d]="pathData({x: line.x1, y: line.y1}, {x: line.x2, y: line.y2})"></path>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+            <ng-container *ngFor="let tid of h.targets">
+              <ng-container *ngIf="vertexById(tid) as tv">
+                <ng-container *ngIf="trimmedLine(hub, tv, hubRadius, vertexRadius + 3) as line">
+                  <path class="hyper-spoke target" [attr.d]="pathData({x: line.x1, y: line.y1}, {x: line.x2, y: line.y2})"
+                        marker-end="url(#arrow-hub)"></path>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+
+            <circle class="hub" [attr.cx]="hub.x" [attr.cy]="hub.y" [attr.r]="hubRadius"></circle>
+            <foreignObject *ngIf="h.label" class="hub-label-box"
+                            [attr.x]="hub.x - 90" [attr.y]="hub.y - hubRadius - 24" width="180" height="22">
+              <div xmlns="http://www.w3.org/1999/xhtml" class="hub-label" [title]="h.label" [innerHTML]="h.label | latex"></div>
+            </foreignObject>
+          </ng-container>
+        </g>
+
+        <!-- Vertices -->
+        <g *ngFor="let v of s.vertices" class="vertex-group" [class.blank]="!v.revealed" [class.selected]="v.id === selectedBlankId" [class.drag-over]="v.id === dragOverId"
+           (click)="selectBlank(v)" (dragover)="onVertexDragOver($event, v)" (dragleave)="onVertexDragLeave(v)"
+           (drop)="onVertexDrop($event, v)">
+          <circle class="vertex" [class.vertex-hidden]="!s.showVertices && v.revealed" [class.correct-flash]="feedback?.vertexId === v.id && feedback?.correct"
+                  [class.wrong-flash]="feedback?.vertexId === v.id && !feedback?.correct"
+                  [attr.cx]="v.x" [attr.cy]="v.y" [attr.r]="vertexRadius"></circle>
+          <foreignObject class="vertex-label-box"
+                          [attr.x]="v.x - (vertexRadius * 2.6)" [attr.y]="v.y - (vertexRadius * 1.6)"
+                          [attr.width]="vertexRadius * 5.2" [attr.height]="vertexRadius * 3.2">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="vertex-label" *ngIf="v.revealed" [innerHTML]="v.label | latex"></div>
+            <div xmlns="http://www.w3.org/1999/xhtml" class="vertex-blank" *ngIf="!v.revealed">?</div>
+          </foreignObject>
+        </g>
+
+      </svg>
+
+      <aside class="side-panel">
+        <ng-container *ngIf="isDrag">
+          <div class="panel-label">{{ 'GRAPH_GAME.BANK_TITLE' | translate }}</div>
+          <div class="bank">
+            <div class="bank-chip" *ngFor="let label of s.bank; let i = index" draggable="true"
+                 [class.chosen]="chosenIndex === i" [class.dragging]="draggedIndex === i"
+                 (dragstart)="onBankDragStart($event, i)" (dragend)="onBankDragEnd()" (click)="chooseBankItem(i)"
+                 [innerHTML]="label | latex"></div>
+          </div>
+          <div class="hint-box" *ngIf="s.bank.length > 0">{{ 'GRAPH_GAME.DRAG_HINT' | translate }}</div>
+          <div class="hint-box" *ngIf="s.bank.length === 0">{{ 'GRAPH_GAME.BANK_EMPTY' | translate }}</div>
+          <p class="feedback wrong" *ngIf="feedback && !feedback.correct">{{ 'GRAPH_GAME.WRONG_DROP' | translate }}</p>
+        </ng-container>
+        <ng-container *ngIf="!isDrag && selectedBlankId; else hint">
+          <div class="panel-label">{{ 'GRAPH_GAME.WHAT_CALLED' | translate }}</div>
+          <input class="guess-input" type="text" [(ngModel)]="guessText" [placeholder]="'GRAPH_GAME.GUESS_PLACEHOLDER' | translate"
+                 (keydown.enter)="submitGuess()" autofocus />
+          <div class="guess-actions">
+            <button type="button" class="btn-secondary" (click)="cancelGuess()">{{ 'GRAPH_GAME.CANCEL' | translate }}</button>
+            <button type="button" class="btn-primary" [disabled]="checking || !guessText.trim()" (click)="submitGuess()">
+              {{ (checking ? 'GRAPH_GAME.CHECKING' : 'GRAPH_GAME.SUBMIT') | translate }}
+            </button>
+          </div>
+          <p class="feedback wrong" *ngIf="feedback && feedback.vertexId === selectedBlankId && !feedback.correct">
+            {{ 'GRAPH_GAME.WRONG' | translate }}
+          </p>
+        </ng-container>
+        <ng-template #hint>
+          <div class="hint-box" *ngIf="!isDrag">{{ 'GRAPH_GAME.HINT' | translate }}</div>
+        </ng-template>
+      </aside>
+    </div>
+  </ng-container>
+</div>

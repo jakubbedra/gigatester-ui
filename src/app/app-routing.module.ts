@@ -26,6 +26,9 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { JoinGroupComponent } from './calendar/join-group/join-group.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { GraphLabComponent } from './admin/graph-lab/graph-lab.component';
+import { GraphsListComponent } from './admin/graphs-list/graphs-list.component';
+import { GraphGameListComponent } from './graph-game/graph-game-list/graph-game-list.component';
+import { GraphGamePlayComponent } from './graph-game/graph-game-play/graph-game-play.component';
 import { AdminGuard } from './guard/admin.guard';
 import { AuthGuard } from './guard/auth.guard';
 import { ModeratorGuard } from './guard/moderator.guard';
@@ -48,7 +51,10 @@ const routes: Routes = [
   { path: 'admin/crosswords/:id/edit', component: CrosswordEditComponent, canActivate: [AuthGuard, ModeratorGuard] },
   { path: 'admin/users', component: UsersListComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'admin/roles', component: RolesListComponent, canActivate: [AuthGuard, AdminGuard] },
-  { path: 'admin/graph-lab', component: GraphLabComponent, canActivate: [AuthGuard, AdminGuard] },
+  { path: 'admin/graph-lab', component: GraphLabComponent, canActivate: [AuthGuard, ModeratorGuard] },
+  { path: 'admin/graphs', component: GraphsListComponent, canActivate: [AuthGuard, ModeratorGuard] },
+  { path: 'graphs/play', component: GraphGameListComponent, canActivate: [AuthGuard] },
+  { path: 'graphs/sessions/:id', component: GraphGamePlayComponent, canActivate: [AuthGuard] },
   { path: 'subjects/:id', component: TestsListComponent, canActivate: [AuthGuard] },
   { path: 'tests', component: TestsListComponent, canActivate: [AuthGuard] },
   { path: 'admin/tests', component: TestsListComponent, canActivate: [AuthGuard, ModeratorGuard] },

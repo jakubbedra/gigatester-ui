@@ -144,6 +144,29 @@
     </ng-template>
   </ng-container>
 
+  <!-- Graphs (subject view only) -->
+  <ng-container *ngIf="subjectId">
+    <div class="section-label">{{ 'TESTS_LIST.GRAPHS' | translate }}</div>
+    <div class="grid" *ngIf="graphs.length > 0; else emptyGraphs">
+      <div class="card" *ngFor="let g of graphs" (click)="openGraph(g.id)">
+        <div class="card-body">
+          <div class="card-icon">🕸️</div>
+          <div class="card-name">{{ g.name }}</div>
+        </div>
+        <div class="context-wrapper" *ngIf="canModifyGraphs" (click)="stopPropagation($event)">
+          <button class="ctx-btn" (click)="toggleMenu($event, 'gr-' + g.id)">···</button>
+          <div class="ctx-menu" *ngIf="openMenuId === 'gr-' + g.id">
+            <button (click)="editGraph($event, g.id)">{{ 'SIDEBAR.EDIT' | translate }}</button>
+            <button class="danger" (click)="deleteGraph($event, g.id)">{{ 'SIDEBAR.DELETE' | translate }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-template #emptyGraphs>
+      <div class="empty-inline">{{ 'TESTS_LIST.NO_GRAPHS_SUBJECT' | translate }}</div>
+    </ng-template>
+  </ng-container>
+
   <!-- Comments (subject view only) -->
   <ng-container *ngIf="subjectId">
     <div class="section-label comments-label">{{ 'TESTS_LIST.COMMENTS' | translate }}</div>

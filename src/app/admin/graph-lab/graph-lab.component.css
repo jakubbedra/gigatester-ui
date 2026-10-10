@@ -338,3 +338,43 @@
 }
 .font-size-row input[type="range"] { flex: 1; accent-color: var(--c-7b6df5); }
 .font-size-value { width: 34px; text-align: right; color: var(--c-cccccc); }
+
+.saved-graph-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.saved-graph-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--c-181818);
+  border: 1px solid var(--c-2a2a2a);
+}
+.saved-graph-row.active { border-color: var(--c-7b6df5); background: var(--a-1); }
+
+.saved-graph-name {
+  font-size: 12px;
+  color: var(--c-cccccc);
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.saved-graph-name:hover { color: var(--c-e0e0e0); }
+
+.saved-graph-delete {
+  background: transparent;
+  border: none;
+  color: var(--c-777777);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 4px;
+}
+.saved-graph-delete:hover { color: #f05050; }

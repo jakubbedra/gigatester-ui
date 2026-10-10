@@ -1,0 +1,51 @@
+<div class="test-wrapper">
+  <div class="test-card">
+
+    <div class="title-row">
+      <h1 class="test-title">🕸️ {{ 'GRAPH_GAME.TITLE' | translate }}</h1>
+    </div>
+
+    <p class="loading" *ngIf="loading">{{ 'GRAPH_GAME.LOADING_GRAPHS' | translate }}</p>
+
+    <div class="empty" *ngIf="!loading && graphs.length === 0">
+      {{ 'GRAPH_GAME.NO_GRAPHS' | translate }}
+    </div>
+
+    <ng-container *ngIf="!loading && graphs.length > 0">
+
+      <div class="field-section">
+        <div class="field-label">{{ 'GRAPH_GAME.CHOOSE_GRAPH' | translate }}</div>
+        <div class="graph-list">
+          <button type="button" class="graph-item" *ngFor="let g of graphs"
+                  [class.active]="g.id === selectedGraphId" (click)="selectGraph(g.id)">
+            <span class="graph-item-icon">🕸️</span>
+            <span class="graph-item-name">{{ g.name || ('GRAPH_GAME.UNNAMED' | translate) }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="field-section">
+        <div class="field-label">{{ 'GRAPH_GAME.MODE' | translate }}</div>
+        <div class="mode-tabs">
+          <button type="button" class="mode-tab" *ngFor="let m of modes"
+                  [class.active]="mode === m.value" (click)="mode = m.value">{{ m.label | translate }}</button>
+        </div>
+        <div class="tag-filter-hint">{{ currentModeHint | translate }}</div>
+      </div>
+
+      <div class="field-section">
+        <div class="field-label">{{ 'GRAPH_GAME.DIFFICULTY' | translate }}</div>
+        <div class="tag-mode-toggle">
+          <button type="button" class="tag-mode-btn" *ngFor="let d of difficulties"
+                  [class.active]="difficulty === d.value" (click)="difficulty = d.value">{{ d.label | translate }}</button>
+        </div>
+        <div class="tag-filter-hint">{{ currentDifficultyHint | translate }}</div>
+      </div>
+
+      <button type="button" class="start-btn" [disabled]="!selectedGraphId || starting" (click)="startGame()">
+        {{ (starting ? 'GRAPH_GAME.STARTING' : 'GRAPH_GAME.START') | translate }}
+      </button>
+
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+<div class="page">
+  <div class="page-header">
+    <h1 class="page-title">{{ 'GRAPHS_LIST.TITLE' | translate }}</h1>
+    <button class="btn-add" *ngIf="canWrite" (click)="openNew()">+ {{ 'GRAPHS_LIST.NEW_GRAPH' | translate }}</button>
+  </div>
+
+  <div class="grid" *ngIf="graphs.length > 0; else empty">
+    <div class="card" *ngFor="let g of graphs" (click)="edit(g.id)">
+
+      <div class="card-header">
+        <div class="card-icon">🕸️</div>
+        <div class="card-name">{{ g.name || ('GRAPH_GAME.UNNAMED' | translate) }}</div>
+        <div class="context-wrapper" (click)="stopPropagation($event)">
+          <button class="ctx-btn" (click)="toggleMenu($event, g.id)">···</button>
+          <div class="ctx-menu" *ngIf="openMenuId === g.id">
+            <button (click)="play($event, g.id)">{{ 'GRAPHS_LIST.PLAY' | translate }}</button>
+            <button (click)="edit(g.id)">{{ 'SIDEBAR.EDIT' | translate }}</button>
+            <button class="danger" (click)="delete($event, g.id)">{{ 'SIDEBAR.DELETE' | translate }}</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <span class="edit-hint">{{ 'CROSSWORDS_LIST.CLICK_EDIT' | translate }}</span>
+      </div>
+
+    </div>
+  </div>
+
+  <ng-template #empty>
+    <div class="empty-state">
+      <div class="empty-icon">🕸️</div>
+      <p>{{ 'GRAPHS_LIST.EMPTY' | translate }}</p>
+    </div>
+  </ng-template>
+</div>

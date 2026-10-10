@@ -1,4 +1,7 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { GraphService, GraphSummary } from '../../service/graph.service';
 
 type Mode = 'edge' | 'directedEdge' | 'hyperedge';
 
@@ -51,7 +54,7 @@ function freshId(prefix: string): string {
   templateUrl: './graph-lab.component.html',
   styleUrls: ['./graph-lab.component.css']
 })
-export class GraphLabComponent {
+export class GraphLabComponent implements OnInit {
   readonly vertexRadius = VERTEX_RADIUS;
   readonly hubRadius = HUB_RADIUS;
 
@@ -77,6 +80,14 @@ export class GraphLabComponent {
   // Side-panel selection
   selectedVertexId: string | null = null;
   selectedHyperedgeId: string | null = null;
+
+  // Server-side save/load (separate from the localStorage autosave draft above)
+  serverGraphId: string | null = null;
+  graphName = '';
+  savedGraphs: GraphSummary[] = [];
+  loadingGraphs = false;
+  saving = false;
+  saveError: string | null = null;
 
   @ViewChild('svgEl') svgElRef!: ElementRef<SVGSVGElement>;
   @ViewChild('labelInputEl') labelInputElRef?: ElementRef<HTMLInputElement>;
@@ -116,7 +127,7 @@ export class GraphLabComponent {
   private readonly boundMouseMove = (e: MouseEvent) => this.onDocumentMouseMove(e);
   private readonly boundMouseUp = (e: MouseEvent) => this.onDocumentMouseUp(e);
 
-  constructor() {
+  constructor(private graphService: GraphService, private translate: TranslateService, private route: ActivatedRoute) {
     this.restore();
     try {
       const saved = localStorage.getItem('graph-lab:edgeStyle');
@@ -129,6 +140,12 @@ export class GraphLabComponent {
         if (!Number.isNaN(n) && n > 0) this.labelFontSize = n;
       }
     } catch { /* ignore */ }
+  }
+
+  ngOnInit() {
+    this.loadGraphList();
+    const graphId = this.route.snapshot.queryParamMap.get('graphId');
+    if (graphId) this.loadFromServer(graphId);
   }
 
   // ── Mode ─────────────────────────────────────────────────────────────────
@@ -528,14 +545,14 @@ export class GraphLabComponent {
 
   vertexLabel(id: string): string {
     const v = this.vertexById(id);
-    return v?.label?.trim() || '(unlabeled)';
+    return v?.label?.trim() || this.translate.instant('GRAPH_LAB.UNLABELED');
   }
 
   // ── Whole-canvas actions ─────────────────────────────────────────────────
 
   clearCanvas() {
     if (this.vertices.length === 0 && this.edges.length === 0 && this.hyperedges.length === 0) return;
-    if (!confirm('Clear the whole canvas? This cannot be undone.')) return;
+    if (!confirm(this.translate.instant('GRAPH_LAB.CONFIRM_CLEAR'))) return;
     this.vertices = [];
     this.edges = [];
     this.hyperedges = [];
@@ -543,6 +560,74 @@ export class GraphLabComponent {
     this.selectedHyperedgeId = null;
     this.cancelHyperDraft();
     this.persist();
+  }
+
+  // ── Server-side save/load ────────────────────────────────────────────────
+
+  private currentGraphJson(): string {
+    return JSON.stringify({ vertices: this.vertices, edges: this.edges, hyperedges: this.hyperedges, showVertices: this.showVertices, edgeStyle: this.edgeStyle });
+  }
+
+  loadGraphList() {
+    this.loadingGraphs = true;
+    this.graphService.getGraphs().subscribe({
+      next: list => { this.savedGraphs = list; this.loadingGraphs = false; },
+      error: () => { this.loadingGraphs = false; }
+    });
+  }
+
+  saveToServer() {
+    if (!this.graphName.trim()) { this.saveError = this.translate.instant('GRAPH_LAB.ERR_NAME_REQUIRED'); return; }
+    this.saving = true;
+    this.saveError = null;
+    const request = { name: this.graphName.trim(), graphJson: this.currentGraphJson() };
+    const done = () => { this.saving = false; this.loadGraphList(); };
+    if (this.serverGraphId) {
+      this.graphService.updateGraph(this.serverGraphId, request).subscribe({
+        next: done,
+        error: () => { this.saving = false; this.saveError = this.translate.instant('GRAPH_LAB.ERR_SAVE_FAILED'); }
+      });
+    } else {
+      this.graphService.addGraph(request).subscribe({
+        next: id => { this.serverGraphId = id; done(); },
+        error: () => { this.saving = false; this.saveError = this.translate.instant('GRAPH_LAB.ERR_SAVE_FAILED'); }
+      });
+    }
+  }
+
+  saveAsNewOnServer() {
+    this.serverGraphId = null;
+    this.saveToServer();
+  }
+
+  loadFromServer(id: string) {
+    this.graphService.getGraph(id).subscribe({
+      next: record => {
+        const data = JSON.parse(record.graphJson);
+        this.vertices = data.vertices ?? [];
+        this.edges = data.edges ?? [];
+        this.hyperedges = data.hyperedges ?? [];
+        if (typeof data.showVertices === 'boolean') this.setShowVertices(data.showVertices);
+        if (data.edgeStyle === 'straight' || data.edgeStyle === 'curved') this.setEdgeStyle(data.edgeStyle);
+        this.serverGraphId = record.id;
+        this.graphName = record.name;
+        this.selectedVertexId = null;
+        this.selectedHyperedgeId = null;
+        this.cancelHyperDraft();
+        this.persist();
+      },
+      error: () => { this.saveError = this.translate.instant('GRAPH_LAB.ERR_LOAD_FAILED'); }
+    });
+  }
+
+  deleteFromServer(id: string) {
+    if (!confirm(this.translate.instant('GRAPH_LAB.CONFIRM_DELETE_SAVED'))) return;
+    this.graphService.deleteGraph(id).subscribe({
+      next: () => {
+        if (this.serverGraphId === id) this.serverGraphId = null;
+        this.loadGraphList();
+      }
+    });
   }
 
   exportJson() {
@@ -579,7 +664,7 @@ export class GraphLabComponent {
         this.cancelHyperDraft();
         this.persist();
       } catch {
-        alert('Could not read that file — is it a graph exported from this page?');
+        alert(this.translate.instant('GRAPH_LAB.ERR_IMPORT_FAILED'));
       }
     };
     reader.readAsText(file);

@@ -246,6 +246,7 @@ export interface SubjectRequest {
     difficulty?: number;
     tests: string[];
     crosswords: string[];
+    graphs: string[];
 }
 
 export interface CommentResponse {
@@ -279,6 +280,7 @@ export interface SubjectResponse {
     difficulty: number;
     tests: string[];
     crosswords: string[];
+    graphs: string[];
     comments: CommentResponse[];
     authors: SubjectAuthor[];
 }
@@ -437,6 +439,8 @@ export const enum Permission {
     TESTS_WRITE = "TESTS_WRITE",
     CROSSWORDS_READ = "CROSSWORDS_READ",
     CROSSWORDS_WRITE = "CROSSWORDS_WRITE",
+    GRAPHS_READ = "GRAPHS_READ",
+    GRAPHS_WRITE = "GRAPHS_WRITE",
 }
 
 export interface RoleRequest {

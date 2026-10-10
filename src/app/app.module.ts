@@ -54,6 +54,9 @@ import { CrosswordMultiplayerPlayComponent } from './crosswords/crossword-multip
 import { CrosswordTestRunComponent } from './crosswords/crossword-test-run/crossword-test-run.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { JoinGroupComponent } from './calendar/join-group/join-group.component';
+import { GraphsListComponent } from './admin/graphs-list/graphs-list.component';
+import { GraphGameListComponent } from './graph-game/graph-game-list/graph-game-list.component';
+import { GraphGamePlayComponent } from './graph-game/graph-game-play/graph-game-play.component';
 
 @NgModule({
   declarations: [
@@ -91,6 +94,9 @@ import { JoinGroupComponent } from './calendar/join-group/join-group.component';
     CrosswordTestRunComponent,
     CalendarComponent,
     JoinGroupComponent,
+    GraphGameListComponent,
+    GraphGamePlayComponent,
+    GraphsListComponent,
   ],
   imports: [
     BrowserModule,

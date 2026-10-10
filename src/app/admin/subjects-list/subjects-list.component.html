@@ -43,6 +43,16 @@
         </div>
       </div>
 
+      <div class="tests-section" *ngIf="subject.graphs.length > 0">
+        <div class="tests-label">{{ 'SUBJECTS.GRAPHS' | translate }} <span class="test-count">{{ subject.graphs.length }}</span></div>
+        <div class="tests-list">
+          <div class="test-row crossword-row" *ngFor="let g of subject.graphs">
+            <span class="test-icon">🕸️</span>
+            <span class="test-name">{{ g.name }}</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -118,6 +128,28 @@
       </ng-container>
       <ng-template #noCrosswordsAvailable>
         <div class="no-tests-hint">{{ 'SUBJECTS.NO_CROSSWORDS_AVAILABLE' | translate }}</div>
+      </ng-template>
+    </div>
+
+    <div class="form-group">
+      <label>{{ 'SUBJECTS.ASSIGNED_GRAPHS' | translate }}</label>
+      <ng-container *ngIf="allGraphs.length > 0; else noGraphsAvailable">
+        <input class="search-input" type="text" [(ngModel)]="graphSearch" [placeholder]="'SUBJECTS.SEARCH_GRAPHS' | translate" />
+        <div class="test-picker">
+          <ng-container *ngFor="let g of allGraphs">
+            <label class="test-check" *ngIf="!graphSearch || g.name.toLowerCase().includes(graphSearch.toLowerCase())"
+                   [class.selected]="isGraphAssigned(g.id)"
+                   (click)="toggleGraph(g.id)">
+              <span class="check-box">
+                <span class="check-mark" *ngIf="isGraphAssigned(g.id)">✓</span>
+              </span>
+              <span class="check-label">🕸️ {{ g.name }}</span>
+            </label>
+          </ng-container>
+        </div>
+      </ng-container>
+      <ng-template #noGraphsAvailable>
+        <div class="no-tests-hint">{{ 'SUBJECTS.NO_GRAPHS_AVAILABLE' | translate }}</div>
       </ng-template>
     </div>
 

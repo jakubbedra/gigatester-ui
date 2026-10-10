@@ -34,7 +34,7 @@
         <span class="admin-link" (click)="navigateToCrosswords()">{{ 'SIDEBAR.CROSSWORDS' | translate }}</span>
         <span class="admin-link" *ngIf="isAdmin" (click)="navigateToUsers()">{{ 'SIDEBAR.USERS' | translate }}</span>
         <span class="admin-link" *ngIf="isAdmin" (click)="navigateToRoles()">{{ 'SIDEBAR.ROLES' | translate }}</span>
-        <span class="admin-link" *ngIf="isAdmin" routerLink="/admin/graph-lab">🕸️ Graph Lab</span>
+        <span class="admin-link" (click)="navigateToGraphs()">{{ 'SIDEBAR.GRAPHS' | translate }}</span>
         <span class="admin-link" routerLink="/admin/ai-generator">✨ {{ 'SIDEBAR.AI_GENERATOR' | translate }}</span>
       </li>
 
@@ -45,6 +45,7 @@
             <div class="menu-row test-row">
               <a *ngIf="fav.type === 'TEST'" [routerLink]="['/tests', fav.id]" class="tests">{{ fav.name }}</a>
               <a *ngIf="fav.type === 'CROSSWORD'" [routerLink]="['/crosswords', fav.id]" class="tests crossword-link">🔠 {{ fav.name }}</a>
+              <a *ngIf="fav.type === 'GRAPH'" [routerLink]="['/graphs/play']" [queryParams]="{ graphId: fav.id }" class="tests crossword-link">🕸️ {{ fav.name }}</a>
               <button class="pin-btn pinned" (click)="togglePin($event, fav)" title="Unpin">★</button>
             </div>
           </li>
@@ -100,6 +101,19 @@
                     <button class="ctx-btn" (click)="toggleMenu($event, 'cw-' + cw.id)">···</button>
                     <div class="ctx-menu" *ngIf="openMenuId === 'cw-' + cw.id">
                       <button (click)="editCrossword($event, cw.id)">{{ 'SIDEBAR.EDIT' | translate }}</button>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <li *ngFor="let g of subject.graphs">
+                <div class="menu-row test-row">
+                  <a [routerLink]="['/graphs/play']" [queryParams]="{ graphId: g.id }" class="tests crossword-link">🕸️ {{ g.name }}</a>
+                  <button class="pin-btn" [class.pinned]="g.pinned" (click)="togglePin($event, g)"
+                          [title]="g.pinned ? 'Unpin' : 'Pin'">{{ g.pinned ? '★' : '☆' }}</button>
+                  <div class="context-wrapper" *ngIf="canUseGraphLab">
+                    <button class="ctx-btn" (click)="toggleMenu($event, 'gr-' + g.id)">···</button>
+                    <div class="ctx-menu" *ngIf="openMenuId === 'gr-' + g.id">
+                      <button (click)="editGraph($event, g.id)">{{ 'SIDEBAR.EDIT' | translate }}</button>
                     </div>
                   </div>
                 </div>

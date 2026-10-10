@@ -4,7 +4,8 @@ import { AuthService } from '../service/auth.service';
 import { LanguageService } from '../service/language.service';
 import { StreakService } from '../service/streak.service';
 import { forkJoin, of, Subscription, timer } from 'rxjs';
-import { switchMap, map, filter } from 'rxjs/operators';
+import { switchMap, map, filter, catchError } from 'rxjs/operators';
+import { GraphService, GraphSummary } from '../service/graph.service';
 import { PermissionService } from '../service/permission.service';
 import { SidebarRefreshService } from '../service/sidebar-refresh.service';
 import { TestService } from '../service/test.service';
@@ -12,7 +13,7 @@ import { SubjectsService } from '../service/subject.service';
 import { SubjectGroupService } from '../service/subject-group.service';
 import { CrosswordService } from '../service/crossword.service';
 import { SubjectGroupAccessService } from '../service/subject-group-access.service';
-import { CrosswordSummaryResponse, TestSummaryResponse } from '../models/models.d';
+import { CrosswordSummaryResponse, Permission, TestSummaryResponse } from '../models/models.d';
 import { InboxRequest } from '../admin/inbox/inbox.component';
 import { PinService, PinnedEntityType } from '../service/pin.service';
 import { QuestionReportService } from '../service/question-report.service';
@@ -31,6 +32,7 @@ interface Subject {
   id: string;
   tests: Item[];
   crosswords: Item[];
+  graphs: Item[];
   expanded?: boolean;
 }
 
@@ -74,6 +76,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private subjectsService: SubjectsService,
     private subjectGroupService: SubjectGroupService,
     private crosswordService: CrosswordService,
+    private graphService: GraphService,
     private accessService: SubjectGroupAccessService,
     private router: Router,
     private authService: AuthService,
@@ -208,29 +211,30 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
     this.subjectGroupService.getSubjectGroups().pipe(
       switchMap(groupsRes => {
-        if (groupsRes.subjectGroups.length === 0) return of({ groups: [], allTests: [] as TestSummaryResponse[], allCrosswords: [] as CrosswordSummaryResponse[] });
+        if (groupsRes.subjectGroups.length === 0) return of({ groups: [], allTests: [] as TestSummaryResponse[], allCrosswords: [] as CrosswordSummaryResponse[], allGraphs: [] as GraphSummary[] });
         return forkJoin([
           forkJoin(groupsRes.subjectGroups.map(g => this.subjectGroupService.getSubjectGroup(g.id))),
           this.testService.getTests(),
           this.crosswordService.getCrosswords(),
-          canSeeAll ? of([] as any[]) : this.accessService.getMyAccess()
+          canSeeAll ? of([] as any[]) : this.accessService.getMyAccess(),
+          this.graphService.getPlayableGraphs().pipe(catchError(() => of([] as GraphSummary[])))
         ]).pipe(
-          switchMap(([groupDetails, testsRes, crosswordsRes, accessStatuses]: [any[], any, any, any[]]) => {
+          switchMap(([groupDetails, testsRes, crosswordsRes, accessStatuses, allGraphs]: [any[], any, any, any[], GraphSummary[]]) => {
             const visibleGroups = canSeeAll
               ? groupDetails
               : groupDetails.filter((g: any) => accessStatuses.some((a: any) => a.groupId === g.id && a.status === 'APPROVED'));
             const subjectIds = [...new Set(visibleGroups.flatMap((g: any) => g.subjects as string[]))];
             if (subjectIds.length === 0) {
-              return of({ groups: visibleGroups, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], subjectDetails: [] as any[] });
+              return of({ groups: visibleGroups, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], allGraphs, subjectDetails: [] as any[] });
             }
             return forkJoin(subjectIds.map(id => this.subjectsService.getSubject(id))).pipe(
-              switchMap(subjectDetails => of({ groups: visibleGroups, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], subjectDetails }))
+              switchMap(subjectDetails => of({ groups: visibleGroups, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], allGraphs, subjectDetails }))
             );
           })
         );
       })
     ).subscribe((result: any) => {
-      const { groups, allTests, allCrosswords, subjectDetails = [] } = result;
+      const { groups, allTests, allCrosswords, allGraphs = [], subjectDetails = [] } = result;
       const subjectMap = new Map(subjectDetails.map((s: any) => [s.id, s]));
       const prevYearExpanded = new Map(this.universityYears.map(y => [y.id, y.expanded]));
       const prevSubjectExpanded = new Map(
@@ -257,6 +261,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
             crosswords: allCrosswords
               .filter((c: CrosswordSummaryResponse) => (subject.crosswords ?? []).includes(c.id))
               .map((c: CrosswordSummaryResponse) => ({ name: c.name, id: c.id, type: 'CROSSWORD' as PinnedEntityType, pinned: isPinned('CROSSWORD', c.id) }))
+              .sort((a: Item, b: Item) => a.name.localeCompare(b.name)),
+            graphs: allGraphs
+              .filter((g: GraphSummary) => (subject.graphs ?? []).includes(g.id))
+              .map((g: GraphSummary) => ({ name: g.name, id: g.id, type: 'GRAPH' as PinnedEntityType, pinned: isPinned('GRAPH', g.id) }))
               .sort((a: Item, b: Item) => a.name.localeCompare(b.name))
           };
         }).filter(Boolean)
@@ -268,7 +276,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
       const pinnedCrosswords: Item[] = allCrosswords
         .filter((c: CrosswordSummaryResponse) => isPinned('CROSSWORD', c.id))
         .map((c: CrosswordSummaryResponse) => ({ name: c.name, id: c.id, type: 'CROSSWORD' as PinnedEntityType, pinned: true }));
-      this.favourites = [...pinnedTests, ...pinnedCrosswords].sort((a, b) => a.name.localeCompare(b.name));
+      const pinnedGraphs: Item[] = allGraphs
+        .filter((g: GraphSummary) => isPinned('GRAPH', g.id))
+        .map((g: GraphSummary) => ({ name: g.name, id: g.id, type: 'GRAPH' as PinnedEntityType, pinned: true }));
+      this.favourites = [...pinnedTests, ...pinnedCrosswords, ...pinnedGraphs].sort((a, b) => a.name.localeCompare(b.name));
     });
   }
 
@@ -358,6 +369,20 @@ export class SidebarComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     this.openMenuId = null;
     this.router.navigate(['/admin/crosswords', crosswordId, 'edit']);
+  }
+
+  get canUseGraphLab(): boolean {
+    return this.permissionService.hasPermission(Permission.GRAPHS_WRITE);
+  }
+
+  editGraph(event: Event, graphId: string) {
+    event.stopPropagation();
+    this.openMenuId = null;
+    this.router.navigate(['/admin/graph-lab'], { queryParams: { graphId } });
+  }
+
+  navigateToGraphs() {
+    this.router.navigate(['/admin/graphs']);
   }
 
   navigateToCrosswords() {

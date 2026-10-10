@@ -1,10 +1,11 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 import { SubjectsService } from '../../service/subject.service';
 import { TestService } from '../../service/test.service';
 import { CrosswordService } from '../../service/crossword.service';
+import { GraphService, GraphSummary } from '../../service/graph.service';
 import { SubjectResponse, TestSummaryResponse, CrosswordSummaryResponse } from '../../models/models.d';
 import { SidebarRefreshService } from '../../service/sidebar-refresh.service';
 
@@ -13,6 +14,7 @@ interface SubjectCard {
   name: string;
   tests: TestSummaryResponse[];
   crosswords: CrosswordSummaryResponse[];
+  graphs: GraphSummary[];
 }
 
 @Component({
@@ -24,6 +26,7 @@ export class SubjectsListComponent implements OnInit {
   subjects: SubjectCard[] = [];
   allTests: TestSummaryResponse[] = [];
   allCrosswords: CrosswordSummaryResponse[] = [];
+  allGraphs: GraphSummary[] = [];
   openMenuId: string | null = null;
 
   // Edit modal
@@ -34,9 +37,11 @@ export class SubjectsListComponent implements OnInit {
   editDifficulty = 0;
   editTestIds: string[] = [];
   editCrosswordIds: string[] = [];
+  editGraphIds: string[] = [];
   saving = false;
   testSearch = '';
   crosswordSearch = '';
+  graphSearch = '';
 
   quillModules = {
     toolbar: [
@@ -63,6 +68,7 @@ export class SubjectsListComponent implements OnInit {
     private subjectsService: SubjectsService,
     private testService: TestService,
     private crosswordService: CrosswordService,
+    private graphService: GraphService,
     private router: Router,
     private sidebarRefreshService: SidebarRefreshService
   ) {}
@@ -74,11 +80,13 @@ export class SubjectsListComponent implements OnInit {
   load() {
     forkJoin([
       this.testService.getTests(),
-      this.crosswordService.getCrosswords()
+      this.crosswordService.getCrosswords(),
+      this.graphService.getGraphs().pipe(catchError(() => of([] as GraphSummary[])))
     ]).pipe(
-      switchMap(([testsRes, crosswordsRes]) => {
+      switchMap(([testsRes, crosswordsRes, graphsRes]) => {
         this.allTests = testsRes.tests;
         this.allCrosswords = crosswordsRes.crosswords;
+        this.allGraphs = graphsRes;
         return this.subjectsService.getSubjects();
       }),
       switchMap(subjectsRes => {
@@ -90,7 +98,8 @@ export class SubjectsListComponent implements OnInit {
         id: d.id,
         name: d.name,
         tests: this.allTests.filter(t => d.tests.includes(t.id)),
-        crosswords: this.allCrosswords.filter(c => (d.crosswords ?? []).includes(c.id))
+        crosswords: this.allCrosswords.filter(c => (d.crosswords ?? []).includes(c.id)),
+        graphs: this.allGraphs.filter(g => (d.graphs ?? []).includes(g.id))
       }));
     });
   }
@@ -115,8 +124,10 @@ export class SubjectsListComponent implements OnInit {
       this.editDifficulty = detail.difficulty ?? 0;
       this.editTestIds = [...detail.tests];
       this.editCrosswordIds = [...(detail.crosswords ?? [])];
+      this.editGraphIds = [...(detail.graphs ?? [])];
       this.testSearch = '';
       this.crosswordSearch = '';
+      this.graphSearch = '';
       this.showEditModal = true;
     });
   }
@@ -141,6 +152,16 @@ export class SubjectsListComponent implements OnInit {
     else this.editCrosswordIds.splice(idx, 1);
   }
 
+  isGraphAssigned(graphId: string): boolean {
+    return this.editGraphIds.includes(graphId);
+  }
+
+  toggleGraph(graphId: string) {
+    const idx = this.editGraphIds.indexOf(graphId);
+    if (idx === -1) this.editGraphIds.push(graphId);
+    else this.editGraphIds.splice(idx, 1);
+  }
+
   saveEdit() {
     if (!this.editingSubject || !this.editName.trim()) return;
     this.saving = true;
@@ -149,7 +170,8 @@ export class SubjectsListComponent implements OnInit {
       description: this.editDescription,
       difficulty: this.editDifficulty,
       tests: this.editTestIds,
-      crosswords: this.editCrosswordIds
+      crosswords: this.editCrosswordIds,
+      graphs: this.editGraphIds
     }).subscribe({
       next: () => {
         this.saving = false;
@@ -198,7 +220,7 @@ export class SubjectsListComponent implements OnInit {
   saveAdd() {
     if (!this.newSubjectName.trim()) return;
     this.adding = true;
-    this.subjectsService.addSubject({ name: this.newSubjectName.trim(), tests: [], crosswords: [] }).subscribe({
+    this.subjectsService.addSubject({ name: this.newSubjectName.trim(), tests: [], crosswords: [], graphs: [] }).subscribe({
       next: () => {
         this.adding = false;
         this.showAddModal = false;

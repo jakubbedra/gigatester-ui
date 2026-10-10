@@ -37,6 +37,8 @@ export class PermissionService {
         return granted.includes(Permission.TESTS_WRITE);
       case Permission.CROSSWORDS_READ:
         return granted.includes(Permission.CROSSWORDS_WRITE);
+      case Permission.GRAPHS_READ:
+        return granted.includes(Permission.GRAPHS_WRITE);
       default:
         return false;
     }

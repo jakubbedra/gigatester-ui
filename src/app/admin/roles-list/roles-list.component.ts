@@ -24,12 +24,14 @@ export class RolesListComponent implements OnInit {
     { label: 'Subjects', icon: '📚', read: Permission.SUBJECTS_READ, write: Permission.SUBJECTS_WRITE },
     { label: 'Tests', icon: '📝', read: Permission.TESTS_READ, write: Permission.TESTS_WRITE },
     { label: 'Crosswords', icon: '🔠', read: Permission.CROSSWORDS_READ, write: Permission.CROSSWORDS_WRITE },
+    { label: 'Graphs', icon: '🕸️', read: Permission.GRAPHS_READ, write: Permission.GRAPHS_WRITE },
   ];
 
   private readonly impliedReadByWrite: Partial<Record<Permission, Permission>> = {
     [Permission.SUBJECTS_READ]: Permission.SUBJECTS_WRITE,
     [Permission.TESTS_READ]: Permission.TESTS_WRITE,
     [Permission.CROSSWORDS_READ]: Permission.CROSSWORDS_WRITE,
+    [Permission.GRAPHS_READ]: Permission.GRAPHS_WRITE,
   };
 
   showEditModal = false;
