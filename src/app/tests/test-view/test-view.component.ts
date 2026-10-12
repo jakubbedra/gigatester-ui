@@ -1,4 +1,5 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ExamAttempt, ExamService} from '../../service/exam.service';
 import {ActivatedRoute, Router} from "@angular/router";
 import {TagResponse, TestDisplayTypeDto, TestModeDto, TestResponse, TestStateRequest, TestStateResponse} from "../../models/models.d";
 import {TestService} from "../../service/test.service";
@@ -15,7 +16,85 @@ import {Permission} from "../../models/models.d";
   templateUrl: './test-view.component.html',
   styleUrls: ['./test-view.component.css']
 })
-export class TestViewComponent implements OnInit {
+export class TestViewComponent implements OnInit, OnDestroy {
+
+  // ── Scheduled exam ───────────────────────────────────────────────────────
+  examState: TestStateResponse | null = null;
+  examAttempts: ExamAttempt[] = [];
+  examError: string | null = null;
+  examStarting = false;
+  nowMs = Date.now();
+  private clock?: ReturnType<typeof setInterval>;
+
+  get isScheduled(): boolean {
+    return this.test?.type === 'SCHEDULED_EXAM';
+  }
+
+  get examStartMs(): number { return this.test?.startAt ? new Date(this.test.startAt).getTime() : 0; }
+  get examEndMs(): number { return this.test?.windowEnd ? new Date(this.test.windowEnd).getTime() : 0; }
+
+  get examPhase(): 'before' | 'open' | 'closed' {
+    if (this.nowMs < this.examStartMs) return 'before';
+    if (this.nowMs >= this.examEndMs) return 'closed';
+    return 'open';
+  }
+
+  get examTimeLimitMinutes(): number {
+    return Math.round((this.test?.timeLimit ?? 0) / 60000);
+  }
+
+  /** Start can be pressed inside the window, and only if there is no attempt yet. */
+  get canStartExam(): boolean {
+    return this.examPhase === 'open' && !this.examState;
+  }
+
+  startExam(): void {
+    if (this.examStarting || !this.canStartExam) return;
+    this.examStarting = true;
+    this.examError = null;
+    this.testStateService.createTestState(this.testId, this.buildDefaultState(this.test)).subscribe({
+      next: (stateId: any) => {
+        this.examStarting = false;
+        this.router.navigate(['/tests', stateId, 'executions']);
+      },
+      error: err => {
+        this.examStarting = false;
+        this.examError = err?.error?.message || 'Could not start the exam.';
+        this.loadExamState();
+      }
+    });
+  }
+
+  continueExam(): void {
+    if (this.examState) this.router.navigate(['/tests', this.examState.id, 'executions']);
+  }
+
+  reviewExam(): void {
+    if (this.examState) this.router.navigate(['/tests', this.testId, 'attempts', this.examState.id]);
+  }
+
+  openAttempt(attempt: ExamAttempt): void {
+    this.router.navigate(['/tests', this.testId, 'attempts', attempt.stateId]);
+  }
+
+  private loadExamState(): void {
+    this.testStateService.getTestStateFromTestId(this.testId).subscribe({
+      next: state => this.examState = state,
+      error: () => this.examState = null
+    });
+  }
+
+  private loadExamAttempts(): void {
+    this.examService.getAttempts(this.testId).subscribe({
+      next: list => this.examAttempts = list,
+      error: () => this.examAttempts = []
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.clock) clearInterval(this.clock);
+  }
+
 
   form!: FormGroup;
   testId!: string;
@@ -49,8 +128,11 @@ export class TestViewComponent implements OnInit {
     private tagService: TagService,
     private authService: AuthService,
     private metricsService: MetricsService,
-    private permissionService: PermissionService
-  ) { }
+    private permissionService: PermissionService,
+    private examService: ExamService
+  ) {
+    this.clock = setInterval(() => this.nowMs = Date.now(), 1000);
+  }
 
   openStatsTab() {
     this.activeTab = 'stats';
@@ -103,6 +185,10 @@ export class TestViewComponent implements OnInit {
 
       this.testService.getTest(this.testId).subscribe({next: test => {
         this.test = test;
+        if (test.type === 'SCHEDULED_EXAM') {
+          this.loadExamState();
+          if (this.canModify) this.loadExamAttempts();
+        }
         this.testService.getTestTags(this.testId).subscribe(tags => this.allTags = tags);
         this.availableClosed = test.storedClosedQuestionsCount;
         this.availableOpen = test.storedOpenQuestionsCount;

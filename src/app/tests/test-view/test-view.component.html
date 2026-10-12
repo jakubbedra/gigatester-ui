@@ -1,4 +1,75 @@
-<div class="test-wrapper" *ngIf="test && form">
+<!-- ══ SCHEDULED EXAM ══ -->
+<div class="test-wrapper exam-wrapper" *ngIf="test && isScheduled">
+  <div class="exam-stack">
+    <div class="test-card">
+      <div class="title-row">
+        <h1 class="test-title">{{ test.name }}</h1>
+        <button *ngIf="canModify" type="button" class="edit-btn" (click)="editTest()">✎ {{ 'SIDEBAR.EDIT' | translate }}</button>
+      </div>
+
+      <div class="exam-facts">
+        <div class="exam-fact">
+          <span class="exam-fact-label">{{ 'EXAM.STARTS_AT' | translate }}</span>
+          <span class="exam-fact-value">{{ test.startAt | date:'dd.MM.yyyy HH:mm' }}</span>
+        </div>
+        <div class="exam-fact">
+          <span class="exam-fact-label">{{ 'EXAM.TIME_LIMIT' | translate }}</span>
+          <span class="exam-fact-value">{{ examTimeLimitMinutes }} {{ 'TEST_VIEW.MINUTES' | translate }}</span>
+        </div>
+        <div class="exam-fact">
+          <span class="exam-fact-label">{{ 'EXAM.WINDOW_END' | translate }}</span>
+          <span class="exam-fact-value">{{ test.windowEnd | date:'dd.MM.yyyy HH:mm' }}</span>
+        </div>
+      </div>
+
+      <p class="exam-note" *ngIf="!examState && examPhase === 'before'">{{ 'EXAM.NOT_STARTED' | translate }}</p>
+      <p class="exam-note" *ngIf="!examState && examPhase === 'open'">{{ 'EXAM.OPEN_NOTE' | translate }}</p>
+      <p class="exam-note" *ngIf="!examState && examPhase === 'closed'">{{ 'EXAM.MISSED' | translate }}</p>
+      <p class="exam-note" *ngIf="examState && examState.executionState !== 'FINISHED'">{{ 'EXAM.IN_PROGRESS_NOTE' | translate }}</p>
+      <p class="exam-note" *ngIf="examState && examState.executionState === 'FINISHED' && !examState.reviewAvailable">{{ 'EXAM.SUBMITTED_NOTE' | translate }}</p>
+      <p class="exam-error" *ngIf="examError">{{ examError }}</p>
+
+      <button type="button" class="start-btn" *ngIf="canStartExam" [disabled]="examStarting" (click)="startExam()">
+        {{ 'EXAM.START' | translate }}
+      </button>
+      <button type="button" class="start-btn" *ngIf="examState && examState.executionState !== 'FINISHED'" (click)="continueExam()">
+        {{ 'TEST_VIEW.CONTINUE_TEST' | translate }}
+      </button>
+      <button type="button" class="start-btn" *ngIf="examState && examState.executionState === 'FINISHED' && examState.reviewAvailable" (click)="reviewExam()">
+        {{ 'EXAM.REVIEW' | translate }}
+      </button>
+    </div>
+
+    <!-- Staff: who took the exam -->
+    <div class="test-card attempts-card" *ngIf="canModify">
+      <h2 class="attempts-title">{{ 'EXAM.ATTEMPTS' | translate }} <span class="attempts-count">{{ examAttempts.length }}</span></h2>
+      <p class="exam-note" *ngIf="examAttempts.length === 0">{{ 'EXAM.NO_ATTEMPTS' | translate }}</p>
+      <table class="attempts-table" *ngIf="examAttempts.length > 0">
+        <thead>
+          <tr>
+            <th>{{ 'EXAM.USER' | translate }}</th>
+            <th>{{ 'EXAM.STATUS' | translate }}</th>
+            <th>{{ 'EXAM.SCORE' | translate }}</th>
+            <th>{{ 'EXAM.GRADING' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let a of examAttempts" class="attempt-row" (click)="openAttempt(a)">
+            <td>{{ a.username }}</td>
+            <td>{{ (a.executionState === 'FINISHED' ? 'EXAM.STATUS_SUBMITTED' : 'EXAM.STATUS_IN_PROGRESS') | translate }}</td>
+            <td>{{ a.totalScore | number:'1.0-2' }} / {{ a.maxScore | number:'1.0-2' }}</td>
+            <td>
+              <span class="pending-badge" *ngIf="a.pendingGrading > 0">{{ a.pendingGrading }} {{ 'EXAM.TO_GRADE' | translate }}</span>
+              <span *ngIf="a.pendingGrading === 0">✓</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="test-wrapper" *ngIf="test && form && !isScheduled">
   <div class="test-card">
 
     <div class="title-row">

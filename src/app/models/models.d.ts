@@ -323,7 +323,13 @@ export interface TestRequest {
     openQuestionsCount: number;
     passingPercentage: number;
     hideTagsDuringTest?: boolean;
+    timeLimit?: number;
+    type?: TestType;
+    startAt?: string | null;
+    windowEnd?: string | null;
 }
+
+export type TestType = "STANDARD" | "SCHEDULED_EXAM";
 
 export interface TestStateRequest {
     closedQuestionsCount: number;
@@ -376,6 +382,9 @@ export interface TestResponse {
     passingPercentage: number;
     timeLimit: number;
     hideTagsDuringTest: boolean;
+    type: TestType;
+    startAt: string | null;
+    windowEnd: string | null;
     authors: SubjectAuthor[];
 }
 
@@ -398,6 +407,10 @@ export interface TestStateResponse {
     timeLimitMs: number;
     startTime: number;
     hideTagsDuringTest: boolean;
+    scheduled: boolean;
+    reviewAvailable: boolean;
+    pendingGrading: number;
+    submittedAt: number | null;
 }
 
 export interface QuestionStateSummaryResponse {

@@ -362,7 +362,9 @@
     "ADD_AUTHOR": "Add author",
     "GRAPHS": "Graphs",
     "NO_GRAPHS_SUBJECT": "No graphs assigned to this subject.",
-    "CONFIRM_DELETE_GRAPH": "Are you sure you want to delete this graph?"
+    "CONFIRM_DELETE_GRAPH": "Are you sure you want to delete this graph?",
+    "NEW_CROSSWORD": "New crossword",
+    "NEW_GRAPH": "New graph"
   },
   "TEST_EDIT": {
     "BACK": "Tests",
@@ -428,7 +430,14 @@
     "ORDER_MATTERS": "Order matters (answers must match by position)",
     "ANSWER_1": "Answer 1",
     "ANSWERS_2_3": "Answers 2, 3, …",
-    "CORRECT_ANSWER_PLACEHOLDER": "Correct answer"
+    "CORRECT_ANSWER_PLACEHOLDER": "Correct answer",
+    "TYPE": "Test type",
+    "TYPE_STANDARD": "Standard test",
+    "TYPE_SCHEDULED_EXAM": "Scheduled exam",
+    "EXAM_START": "Exam starts",
+    "EXAM_WINDOW_END": "Window ends",
+    "EXAM_TIME_LIMIT": "Time limit (min)",
+    "EXAM_HINT": "Students get one attempt, startable between the start and the window end. The number of closed/open questions and the passing percentage above apply to every attempt. Results unlock for students when the window closes."
   },
   "CROSSWORDS_LIST": {
     "TITLE": "Crosswords",
@@ -490,7 +499,23 @@
     "SHARE_LINK": "Share this link with",
     "LINK_EXPIRES": "It expires in 24 hours.",
     "COPY": "Copy",
-    "CLOSE": "Close"
+    "CLOSE": "Close",
+    "NEW_USER": "New user",
+    "NEW_USER_HINT": "Create an account and choose its username and password. Share the credentials with the user yourself.",
+    "PASSWORD": "Password",
+    "PASSWORD_HINT": "At least 6 characters",
+    "CREATE": "Create user",
+    "ADMIN_CREATED": "Created by admin",
+    "USERNAME_TAKEN": "That username is already taken.",
+    "CREATE_FAILED": "Could not create the user.",
+    "USERNAME_REQUIRED": "Enter a username.",
+    "STRENGTH_WEAK": "Weak",
+    "STRENGTH_OK": "Okay",
+    "STRENGTH_STRONG": "Strong",
+    "GROUPS": "Groups",
+    "GROUPS_HINT": "Tick the groups this user belongs to. Changes apply immediately.",
+    "NO_GROUPS": "There are no groups yet.",
+    "GROUP_PENDING": "requested access"
   },
   "ROLES": {
     "TITLE": "Roles",
@@ -676,7 +701,8 @@
     "FRI": "Fri",
     "SAT": "Sat",
     "SUN": "Sun",
-    "LINK_GRAPH": "Graph"
+    "LINK_GRAPH": "Graph",
+    "EXAM": "Scheduled exam"
   },
   "GRAPH_LAB": {
     "TITLE": "Graph Lab",
@@ -787,5 +813,45 @@
     "NEW_GRAPH": "New Graph",
     "PLAY": "Play",
     "EMPTY": "No graphs yet. Create one to get started."
+  },
+  "EXAM": {
+    "STARTS_AT": "Test will start at",
+    "TIME_LIMIT": "Time limit",
+    "WINDOW_END": "Window end",
+    "NOT_STARTED": "The exam has not started yet. You will be able to start it once the start time passes.",
+    "OPEN_NOTE": "The exam is open. You have one attempt — once you start, the clock runs until you submit.",
+    "MISSED": "The exam window has closed and you did not take part.",
+    "IN_PROGRESS_NOTE": "You have an exam attempt in progress.",
+    "SUBMITTED_TITLE": "Exam submitted",
+    "SUBMITTED_NOTE": "Your answers are saved. Results and review will be available after the exam window closes.",
+    "PENDING_GRADING_NOTE": "Some answers are still waiting for manual grading, so the score may change.",
+    "START": "Start exam",
+    "REVIEW": "Review exam",
+    "BACK_TO_EXAM": "Back to exam",
+    "ATTEMPTS": "Attempts",
+    "NO_ATTEMPTS": "Nobody has started this exam yet.",
+    "USER": "User",
+    "STATUS": "Status",
+    "SCORE": "Score",
+    "GRADING": "Grading",
+    "STATUS_SUBMITTED": "Submitted",
+    "STATUS_IN_PROGRESS": "In progress",
+    "TO_GRADE": "to grade",
+    "QUESTION": "Question",
+    "MANUAL_TAG": "Manual grading",
+    "GRADED_TAG": "Graded",
+    "UNANSWERED": "Unanswered",
+    "GIVEN_ANSWER": "Given answer",
+    "EXPECTED_ANSWER": "Expected answer",
+    "NO_ANSWER": "(no answer)",
+    "TRUE": "True",
+    "FALSE": "False",
+    "EXPLANATION": "Explanation",
+    "FULL_POINTS": "Max",
+    "SAVE_GRADES": "Save grades",
+    "SAVED": "Grades saved.",
+    "SAVE_ERROR": "Could not save the grades.",
+    "LOAD_ERROR": "Could not load this attempt.",
+    "READ_ONLY_NOTE": "This is a read-only review of your attempt."
   }
 }

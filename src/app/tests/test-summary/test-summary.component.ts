@@ -58,6 +58,23 @@ export class TestSummaryComponent implements OnInit {
     return this.percentage >= p;
   }
 
+  get isScheduledPassing(): boolean | null {
+    if (!this.testState || !this.testState.reviewAvailable) return null;
+    const p = this.testState.passingPercentage;
+    if (p === undefined || p === null || p === 0) return null;
+    return this.percentage >= p;
+  }
+
+  reviewExam() {
+    if (!this.testState) return;
+    this.router.navigate(['/tests', this.testState.testId, 'attempts', this.testState.id]);
+  }
+
+  backToExam() {
+    if (!this.testState) return;
+    this.router.navigate(['/tests', this.testState.testId]);
+  }
+
   retake() {
     if (!this.testState) return;
     const isAllAtOnce = this.testState.displayType === TestDisplayTypeDto.ALL_AT_ONCE;

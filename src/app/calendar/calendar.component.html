@@ -45,8 +45,8 @@
             <div class="day-event-header" (click)="toggleExpandEvent(e.id)">
               <span class="day-event-caret" [class.open]="expandedEventId === e.id">›</span>
               <div class="day-event-heading">
-                <span class="day-event-title" [title]="e.title">{{ e.title }}</span>
-                <span class="group-badge small">{{ e.calendarGroupName }}</span>
+                <span class="day-event-title" [title]="e.title"><span *ngIf="e.exam" class="exam-icon" [title]="'CALENDAR.EXAM' | translate">🎓</span> {{ e.title }}</span>
+                <span class="group-badge small" *ngIf="e.calendarGroupName">{{ e.calendarGroupName }}</span>
               </div>
             </div>
 

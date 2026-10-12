@@ -50,6 +50,11 @@ export class SubjectGroupAccessService {
     return this.http.delete<void>(`${this.base}/access-requests/${requestId}`);
   }
 
+  /** Admin only: puts the user into the group with approved access straight away. */
+  addMember(groupId: string, userId: string): Observable<AccessRequestResponse> {
+    return this.http.put<AccessRequestResponse>(`${this.base}/${groupId}/members/${userId}`, {});
+  }
+
   getAllAccessRequests(): Observable<AccessRequestResponse[]> {
     return this.http.get<AccessRequestResponse[]>(`${this.base}/all-access-requests`);
   }

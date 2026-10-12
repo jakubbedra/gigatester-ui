@@ -26,6 +26,7 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { JoinGroupComponent } from './calendar/join-group/join-group.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { GraphLabComponent } from './admin/graph-lab/graph-lab.component';
+import { ExamAttemptComponent } from './tests/exam-attempt/exam-attempt.component';
 import { GraphsListComponent } from './admin/graphs-list/graphs-list.component';
 import { GraphGameListComponent } from './graph-game/graph-game-list/graph-game-list.component';
 import { GraphGamePlayComponent } from './graph-game/graph-game-play/graph-game-play.component';
@@ -42,6 +43,7 @@ const routes: Routes = [
   { path: 'calendar', component: CalendarComponent, canActivate: [AuthGuard] },
   { path: 'calendar/join/:token', component: JoinGroupComponent, canActivate: [AuthGuard] },
   { path: 'tests/:id', component: TestViewComponent, canActivate: [AuthGuard] },
+  { path: 'tests/:testId/attempts/:stateId', component: ExamAttemptComponent, canActivate: [AuthGuard] },
   { path: 'tests/:id/executions', component: QuestionCardComponent, canActivate: [AuthGuard] },
   { path: 'tests/:id/executions/all', component: AllAtOnceComponent, canActivate: [AuthGuard] },
   { path: 'tests/:id/summary', component: TestSummaryComponent, canActivate: [AuthGuard] },

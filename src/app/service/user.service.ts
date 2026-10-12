@@ -7,6 +7,7 @@ export interface UserResponse {
   id: string;
   username: string;
   role: 'USER' | 'MODERATOR' | 'ADMIN';
+  type?: 'SELF_REGISTERED' | 'ADMIN_CREATED';
   assignedRoleId?: string | null;
   assignedRoleName?: string | null;
   profilePictureUrl?: string | null;
@@ -21,6 +22,10 @@ export class UserService {
 
   findAll(): Observable<UserResponse[]> {
     return this.http.get<UserResponse[]>(this.baseUrl);
+  }
+
+  createUser(username: string, password: string): Observable<UserResponse> {
+    return this.http.post<UserResponse>(this.baseUrl, { username, password });
   }
 
   assignRole(id: string, roleId: string | null): Observable<UserResponse> {

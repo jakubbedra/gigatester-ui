@@ -1,0 +1,101 @@
+<div class="attempt-page">
+
+  <div class="attempt-header">
+    <button class="btn-back" (click)="back()">← {{ 'EXAM.BACK_TO_EXAM' | translate }}</button>
+  </div>
+
+  <p class="state-msg" *ngIf="loading">{{ 'TEST_SUMMARY.LOADING' | translate }}</p>
+  <p class="state-msg error" *ngIf="error === 'load'">{{ 'EXAM.LOAD_ERROR' | translate }}</p>
+
+  <ng-container *ngIf="!loading && grading">
+
+    <div class="summary-card">
+      <div>
+        <h1 class="attempt-title">{{ grading.testName }}</h1>
+        <div class="attempt-user">{{ grading.username }}</div>
+      </div>
+      <div class="attempt-score">
+        <span class="score-value">{{ previewTotal | number:'1.0-2' }}</span>
+        <span class="score-sep">/</span>
+        <span class="score-max">{{ grading.maxScore | number:'1.0-2' }}</span>
+        <span class="score-pts">pts</span>
+      </div>
+    </div>
+
+    <p class="note" *ngIf="!grading.canGrade">{{ 'EXAM.READ_ONLY_NOTE' | translate }}</p>
+    <p class="note warn" *ngIf="grading.canGrade && pendingCount > 0">
+      {{ pendingCount }} {{ 'EXAM.TO_GRADE' | translate }}
+    </p>
+
+    <div class="item-card" *ngFor="let it of items; let i = index" [class.pending]="it.manual && !it.graded && !it.touched">
+
+      <div class="item-top">
+        <span class="item-number">{{ 'EXAM.QUESTION' | translate }} {{ i + 1 }}</span>
+        <span class="tag manual" *ngIf="it.manual">{{ 'EXAM.MANUAL_TAG' | translate }}</span>
+        <span class="tag graded" *ngIf="it.graded">{{ 'EXAM.GRADED_TAG' | translate }}</span>
+        <span class="tag unanswered" *ngIf="!it.answered">{{ 'EXAM.UNANSWERED' | translate }}</span>
+        <span class="spacer"></span>
+
+        <ng-container *ngIf="grading.canGrade; else readOnlyScore">
+          <button type="button" class="mini-btn" (click)="setZero(it)">0</button>
+          <input class="score-input" type="number" step="0.5" min="0" [max]="it.maxScore"
+                 [(ngModel)]="it.newScore" (ngModelChange)="markTouched(it)" [class.invalid]="it.touched && invalid(it)" />
+          <span class="max-label">/ {{ it.maxScore }}</span>
+          <button type="button" class="mini-btn" (click)="setFull(it)">{{ 'EXAM.FULL_POINTS' | translate }}</button>
+        </ng-container>
+        <ng-template #readOnlyScore>
+          <span class="score-readonly">{{ it.score | number:'1.0-2' }} / {{ it.maxScore }}</span>
+        </ng-template>
+      </div>
+
+      <div class="question-text" [innerHTML]="it.question.content.text | latex"></div>
+
+      <!-- CLOSED -->
+      <div class="answers" *ngIf="it.questionType === 'CLOSED'">
+        <div class="answer-row" *ngFor="let a of it.question.answers"
+             [class.correct]="a.correct" [class.chosen]="isSelected(it, a.id)"
+             [class.wrong]="isSelected(it, a.id) && !a.correct">
+          <span class="mark">{{ isSelected(it, a.id) ? '☑' : '☐' }}</span>
+          <span class="answer-text" [innerHTML]="a.text | latex"></span>
+          <span class="flag" *ngIf="a.correct">✓</span>
+        </div>
+      </div>
+
+      <!-- OPEN -->
+      <div class="open-block" *ngIf="it.questionType === 'OPEN'">
+        <div class="open-label">{{ 'EXAM.GIVEN_ANSWER' | translate }}</div>
+        <div class="open-given">{{ it.answer?.givenAnswer || ('EXAM.NO_ANSWER' | translate) }}</div>
+        <div class="open-label">{{ 'EXAM.EXPECTED_ANSWER' | translate }}</div>
+        <div class="open-expected" [innerHTML]="it.question.answer?.text | latex"></div>
+        <div class="open-variations" *ngFor="let v of it.question.answerVariations">
+          <span [innerHTML]="v.text | latex"></span>
+        </div>
+      </div>
+
+      <!-- STATEMENT -->
+      <div class="statements" *ngIf="it.questionType === 'STATEMENT'">
+        <div class="statement-row" *ngFor="let s of it.question.statements; let k = index">
+          <span class="statement-text" [innerHTML]="s.text | latex"></span>
+          <span class="statement-given" [class.right]="givenStatement(it, k) === s.answer" [class.wrong]="givenStatement(it, k) !== s.answer">
+            {{ givenStatement(it, k) === null ? '—' : (givenStatement(it, k) ? ('EXAM.TRUE' | translate) : ('EXAM.FALSE' | translate)) }}
+          </span>
+          <span class="statement-correct">({{ s.answer ? ('EXAM.TRUE' | translate) : ('EXAM.FALSE' | translate) }})</span>
+        </div>
+      </div>
+
+      <div class="explanation" *ngIf="it.question.explanation?.text">
+        <span class="open-label">{{ 'EXAM.EXPLANATION' | translate }}</span>
+        <div [innerHTML]="it.question.explanation.text | latex"></div>
+      </div>
+    </div>
+
+    <div class="save-bar" *ngIf="grading.canGrade">
+      <span class="save-msg ok" *ngIf="saved">{{ 'EXAM.SAVED' | translate }}</span>
+      <span class="save-msg err" *ngIf="error === 'save'">{{ 'EXAM.SAVE_ERROR' | translate }}</span>
+      <button type="button" class="btn-save" [disabled]="!hasChanges || anyInvalid || saving" (click)="save()">
+        {{ 'EXAM.SAVE_GRADES' | translate }}
+      </button>
+    </div>
+
+  </ng-container>
+</div>

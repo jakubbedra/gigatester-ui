@@ -129,9 +129,26 @@ export class CalendarComponent implements OnInit {
     this.loading = true;
     const groupIds = Array.from(this.selectedGroupIds);
     this.calendarService.getEvents(groupIds).subscribe({
-      next: events => { this.events = events; this.loading = false; },
+      next: events => {
+        this.events = events.map(e => e.exam ? this.withLocalExamTimes(e) : e);
+        this.loading = false;
+      },
       error: () => { this.loading = false; }
     });
+  }
+
+  /** Exam times arrive as exact instants; show them in the viewer's own timezone like every other event. */
+  private withLocalExamTimes(e: CalendarEventResponse): CalendarEventResponse {
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const local = (iso: string) => {
+      const d = new Date(iso);
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    };
+    return {
+      ...e,
+      startTime: e.startInstant ? local(e.startInstant) : e.startTime,
+      endTime: e.endInstant ? local(e.endInstant) : e.endTime
+    };
   }
 
   toggleGroupFilter(groupId: string) {

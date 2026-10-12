@@ -24,6 +24,39 @@
         <input type="number" [(ngModel)]="test!.passingPercentage" min="0" max="100" />
       </div>
     </div>
+    <div class="type-section">
+      <div class="section-label">{{ 'TEST_EDIT.TYPE' | translate }}</div>
+      <div class="type-tabs">
+        <button type="button" class="type-tab" [class.active]="testType === 'STANDARD'" (click)="testType = 'STANDARD'">
+          <span class="type-tab-icon">📝</span>{{ 'TEST_EDIT.TYPE_STANDARD' | translate }}
+        </button>
+        <button type="button" class="type-tab" [class.active]="testType === 'SCHEDULED_EXAM'" (click)="testType = 'SCHEDULED_EXAM'">
+          <span class="type-tab-icon">🎓</span>{{ 'TEST_EDIT.TYPE_SCHEDULED_EXAM' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <div class="exam-panel" *ngIf="testType === 'SCHEDULED_EXAM'">
+      <div class="exam-panel-grid">
+        <div class="form-group">
+          <label>{{ 'TEST_EDIT.EXAM_START' | translate }}</label>
+          <input type="datetime-local" class="dt-input" [(ngModel)]="startAtLocal" />
+        </div>
+        <div class="form-group">
+          <label>{{ 'TEST_EDIT.EXAM_WINDOW_END' | translate }}</label>
+          <input type="datetime-local" class="dt-input" [(ngModel)]="windowEndLocal" />
+        </div>
+        <div class="form-group">
+          <label>{{ 'TEST_EDIT.EXAM_TIME_LIMIT' | translate }}</label>
+          <input type="number" class="dt-input" [(ngModel)]="timeLimitMinutes" min="1" />
+        </div>
+      </div>
+      <div class="exam-callout">
+        <span class="exam-callout-icon">ℹ️</span>
+        <span>{{ 'TEST_EDIT.EXAM_HINT' | translate }}</span>
+      </div>
+    </div>
+
     <div class="form-row">
       <label class="toggle-row">
         <span class="toggle-switch">
@@ -36,6 +69,7 @@
         </span>
       </label>
     </div>
+    <p class="exam-error" *ngIf="saveError">{{ saveError }}</p>
     <div class="meta-actions">
       <button class="btn-save" (click)="save()" [disabled]="saving || !testName.trim()">
         {{ saving ? ('TEST_EDIT.SAVE' | translate) : ('TEST_EDIT.SAVE' | translate) }}

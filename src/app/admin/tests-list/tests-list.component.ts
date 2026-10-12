@@ -1,7 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, of } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { forkJoin, Observable, of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { GraphService, GraphSummary } from '../../service/graph.service';
 import { TestService } from '../../service/test.service';
@@ -95,6 +95,65 @@ export class TestsListComponent implements OnInit {
 
   get canModifyCrosswords(): boolean {
     return this.permissionService.hasPermission(Permission.CROSSWORDS_WRITE);
+  }
+
+  /** Staff (moderators/admins) always see every section; everyone else only sees sections that have content. */
+  get isStaff(): boolean {
+    return this.permissionService.isStaff();
+  }
+
+  // ── Create from the subject page: make the item, attach it to this subject, open its editor ──
+  createKind: 'crossword' | 'graph' | null = null;
+  createName = '';
+  createBusy = false;
+
+  openCreate(kind: 'crossword' | 'graph') {
+    this.createKind = kind;
+    this.createName = '';
+  }
+
+  cancelCreate() {
+    this.createKind = null;
+  }
+
+  private attachToSubject(patch: { tests?: string[]; crosswords?: string[]; graphs?: string[] }): Observable<any> {
+    if (!this.subjectId || !this.subjectName) return of(null);
+    return this.subjectsService.updateSubject(this.subjectId, {
+      name: this.subjectName,
+      description: this.subjectDescription ?? '',
+      difficulty: this.subjectDifficulty,
+      tests: patch.tests ?? this.subjectTestIds,
+      crosswords: patch.crosswords ?? this.subjectCrosswordIds,
+      graphs: patch.graphs ?? this.subjectGraphIds
+    });
+  }
+
+  private idOf(created: any): string {
+    return typeof created === 'string' ? created : created?.id;
+  }
+
+  saveCreate() {
+    if (!this.createKind || !this.createName.trim() || this.createBusy) return;
+    const name = this.createName.trim();
+    this.createBusy = true;
+    const done = () => { this.createBusy = false; this.createKind = null; this.sidebarRefreshService.notify(); };
+    if (this.createKind === 'crossword') {
+      this.crosswordService.addCrossword({ name, terms: [] }).pipe(
+        switchMap(created => this.attachToSubject({ crosswords: [...this.subjectCrosswordIds, this.idOf(created)] })
+          .pipe(map(() => this.idOf(created))))
+      ).subscribe({
+        next: id => { done(); this.router.navigate(['/admin/crosswords', id, 'edit']); },
+        error: () => { this.createBusy = false; }
+      });
+    } else {
+      this.graphService.addGraph({ name, graphJson: JSON.stringify({ vertices: [], edges: [], hyperedges: [] }) }).pipe(
+        switchMap(created => this.attachToSubject({ graphs: [...this.subjectGraphIds, this.idOf(created)] })
+          .pipe(map(() => this.idOf(created))))
+      ).subscribe({
+        next: id => { done(); this.router.navigate(['/admin/graph-lab'], { queryParams: { graphId: id } }); },
+        error: () => { this.createBusy = false; }
+      });
+    }
   }
 
   get canModifyGraphs(): boolean {
@@ -314,10 +373,18 @@ export class TestsListComponent implements OnInit {
       passingPercentage: this.newPassing,
     }).subscribe({
       next: (created) => {
-        this.creating = false;
-        this.showAddModal = false;
-        this.sidebarRefreshService.notify();
-        this.router.navigate(['/admin/tests', created.id, 'edit']);
+        const id = this.idOf(created);
+        const finish = () => {
+          this.creating = false;
+          this.showAddModal = false;
+          this.sidebarRefreshService.notify();
+          this.router.navigate(['/admin/tests', id, 'edit']);
+        };
+        if (this.subjectId) {
+          this.attachToSubject({ tests: [...this.subjectTestIds, id] }).subscribe({ next: finish, error: () => { this.creating = false; } });
+        } else {
+          finish();
+        }
       },
       error: () => { this.creating = false; }
     });

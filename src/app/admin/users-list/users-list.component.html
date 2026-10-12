@@ -1,6 +1,7 @@
 <div class="page">
   <div class="page-header">
     <h1 class="page-title">{{ 'USERS.TITLE' | translate }}</h1>
+    <button class="btn-new-user" (click)="openCreate()">+ {{ 'USERS.NEW_USER' | translate }}</button>
   </div>
 
   <div class="loading-state" *ngIf="loading">
@@ -27,6 +28,7 @@
           <td>
             <span class="role-badge" [class]="'role-' + user.role.toLowerCase()">{{ user.role }}</span>
             <span class="assigned-role-badge" *ngIf="user.assignedRoleName">{{ user.assignedRoleName }}</span>
+            <span class="type-badge" *ngIf="user.type === 'ADMIN_CREATED'">{{ 'USERS.ADMIN_CREATED' | translate }}</span>
           </td>
           <td class="actions-cell">
             <ng-container *ngIf="user.role !== 'ADMIN' && !isCurrentUser(user)">
@@ -34,6 +36,11 @@
                       [disabled]="actionInProgress === user.id"
                       (click)="openAssignRole(user)">
                 {{ 'USERS.ASSIGN_ROLE' | translate }}
+              </button>
+              <button class="btn-assign-role"
+                      [disabled]="actionInProgress === user.id"
+                      (click)="openGroups(user)">
+                {{ 'USERS.GROUPS' | translate }}
               </button>
               <button class="btn-reset-link"
                       [disabled]="actionInProgress === user.id"
@@ -51,6 +58,64 @@
         </tr>
       </tbody>
     </table>
+  </div>
+</div>
+
+<!-- Groups modal -->
+<div class="modal-overlay" *ngIf="groupsUser" (click)="closeGroups()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h2 class="modal-title">{{ 'USERS.GROUPS' | translate }} — {{ groupsUser.username }}</h2>
+    <p class="modal-subtitle">{{ 'USERS.GROUPS_HINT' | translate }}</p>
+    <div class="group-list">
+      <div class="spinner" *ngIf="groupsLoading"></div>
+      <p class="no-groups" *ngIf="!groupsLoading && allGroups.length === 0">{{ 'USERS.NO_GROUPS' | translate }}</p>
+      <label class="group-row" *ngFor="let g of allGroups" [class.member]="isMember(g.id)" [class.busy]="groupBusyId === g.id">
+        <input type="checkbox" [checked]="isMember(g.id)" [disabled]="!!groupBusyId" (change)="toggleMembership(g.id)" />
+        <span class="group-name">{{ g.name }}</span>
+        <span class="group-pending" *ngIf="isPending(g.id)">{{ 'USERS.GROUP_PENDING' | translate }}</span>
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-close" (click)="closeGroups()">{{ 'USERS.CLOSE' | translate }}</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create user modal -->
+<div class="modal-overlay" *ngIf="showCreateModal" (click)="cancelCreate()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h2 class="modal-title">{{ 'USERS.NEW_USER' | translate }}</h2>
+    <p class="modal-subtitle">{{ 'USERS.NEW_USER_HINT' | translate }}</p>
+    <div class="create-field">
+      <label>{{ 'USERS.USERNAME' | translate }}</label>
+      <input type="text" class="create-input" [class.invalid]="usernameInvalid" [class.valid]="newUsername.trim()"
+             [(ngModel)]="newUsername" (blur)="usernameTouched = true" autocomplete="off" (keydown.enter)="saveCreate()" />
+      <span class="field-error" *ngIf="usernameInvalid">{{ 'USERS.USERNAME_REQUIRED' | translate }}</span>
+    </div>
+    <div class="create-field">
+      <label>{{ 'USERS.PASSWORD' | translate }}</label>
+      <div class="password-row">
+        <input [type]="showNewPassword ? 'text' : 'password'" class="create-input" [(ngModel)]="newPassword"
+               [class.valid]="passwordLengthOk" [class.invalid]="newPassword.length > 0 && !passwordLengthOk"
+               autocomplete="new-password" (keydown.enter)="saveCreate()" />
+        <button type="button" class="btn-eye" (click)="showNewPassword = !showNewPassword">{{ showNewPassword ? '🙈' : '👁️' }}</button>
+      </div>
+      <div class="strength" *ngIf="newPassword">
+        <div class="strength-bar">
+          <span class="seg" *ngFor="let i of [1, 2, 3]" [class]="'seg level-' + passwordStrength" [class.on]="passwordStrength >= i"></span>
+        </div>
+        <span class="strength-label" [class]="'strength-label level-' + passwordStrength">{{ passwordStrengthKey | translate }}</span>
+      </div>
+      <div class="requirement" [class.met]="passwordLengthOk">
+        <span class="req-icon">{{ passwordLengthOk ? '✓' : '○' }}</span>
+        <span>{{ 'USERS.PASSWORD_HINT' | translate }}</span>
+      </div>
+    </div>
+    <p class="create-error" *ngIf="createError">{{ createError | translate }}</p>
+    <div class="modal-actions">
+      <button class="btn-close" (click)="cancelCreate()">{{ 'USERS.CLOSE' | translate }}</button>
+      <button class="btn-copy" [disabled]="!canCreate" (click)="saveCreate()">{{ 'USERS.CREATE' | translate }}</button>
+    </div>
   </div>
 </div>
 

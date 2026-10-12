@@ -8,10 +8,10 @@
   </div>
 
   <!-- Description + difficulty -->
-  <div class="subject-info-card" *ngIf="subjectId">
+  <div class="subject-info-card" *ngIf="subjectId && (isStaff || subjectDifficulty > 0 || subjectDescription)">
 
     <!-- Stars row -->
-    <div class="stars-row">
+    <div class="stars-row" *ngIf="isStaff || subjectDifficulty > 0">
       <div class="star-rating" [class.editable]="editingDifficulty" (mouseleave)="hoverDifficulty = null">
         <span class="star-slot" *ngFor="let i of tenArray">
           <span class="s-bg">★</span>
@@ -37,7 +37,7 @@
       </div>
       <ng-template #noDescription>
         <button *ngIf="canModify" class="desc-add-btn" (click)="startEditDescription()">+ Add description</button>
-        <p *ngIf="!canModify" class="desc-empty">No description.</p>
+        <p *ngIf="!canModify && isStaff" class="desc-empty">No description.</p>
       </ng-template>
     </ng-container>
 
@@ -97,8 +97,11 @@
   </div>
 
   <!-- Tests -->
-  <div class="section-label" *ngIf="subjectId">{{ 'TESTS_LIST.TITLE' | translate }}</div>
-  <div class="grid" *ngIf="tests.length > 0; else emptyTests">
+  <div class="section-head" *ngIf="subjectId && (tests.length > 0 || isStaff)">
+    <div class="section-label">{{ 'TESTS_LIST.TITLE' | translate }}</div>
+  </div>
+  <div class="empty-inline" *ngIf="subjectId && isStaff && tests.length === 0">{{ 'TESTS_LIST.NO_TESTS_SUBJECT' | translate }}</div>
+  <div class="grid" *ngIf="tests.length > 0 || (subjectId && canModifyTests); else emptyTests">
     <div class="card" *ngFor="let test of tests" (click)="openTest(test.id)">
       <div class="card-body">
         <div class="card-icon">📝</div>
@@ -112,19 +115,28 @@
         </div>
       </div>
     </div>
+    <div class="card card-add" *ngIf="subjectId && canModifyTests" (click)="openAdd()">
+      <div class="card-body">
+        <div class="card-icon add-plus">+</div>
+        <div class="card-name">{{ 'TESTS_LIST.NEW_TEST' | translate }}</div>
+      </div>
+    </div>
   </div>
   <ng-template #emptyTests>
     <div class="empty-state" *ngIf="!subjectId">
       <div class="empty-icon">📋</div>
       <p>{{ 'TESTS_LIST.EMPTY' | translate }}</p>
     </div>
-    <div class="empty-inline" *ngIf="subjectId">{{ 'TESTS_LIST.NO_TESTS_SUBJECT' | translate }}</div>
+    <div class="empty-inline" *ngIf="subjectId && isStaff">{{ 'TESTS_LIST.NO_TESTS_SUBJECT' | translate }}</div>
   </ng-template>
 
   <!-- Crosswords (subject view only) -->
-  <ng-container *ngIf="subjectId">
-    <div class="section-label">{{ 'TESTS_LIST.CROSSWORDS' | translate }}</div>
-    <div class="grid" *ngIf="crosswords.length > 0; else emptyCrosswords">
+  <ng-container *ngIf="subjectId && (crosswords.length > 0 || isStaff)">
+    <div class="section-head">
+      <div class="section-label">{{ 'TESTS_LIST.CROSSWORDS' | translate }}</div>
+    </div>
+    <div class="empty-inline" *ngIf="isStaff && crosswords.length === 0">{{ 'TESTS_LIST.NO_CROSSWORDS_SUBJECT' | translate }}</div>
+    <div class="grid" *ngIf="crosswords.length > 0 || (subjectId && canModifyCrosswords); else emptyCrosswords">
       <div class="card" *ngFor="let cw of crosswords" (click)="openCrossword(cw.id)">
         <div class="card-body">
           <div class="card-icon">🔠</div>
@@ -138,16 +150,25 @@
           </div>
         </div>
       </div>
+      <div class="card card-add" *ngIf="subjectId && canModifyCrosswords" (click)="openCreate('crossword')">
+        <div class="card-body">
+          <div class="card-icon add-plus">+</div>
+          <div class="card-name">{{ 'TESTS_LIST.NEW_CROSSWORD' | translate }}</div>
+        </div>
+      </div>
     </div>
     <ng-template #emptyCrosswords>
-      <div class="empty-inline">{{ 'TESTS_LIST.NO_CROSSWORDS_SUBJECT' | translate }}</div>
+      <div class="empty-inline" *ngIf="isStaff">{{ 'TESTS_LIST.NO_CROSSWORDS_SUBJECT' | translate }}</div>
     </ng-template>
   </ng-container>
 
   <!-- Graphs (subject view only) -->
-  <ng-container *ngIf="subjectId">
-    <div class="section-label">{{ 'TESTS_LIST.GRAPHS' | translate }}</div>
-    <div class="grid" *ngIf="graphs.length > 0; else emptyGraphs">
+  <ng-container *ngIf="subjectId && (graphs.length > 0 || isStaff)">
+    <div class="section-head">
+      <div class="section-label">{{ 'TESTS_LIST.GRAPHS' | translate }}</div>
+    </div>
+    <div class="empty-inline" *ngIf="isStaff && graphs.length === 0">{{ 'TESTS_LIST.NO_GRAPHS_SUBJECT' | translate }}</div>
+    <div class="grid" *ngIf="graphs.length > 0 || (subjectId && canModifyGraphs); else emptyGraphs">
       <div class="card" *ngFor="let g of graphs" (click)="openGraph(g.id)">
         <div class="card-body">
           <div class="card-icon">🕸️</div>
@@ -161,9 +182,15 @@
           </div>
         </div>
       </div>
+      <div class="card card-add" *ngIf="subjectId && canModifyGraphs" (click)="openCreate('graph')">
+        <div class="card-body">
+          <div class="card-icon add-plus">+</div>
+          <div class="card-name">{{ 'TESTS_LIST.NEW_GRAPH' | translate }}</div>
+        </div>
+      </div>
     </div>
     <ng-template #emptyGraphs>
-      <div class="empty-inline">{{ 'TESTS_LIST.NO_GRAPHS_SUBJECT' | translate }}</div>
+      <div class="empty-inline" *ngIf="isStaff">{{ 'TESTS_LIST.NO_GRAPHS_SUBJECT' | translate }}</div>
     </ng-template>
   </ng-container>
 
@@ -255,6 +282,23 @@
       </div>
     </div>
   </ng-container>
+</div>
+
+<!-- Create crossword / graph (named, attached to this subject) -->
+<div class="modal-overlay" *ngIf="createKind" (click)="cancelCreate()">
+  <div class="modal" (click)="stopPropagation($event)">
+    <h2 class="modal-title">{{ (createKind === 'crossword' ? 'TESTS_LIST.NEW_CROSSWORD' : 'TESTS_LIST.NEW_GRAPH') | translate }}</h2>
+    <div class="form-group">
+      <label>{{ 'TESTS_LIST.TEST_NAME' | translate }}</label>
+      <input type="text" [(ngModel)]="createName" (keydown.enter)="saveCreate()" [placeholder]="'TESTS_LIST.NEW_TITLE' | translate" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="cancelCreate()">{{ 'TESTS_LIST.CANCEL' | translate }}</button>
+      <button class="btn-primary" (click)="saveCreate()" [disabled]="createBusy || !createName.trim()">
+        {{ createBusy ? ('TESTS_LIST.CREATING' | translate) : ('TESTS_LIST.CREATE_EDIT' | translate) }}
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- Add Test Modal -->

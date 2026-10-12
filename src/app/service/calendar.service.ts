@@ -53,6 +53,10 @@ export interface CalendarEventResponse {
   endTime: string | null;
   links: CalendarEventLinkResponse[];
   canManage: boolean;
+  /** A scheduled exam, shown automatically and read-only. */
+  exam?: boolean;
+  startInstant?: string | null;
+  endInstant?: string | null;
 }
 
 export interface CalendarEventRequest {

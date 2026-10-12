@@ -362,7 +362,9 @@
     "ADD_AUTHOR": "Dodaj autora",
     "GRAPHS": "Grafy",
     "NO_GRAPHS_SUBJECT": "Brak grafów przypisanych do tego przedmiotu.",
-    "CONFIRM_DELETE_GRAPH": "Czy na pewno chcesz usunąć ten graf?"
+    "CONFIRM_DELETE_GRAPH": "Czy na pewno chcesz usunąć ten graf?",
+    "NEW_CROSSWORD": "Nowa krzyżówka",
+    "NEW_GRAPH": "Nowy graf"
   },
   "TEST_EDIT": {
     "BACK": "Testy",
@@ -428,7 +430,14 @@
     "ORDER_MATTERS": "Kolejność ma znaczenie (odpowiedzi muszą pasować pozycyjnie)",
     "ANSWER_1": "Odpowiedź 1",
     "ANSWERS_2_3": "Odpowiedzi 2, 3, …",
-    "CORRECT_ANSWER_PLACEHOLDER": "Poprawna odpowiedź"
+    "CORRECT_ANSWER_PLACEHOLDER": "Poprawna odpowiedź",
+    "TYPE": "Typ testu",
+    "TYPE_STANDARD": "Zwykły test",
+    "TYPE_SCHEDULED_EXAM": "Egzamin w terminie",
+    "EXAM_START": "Początek egzaminu",
+    "EXAM_WINDOW_END": "Koniec okna",
+    "EXAM_TIME_LIMIT": "Limit czasu (min)",
+    "EXAM_HINT": "Studenci mają jedno podejście, które mogą rozpocząć między startem a końcem okna. Liczba pytań zamkniętych/otwartych i próg zaliczenia powyżej obowiązują w każdym podejściu. Wyniki odblokowują się dla studentów po zamknięciu okna."
   },
   "CROSSWORDS_LIST": {
     "TITLE": "Krzyżówki",
@@ -490,7 +499,23 @@
     "SHARE_LINK": "Udostępnij ten link",
     "LINK_EXPIRES": "Wygasa za 24 godziny.",
     "COPY": "Kopiuj",
-    "CLOSE": "Zamknij"
+    "CLOSE": "Zamknij",
+    "NEW_USER": "Nowy użytkownik",
+    "NEW_USER_HINT": "Utwórz konto i ustaw jego nazwę użytkownika oraz hasło. Dane logowania przekaż użytkownikowi samodzielnie.",
+    "PASSWORD": "Hasło",
+    "PASSWORD_HINT": "Co najmniej 6 znaków",
+    "CREATE": "Utwórz użytkownika",
+    "ADMIN_CREATED": "Utworzony przez admina",
+    "USERNAME_TAKEN": "Ta nazwa użytkownika jest już zajęta.",
+    "CREATE_FAILED": "Nie udało się utworzyć użytkownika.",
+    "USERNAME_REQUIRED": "Podaj nazwę użytkownika.",
+    "STRENGTH_WEAK": "Słabe",
+    "STRENGTH_OK": "Średnie",
+    "STRENGTH_STRONG": "Mocne",
+    "GROUPS": "Grupy",
+    "GROUPS_HINT": "Zaznacz grupy, do których należy użytkownik. Zmiany działają od razu.",
+    "NO_GROUPS": "Nie ma jeszcze żadnych grup.",
+    "GROUP_PENDING": "prosi o dostęp"
   },
   "ROLES": {
     "TITLE": "Role",
@@ -676,7 +701,8 @@
     "FRI": "Pt",
     "SAT": "Sob",
     "SUN": "Nie",
-    "LINK_GRAPH": "Graf"
+    "LINK_GRAPH": "Graf",
+    "EXAM": "Egzamin w terminie"
   },
   "GRAPH_LAB": {
     "TITLE": "Laboratorium grafów",
@@ -787,5 +813,45 @@
     "NEW_GRAPH": "Nowy graf",
     "PLAY": "Graj",
     "EMPTY": "Brak grafów. Utwórz pierwszy, aby zacząć."
+  },
+  "EXAM": {
+    "STARTS_AT": "Test rozpocznie się",
+    "TIME_LIMIT": "Limit czasu",
+    "WINDOW_END": "Koniec okna",
+    "NOT_STARTED": "Egzamin jeszcze się nie rozpoczął. Będziesz mógł go rozpocząć po godzinie startu.",
+    "OPEN_NOTE": "Egzamin jest otwarty. Masz jedno podejście — po rozpoczęciu czas płynie do momentu wysłania odpowiedzi.",
+    "MISSED": "Okno egzaminu zostało zamknięte, a Ty nie wziąłeś w nim udziału.",
+    "IN_PROGRESS_NOTE": "Masz rozpoczęte podejście do egzaminu.",
+    "SUBMITTED_TITLE": "Egzamin wysłany",
+    "SUBMITTED_NOTE": "Twoje odpowiedzi zostały zapisane. Wyniki i podgląd będą dostępne po zamknięciu okna egzaminu.",
+    "PENDING_GRADING_NOTE": "Część odpowiedzi czeka jeszcze na ręczną ocenę, więc wynik może się zmienić.",
+    "START": "Rozpocznij egzamin",
+    "REVIEW": "Podgląd egzaminu",
+    "BACK_TO_EXAM": "Wróć do egzaminu",
+    "ATTEMPTS": "Podejścia",
+    "NO_ATTEMPTS": "Nikt jeszcze nie rozpoczął tego egzaminu.",
+    "USER": "Użytkownik",
+    "STATUS": "Status",
+    "SCORE": "Wynik",
+    "GRADING": "Ocenianie",
+    "STATUS_SUBMITTED": "Wysłany",
+    "STATUS_IN_PROGRESS": "W trakcie",
+    "TO_GRADE": "do oceny",
+    "QUESTION": "Pytanie",
+    "MANUAL_TAG": "Ocena ręczna",
+    "GRADED_TAG": "Ocenione",
+    "UNANSWERED": "Bez odpowiedzi",
+    "GIVEN_ANSWER": "Udzielona odpowiedź",
+    "EXPECTED_ANSWER": "Oczekiwana odpowiedź",
+    "NO_ANSWER": "(brak odpowiedzi)",
+    "TRUE": "Prawda",
+    "FALSE": "Fałsz",
+    "EXPLANATION": "Wyjaśnienie",
+    "FULL_POINTS": "Max",
+    "SAVE_GRADES": "Zapisz oceny",
+    "SAVED": "Oceny zapisane.",
+    "SAVE_ERROR": "Nie udało się zapisać ocen.",
+    "LOAD_ERROR": "Nie udało się wczytać tego podejścia.",
+    "READ_ONLY_NOTE": "To podgląd Twojego podejścia — bez możliwości edycji."
   }
 }

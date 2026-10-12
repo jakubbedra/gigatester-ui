@@ -4,7 +4,7 @@
     <h2 class="summary-title">{{ testState.testName }}</h2>
 
     <!-- EXAM SUMMARY -->
-    <ng-container *ngIf="isExam; else learningSummary">
+    <ng-container *ngIf="!testState.scheduled && isExam; else notStandardExam">
 
       <div class="summary-score">
         <div class="score-main">
@@ -37,6 +37,37 @@
       </div>
 
     </ng-container>
+
+    <!-- SCHEDULED EXAM: one attempt, results unlock when the window closes -->
+    <ng-template #notStandardExam>
+      <ng-container *ngIf="testState.scheduled; else learningSummary">
+        <div class="learning-box">
+          <div class="learning-title">{{ 'EXAM.SUBMITTED_TITLE' | translate }}</div>
+          <div class="learning-text" *ngIf="!testState.reviewAvailable">{{ 'EXAM.SUBMITTED_NOTE' | translate }}</div>
+        </div>
+
+        <div class="summary-score" *ngIf="testState.reviewAvailable">
+          <div class="score-main">
+            <span class="score-value">{{ testState.totalScore }}</span>
+            <span class="score-sep">/</span>
+            <span class="score-max">{{ testState.maxScore }}</span>
+            <span class="score-pts">pts</span>
+          </div>
+          <div class="score-sub">
+            <span class="score-percent">{{ percentage }}%</span>
+            <span class="badge" [class.pass]="isScheduledPassing === true" [class.fail]="isScheduledPassing === false" *ngIf="isScheduledPassing !== null">
+              {{ isScheduledPassing ? ('TEST_SUMMARY.PASSED' | translate) : ('TEST_SUMMARY.FAILED' | translate) }}
+            </span>
+          </div>
+          <div class="meta-row" *ngIf="testState.pendingGrading > 0">{{ 'EXAM.PENDING_GRADING_NOTE' | translate }}</div>
+        </div>
+
+        <div class="actions">
+          <button class="btn secondary" *ngIf="testState.reviewAvailable" (click)="reviewExam()">{{ 'EXAM.REVIEW' | translate }}</button>
+          <button class="btn secondary" (click)="backToExam()">{{ 'EXAM.BACK_TO_EXAM' | translate }}</button>
+        </div>
+      </ng-container>
+    </ng-template>
 
     <!-- LEARNING SUMMARY -->
     <ng-template #learningSummary>

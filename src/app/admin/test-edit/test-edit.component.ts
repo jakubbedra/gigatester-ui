@@ -117,11 +117,33 @@ export class TestEditComponent implements OnInit {
     private permissionService: PermissionService
   ) {}
 
+  // Test type + schedule (SCHEDULED_EXAM). Datetimes are edited as local "yyyy-MM-ddTHH:mm" strings.
+  testType: 'STANDARD' | 'SCHEDULED_EXAM' = 'STANDARD';
+  startAtLocal = '';
+  windowEndLocal = '';
+  timeLimitMinutes = 0;
+  saveError: string | null = null;
+
+  private toLocalInput(iso: string | null | undefined): string {
+    if (!iso) return '';
+    const d = new Date(iso);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  private fromLocalInput(local: string): string | null {
+    return local ? new Date(local).toISOString() : null;
+  }
+
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.testService.getTest(id).subscribe(test => {
       this.test = test;
       this.testName = test.name;
+      this.testType = test.type === 'SCHEDULED_EXAM' ? 'SCHEDULED_EXAM' : 'STANDARD';
+      this.startAtLocal = this.toLocalInput(test.startAt);
+      this.windowEndLocal = this.toLocalInput(test.windowEnd);
+      this.timeLimitMinutes = Math.round((test.timeLimit ?? 0) / 60000);
       this.testAuthors = test.authors ?? [];
       this.loadPage(true);
 
@@ -168,8 +190,15 @@ export class TestEditComponent implements OnInit {
     if (!this.test || !this.testName.trim()) return;
     this.saving = true;
     const name = this.testName.trim();
+    this.saveError = null;
     this.testService.updateTest(this.test.id, { ...this.buildTestRequest(this.test.questions), name })
-      .subscribe(() => { this.saving = false; });
+      .subscribe({
+        next: () => { this.saving = false; },
+        error: err => {
+          this.saving = false;
+          this.saveError = err?.error?.message || 'Could not save the test.';
+        }
+      });
   }
 
   private buildTestRequest(questions: string[]): any {
@@ -179,7 +208,13 @@ export class TestEditComponent implements OnInit {
       closedQuestionsCount: this.test!.closedQuestionsCount,
       openQuestionsCount: this.test!.openQuestionsCount,
       passingPercentage: this.test!.passingPercentage,
-      hideTagsDuringTest: this.test!.hideTagsDuringTest
+      hideTagsDuringTest: this.test!.hideTagsDuringTest,
+      timeLimit: this.testType === 'SCHEDULED_EXAM'
+        ? Math.max(0, Math.round(this.timeLimitMinutes)) * 60000
+        : (this.test!.timeLimit ?? 0),
+      type: this.testType,
+      startAt: this.testType === 'SCHEDULED_EXAM' ? this.fromLocalInput(this.startAtLocal) : null,
+      windowEnd: this.testType === 'SCHEDULED_EXAM' ? this.fromLocalInput(this.windowEndLocal) : null
     };
   }
 
