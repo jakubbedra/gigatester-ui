@@ -6,6 +6,7 @@ import { StreakService } from '../service/streak.service';
 import { forkJoin, of, Subscription, timer } from 'rxjs';
 import { switchMap, map, filter, catchError } from 'rxjs/operators';
 import { GraphService, GraphSummary } from '../service/graph.service';
+import { CodingService, CodingTaskSummary } from '../service/coding.service';
 import { PermissionService } from '../service/permission.service';
 import { SidebarRefreshService } from '../service/sidebar-refresh.service';
 import { TestService } from '../service/test.service';
@@ -33,6 +34,7 @@ interface Subject {
   tests: Item[];
   crosswords: Item[];
   graphs: Item[];
+  codingTasks: { name: string; id: string }[];
   expanded?: boolean;
 }
 
@@ -77,6 +79,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private subjectGroupService: SubjectGroupService,
     private crosswordService: CrosswordService,
     private graphService: GraphService,
+    private codingService: CodingService,
     private accessService: SubjectGroupAccessService,
     private router: Router,
     private authService: AuthService,
@@ -217,24 +220,25 @@ export class SidebarComponent implements OnInit, OnDestroy {
           this.testService.getTests(),
           this.crosswordService.getCrosswords(),
           canSeeAll ? of([] as any[]) : this.accessService.getMyAccess(),
-          this.graphService.getPlayableGraphs().pipe(catchError(() => of([] as GraphSummary[])))
+          this.graphService.getPlayableGraphs().pipe(catchError(() => of([] as GraphSummary[]))),
+          this.codingService.listPlayable().pipe(catchError(() => of([] as CodingTaskSummary[])))
         ]).pipe(
-          switchMap(([groupDetails, testsRes, crosswordsRes, accessStatuses, allGraphs]: [any[], any, any, any[], GraphSummary[]]) => {
+          switchMap(([groupDetails, testsRes, crosswordsRes, accessStatuses, allGraphs, allCoding]: [any[], any, any, any[], GraphSummary[], CodingTaskSummary[]]) => {
             const visibleGroups = canSeeAll
               ? groupDetails
               : groupDetails.filter((g: any) => accessStatuses.some((a: any) => a.groupId === g.id && a.status === 'APPROVED'));
             const subjectIds = [...new Set(visibleGroups.flatMap((g: any) => g.subjects as string[]))];
             if (subjectIds.length === 0) {
-              return of({ groups: visibleGroups, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], allGraphs, subjectDetails: [] as any[] });
+              return of({ groups: visibleGroups, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], allGraphs, allCoding, subjectDetails: [] as any[] });
             }
             return forkJoin(subjectIds.map(id => this.subjectsService.getSubject(id))).pipe(
-              switchMap(subjectDetails => of({ groups: visibleGroups, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], allGraphs, subjectDetails }))
+              switchMap(subjectDetails => of({ groups: visibleGroups, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], allGraphs, allCoding, subjectDetails }))
             );
           })
         );
       })
     ).subscribe((result: any) => {
-      const { groups, allTests, allCrosswords, allGraphs = [], subjectDetails = [] } = result;
+      const { groups, allTests, allCrosswords, allGraphs = [], allCoding = [], subjectDetails = [] } = result;
       const subjectMap = new Map(subjectDetails.map((s: any) => [s.id, s]));
       const prevYearExpanded = new Map(this.universityYears.map(y => [y.id, y.expanded]));
       const prevSubjectExpanded = new Map(
@@ -262,6 +266,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
               .filter((c: CrosswordSummaryResponse) => (subject.crosswords ?? []).includes(c.id))
               .map((c: CrosswordSummaryResponse) => ({ name: c.name, id: c.id, type: 'CROSSWORD' as PinnedEntityType, pinned: isPinned('CROSSWORD', c.id) }))
               .sort((a: Item, b: Item) => a.name.localeCompare(b.name)),
+            codingTasks: allCoding
+              .filter((c: CodingTaskSummary) => (subject.codingTasks ?? []).includes(c.id))
+              .map((c: CodingTaskSummary) => ({ name: c.name, id: c.id }))
+              .sort((x: any, y: any) => x.name.localeCompare(y.name)),
             graphs: allGraphs
               .filter((g: GraphSummary) => (subject.graphs ?? []).includes(g.id))
               .map((g: GraphSummary) => ({ name: g.name, id: g.id, type: 'GRAPH' as PinnedEntityType, pinned: isPinned('GRAPH', g.id) }))
@@ -379,6 +387,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     this.openMenuId = null;
     this.router.navigate(['/admin/graph-lab'], { queryParams: { graphId } });
+  }
+
+  navigateToCodingTasks() {
+    this.router.navigate(['/admin/coding-tasks']);
   }
 
   navigateToGraphs() {

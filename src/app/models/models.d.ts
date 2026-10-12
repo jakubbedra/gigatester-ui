@@ -247,6 +247,7 @@ export interface SubjectRequest {
     tests: string[];
     crosswords: string[];
     graphs: string[];
+    codingTasks?: string[];
 }
 
 export interface CommentResponse {
@@ -281,6 +282,7 @@ export interface SubjectResponse {
     tests: string[];
     crosswords: string[];
     graphs: string[];
+    codingTasks?: string[];
     comments: CommentResponse[];
     authors: SubjectAuthor[];
 }
@@ -454,6 +456,8 @@ export const enum Permission {
     CROSSWORDS_WRITE = "CROSSWORDS_WRITE",
     GRAPHS_READ = "GRAPHS_READ",
     GRAPHS_WRITE = "GRAPHS_WRITE",
+    CODING_READ = "CODING_READ",
+    CODING_WRITE = "CODING_WRITE",
 }
 
 export interface RoleRequest {

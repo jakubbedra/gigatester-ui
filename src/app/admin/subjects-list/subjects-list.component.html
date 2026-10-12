@@ -43,6 +43,16 @@
         </div>
       </div>
 
+      <div class="tests-section" *ngIf="subject.codingTasks.length > 0">
+        <div class="tests-label">{{ 'SUBJECTS.CODING' | translate }} <span class="test-count">{{ subject.codingTasks.length }}</span></div>
+        <div class="tests-list">
+          <div class="test-row crossword-row" *ngFor="let c of subject.codingTasks">
+            <span class="test-icon">💻</span>
+            <span class="test-name">{{ c.name }}</span>
+          </div>
+        </div>
+      </div>
+
       <div class="tests-section" *ngIf="subject.graphs.length > 0">
         <div class="tests-label">{{ 'SUBJECTS.GRAPHS' | translate }} <span class="test-count">{{ subject.graphs.length }}</span></div>
         <div class="tests-list">
@@ -150,6 +160,25 @@
       </ng-container>
       <ng-template #noGraphsAvailable>
         <div class="no-tests-hint">{{ 'SUBJECTS.NO_GRAPHS_AVAILABLE' | translate }}</div>
+      </ng-template>
+    </div>
+
+    <div class="form-group">
+      <label>{{ 'SUBJECTS.ASSIGNED_CODING' | translate }}</label>
+      <ng-container *ngIf="allCoding.length > 0; else noCodingAvailable">
+        <input class="search-input" type="text" [(ngModel)]="codingSearch" [placeholder]="'SUBJECTS.SEARCH_CODING' | translate" />
+        <div class="test-picker">
+          <ng-container *ngFor="let c of allCoding">
+            <label class="test-check" *ngIf="!codingSearch || c.name.toLowerCase().includes(codingSearch.toLowerCase())"
+                   [class.selected]="isCodingAssigned(c.id)" (click)="toggleCoding(c.id)">
+              <span class="check-box"><span class="check-mark" *ngIf="isCodingAssigned(c.id)">✓</span></span>
+              <span class="check-label">💻 {{ c.name }}</span>
+            </label>
+          </ng-container>
+        </div>
+      </ng-container>
+      <ng-template #noCodingAvailable>
+        <div class="no-tests-hint">{{ 'SUBJECTS.NO_CODING_AVAILABLE' | translate }}</div>
       </ng-template>
     </div>
 

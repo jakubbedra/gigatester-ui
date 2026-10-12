@@ -515,6 +515,7 @@ export class CalendarComponent implements OnInit {
 
   goToLinkedResource(link: { linkType: CalendarLinkType; linkId: string }) {
     if (link.linkType === 'TEST') this.router.navigate(['/tests', link.linkId]);
+    else if (link.linkType === 'CODING_TASK') this.router.navigate(['/coding', link.linkId]);
     else if (link.linkType === 'GRAPH') this.router.navigate(['/graphs/play'], { queryParams: { graphId: link.linkId } });
     else this.router.navigate(['/crosswords', link.linkId]);
   }

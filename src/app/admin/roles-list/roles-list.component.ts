@@ -25,6 +25,7 @@ export class RolesListComponent implements OnInit {
     { label: 'Tests', icon: '📝', read: Permission.TESTS_READ, write: Permission.TESTS_WRITE },
     { label: 'Crosswords', icon: '🔠', read: Permission.CROSSWORDS_READ, write: Permission.CROSSWORDS_WRITE },
     { label: 'Graphs', icon: '🕸️', read: Permission.GRAPHS_READ, write: Permission.GRAPHS_WRITE },
+    { label: 'Coding tasks', icon: '💻', read: Permission.CODING_READ, write: Permission.CODING_WRITE },
   ];
 
   private readonly impliedReadByWrite: Partial<Record<Permission, Permission>> = {
@@ -32,6 +33,7 @@ export class RolesListComponent implements OnInit {
     [Permission.TESTS_READ]: Permission.TESTS_WRITE,
     [Permission.CROSSWORDS_READ]: Permission.CROSSWORDS_WRITE,
     [Permission.GRAPHS_READ]: Permission.GRAPHS_WRITE,
+    [Permission.CODING_READ]: Permission.CODING_WRITE,
   };
 
   showEditModal = false;

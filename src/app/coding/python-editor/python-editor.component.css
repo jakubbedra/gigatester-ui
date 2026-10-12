@@ -1,0 +1,42 @@
+.wrap {
+  position: relative;
+  background: var(--c-141414);
+  border: 1px solid var(--c-2e2e2e);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.wrap:focus-within { border-color: var(--c-7b6df5); box-shadow: 0 0 0 3px var(--a-2); }
+
+.layer, .area {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 14px 16px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, "Courier New", monospace;
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  tab-size: 4;
+  white-space: pre;
+  overflow: auto;
+  letter-spacing: 0;
+  border: none;
+}
+.layer { color: var(--c-e6e6e6); pointer-events: none; scrollbar-width: none; }
+.layer::-webkit-scrollbar { display: none; }
+.area { background: transparent; color: transparent; caret-color: #fff; outline: none; resize: none; }
+.area::selection { background: rgba(123, 109, 245, 0.45); }
+.area:disabled { cursor: not-allowed; }
+
+:host ::ng-deep .tk-keyword { color: #c792ea; font-weight: 600; }
+:host ::ng-deep .tk-builtin { color: #82aaff; }
+:host ::ng-deep .tk-string { color: #c3e88d; }
+:host ::ng-deep .tk-number { color: #f78c6c; }
+:host ::ng-deep .tk-comment { color: #7f8aa3; font-style: italic; }
+:host ::ng-deep .tk-def { color: #ffcb6b; }
+:host ::ng-deep .tk-op { color: #89ddff; }

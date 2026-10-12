@@ -35,6 +35,7 @@
         <span class="admin-link" *ngIf="isAdmin" (click)="navigateToUsers()">{{ 'SIDEBAR.USERS' | translate }}</span>
         <span class="admin-link" *ngIf="isAdmin" (click)="navigateToRoles()">{{ 'SIDEBAR.ROLES' | translate }}</span>
         <span class="admin-link" (click)="navigateToGraphs()">{{ 'SIDEBAR.GRAPHS' | translate }}</span>
+        <span class="admin-link" (click)="navigateToCodingTasks()">{{ 'SIDEBAR.CODING' | translate }}</span>
         <span class="admin-link" routerLink="/admin/ai-generator">✨ {{ 'SIDEBAR.AI_GENERATOR' | translate }}</span>
       </li>
 
@@ -103,6 +104,11 @@
                       <button (click)="editCrossword($event, cw.id)">{{ 'SIDEBAR.EDIT' | translate }}</button>
                     </div>
                   </div>
+                </div>
+              </li>
+              <li *ngFor="let c of subject.codingTasks">
+                <div class="menu-row test-row">
+                  <a [routerLink]="['/coding', c.id]" class="tests crossword-link">💻 {{ c.name }}</a>
                 </div>
               </li>
               <li *ngFor="let g of subject.graphs">

@@ -194,6 +194,35 @@
     </ng-template>
   </ng-container>
 
+  <!-- Coding tasks (subject view only) -->
+  <ng-container *ngIf="subjectId && (codingTasks.length > 0 || isStaff)">
+    <div class="section-head">
+      <div class="section-label">{{ 'TESTS_LIST.CODING' | translate }}</div>
+    </div>
+    <div class="empty-inline" *ngIf="isStaff && codingTasks.length === 0">{{ 'TESTS_LIST.NO_CODING_SUBJECT' | translate }}</div>
+    <div class="grid" *ngIf="codingTasks.length > 0 || canModifyCoding">
+      <div class="card" *ngFor="let c of codingTasks" (click)="openCoding(c.id)">
+        <div class="card-body">
+          <div class="card-icon">💻</div>
+          <div class="card-name">{{ c.name }}</div>
+        </div>
+        <div class="context-wrapper" *ngIf="canModifyCoding" (click)="stopPropagation($event)">
+          <button class="ctx-btn" (click)="toggleMenu($event, 'co-' + c.id)">···</button>
+          <div class="ctx-menu" *ngIf="openMenuId === 'co-' + c.id">
+            <button (click)="editCoding($event, c.id)">{{ 'SIDEBAR.EDIT' | translate }}</button>
+            <button class="danger" (click)="deleteCoding($event, c.id)">{{ 'SIDEBAR.DELETE' | translate }}</button>
+          </div>
+        </div>
+      </div>
+      <div class="card card-add" *ngIf="canModifyCoding" (click)="openCreate('coding')">
+        <div class="card-body">
+          <div class="card-icon add-plus">+</div>
+          <div class="card-name">{{ 'TESTS_LIST.NEW_CODING' | translate }}</div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
   <!-- Comments (subject view only) -->
   <ng-container *ngIf="subjectId">
     <div class="section-label comments-label">{{ 'TESTS_LIST.COMMENTS' | translate }}</div>
@@ -287,7 +316,7 @@
 <!-- Create crossword / graph (named, attached to this subject) -->
 <div class="modal-overlay" *ngIf="createKind" (click)="cancelCreate()">
   <div class="modal" (click)="stopPropagation($event)">
-    <h2 class="modal-title">{{ (createKind === 'crossword' ? 'TESTS_LIST.NEW_CROSSWORD' : 'TESTS_LIST.NEW_GRAPH') | translate }}</h2>
+    <h2 class="modal-title">{{ (createKind === 'crossword' ? 'TESTS_LIST.NEW_CROSSWORD' : (createKind === 'coding' ? 'TESTS_LIST.NEW_CODING' : 'TESTS_LIST.NEW_GRAPH')) | translate }}</h2>
     <div class="form-group">
       <label>{{ 'TESTS_LIST.TEST_NAME' | translate }}</label>
       <input type="text" [(ngModel)]="createName" (keydown.enter)="saveCreate()" [placeholder]="'TESTS_LIST.NEW_TITLE' | translate" />

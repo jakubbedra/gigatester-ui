@@ -1,0 +1,219 @@
+<div class="page" *ngIf="!loading && task; else stateTpl">
+
+  <!-- Not open yet: only the schedule, nothing about the problems -->
+  <div class="wait-wrap" *ngIf="task.phase === 'notStarted'">
+    <div class="wait-card">
+      <div class="wait-emoji">🗓️</div>
+      <h1 class="wait-title">{{ task.name }}</h1>
+      <p class="wait-lead">{{ 'CODING.NOT_STARTED' | translate }}</p>
+      <div class="wait-date">{{ task.startAt | date:'dd.MM.yyyy HH:mm' }}</div>
+      <div class="wait-countdown" *ngIf="countdown">{{ 'CODING.OPENS_IN' | translate }} <b>{{ countdown }}</b></div>
+      <p class="wait-sub" *ngIf="task.windowEnd">{{ 'CODING.OPEN_UNTIL' | translate }} <b>{{ task.windowEnd | date:'dd.MM.yyyy HH:mm' }}</b></p>
+      <button class="btn-ghost" *ngIf="isStaff" (click)="edit()">✎ {{ 'SIDEBAR.EDIT' | translate }}</button>
+    </div>
+  </div>
+
+
+  <div class="head" *ngIf="task.phase !== 'notStarted'">
+    <h1 class="title">💻 {{ task.name }}</h1>
+    <div class="head-right">
+      <div class="close-chip" *ngIf="closeCountdown" [class.warn]="closeUrgency === 'warn'" [class.urgent]="closeUrgency === 'urgent'">
+        <span class="close-chip-icon">⏳</span>
+        <span class="close-chip-time">{{ closeCountdown }}</span>
+        <span class="close-chip-label">{{ 'CODING.TO_CLOSE' | translate }}</span>
+      </div>
+      <div class="score-chip" [class.perfect]="allPerfect">
+        <span class="score-chip-label">{{ 'CODING.SCORE' | translate }}</span>
+        <span class="score-chip-value">{{ totalScore }} / {{ task.maxScore }}</span>
+        <span class="score-chip-sub" *ngIf="problem && liveStats.total > 0">
+          {{ 'CODING.PROBLEM' | translate }} {{ active + 1 }}: {{ liveStats.passed }}/{{ liveStats.total }}<span *ngIf="liveStats.known < liveStats.total"> ({{ liveStats.known }} {{ 'CODING.VISIBLE' | translate }})</span>
+        </span>
+      </div>
+      <button class="btn-ghost" *ngIf="locked" (click)="openSummary()">🏁 {{ 'CODING.SUMMARY' | translate }}</button>
+      <button class="btn-ghost sound-btn" (click)="sound.toggleMute()" [title]="'CODING.SOUND' | translate">{{ sound.muted ? '🔇' : '🔊' }}</button>
+      <button class="btn-ghost" *ngIf="isStaff" (click)="edit()">✎ {{ 'SIDEBAR.EDIT' | translate }}</button>
+    </div>
+  </div>
+
+  <div class="banner done" *ngIf="locked && task.phase !== 'notStarted'">🏁 {{ 'CODING.FINISHED_BANNER' | translate }}</div>
+
+  <div class="banner warn" *ngIf="task.phase === 'closed'">{{ 'CODING.CLOSED' | translate }}</div>
+  <div class="banner info" *ngIf="task.phase === 'open' && task.windowEnd">
+    {{ 'CODING.OPEN_UNTIL' | translate }} <b>{{ task.windowEnd | date:'dd.MM.yyyy HH:mm' }}</b>
+  </div>
+
+  <section class="panel intro" *ngIf="task.description && task.phase !== 'notStarted'">
+    <div class="description" [innerHTML]="task.description"></div>
+  </section>
+
+  <ng-container *ngIf="task.phase !== 'notStarted' && task.problems.length > 0">
+
+    <!-- Problem tabs -->
+    <div class="problem-tabs" *ngIf="task.problems.length > 1">
+      <button class="problem-tab" *ngFor="let p of task.problems; let i = index" [class.active]="i === active" (click)="select(i)">
+        <span class="problem-tab-title">{{ i + 1 }}. {{ p.title }}</span>
+        <span class="problem-tab-score" [class.full]="p.bestScore !== null && p.bestScore >= p.points">{{ problemScoreLabel(p) }}</span>
+      </button>
+    </div>
+
+    <div class="stack" *ngIf="problem && state">
+
+      <!-- 1. Description -->
+      <section class="panel statement">
+        <div class="panel-title">{{ 'CODING.TASK' | translate }} <span class="points-badge">{{ problem.points }} {{ 'CODING.POINTS_SHORT' | translate }}</span></div>
+        <h2 class="problem-title" *ngIf="task.problems.length > 1">{{ problem.title }}</h2>
+        <div class="description" [innerHTML]="problem.description"></div>
+        <p class="muted" *ngIf="!problem.description">{{ 'CODING.NO_DESCRIPTION' | translate }}</p>
+      </section>
+
+      <!-- 2. Python editor + output -->
+      <section class="panel work">
+        <div class="panel-title">Python</div>
+        <app-python-editor [code]="state.code" (codeChange)="setCode($event)" [disabled]="readOnly" [minHeight]="340"></app-python-editor>
+
+        <div class="engine-note" *ngIf="engineLoading">⏳ {{ 'CODING.LOADING_ENGINE' | translate }}</div>
+
+        <div class="actions">
+          <button class="btn-secondary" [disabled]="busy || readOnly" (click)="run()">▶ {{ 'CODING.RUN' | translate }}</button>
+          <button class="btn-secondary" [disabled]="busy || readOnly" (click)="runTests()">
+            {{ (testsRunning ? 'CODING.RUNNING_TESTS' : 'CODING.RUN_TESTS') | translate }}
+          </button>
+          <button class="btn-primary" [disabled]="!canSubmit || busy" (click)="submit()">
+            {{ (submitting ? 'CODING.SUBMITTING' : 'CODING.SUBMIT') | translate }}
+          </button>
+        </div>
+
+        <div class="field">
+          <label>{{ 'CODING.CUSTOM_INPUT' | translate }}</label>
+          <textarea class="small-box" spellcheck="false" [(ngModel)]="state.customInput" rows="2" [disabled]="readOnly"></textarea>
+        </div>
+
+        <div class="field">
+          <label>{{ 'CODING.OUTPUT' | translate }}</label>
+          <pre class="output" [class.has-error]="state.output && (state.output.stderr || state.output.timedOut)">
+<ng-container *ngIf="running">…</ng-container><ng-container *ngIf="!running && state.output"><ng-container *ngIf="state.output.timedOut">{{ 'CODING.TIMEOUT' | translate }}</ng-container>{{ state.output.stdout }}{{ state.output.stderr }}</ng-container><ng-container *ngIf="!running && !state.output"><span class="muted">{{ 'CODING.OUTPUT_HINT' | translate }}</span></ng-container></pre>
+        </div>
+
+        <div class="summary" *ngIf="state.submission">
+          <div class="summary-score">{{ state.submission.score }} / {{ state.submission.maxScore }} {{ 'CODING.POINTS_SHORT' | translate }}</div>
+          <div class="summary-sub">{{ state.submission.passed }} / {{ state.submission.total }} {{ 'CODING.TESTS_PASSED' | translate }}</div>
+        </div>
+        <p class="error" *ngIf="state.submitError === 'finished'">{{ 'CODING.FINISHED_BANNER' | translate }}</p>
+        <p class="error" *ngIf="state.submitError === 'closed'">{{ 'CODING.SUBMIT_CLOSED' | translate }}</p>
+        <p class="error" *ngIf="state.submitError === 'failed'">{{ 'CODING.SUBMIT_FAILED' | translate }}</p>
+        <p class="best" *ngIf="problem.bestScore !== null">
+          {{ 'CODING.BEST' | translate }}: <b>{{ problem.bestScore }} / {{ problem.points }}</b> · {{ problem.attempts }} {{ 'CODING.ATTEMPTS' | translate }}
+        </p>
+      </section>
+
+      <!-- 3. Tests -->
+      <section class="panel tests">
+        <div class="panel-title">{{ 'CODING.TESTS' | translate }}</div>
+        <div class="test-item" *ngFor="let t of problem.tests; let i = index" [class.pass]="resultFor(i) === true" [class.fail]="resultFor(i) === false">
+          <div class="test-head">
+            <span class="test-name">{{ 'CODING.TEST' | translate }} {{ i + 1 }}<span class="hidden-tag" *ngIf="t.hidden"> · {{ 'CODING.HIDDEN' | translate }}</span></span>
+            <span class="test-status" *ngIf="resultFor(i) === true">✓</span>
+            <span class="test-status" *ngIf="resultFor(i) === false">✗</span>
+          </div>
+          <ng-container *ngIf="!t.hidden || isStaff">
+            <div class="io-label" *ngIf="t.input">{{ 'CODING.INPUT' | translate }}</div>
+            <pre class="io" *ngIf="t.input">{{ t.input }}</pre>
+            <div class="io-label">{{ 'CODING.EXPECTED' | translate }}</div>
+            <pre class="io">{{ t.expectedOutput }}</pre>
+          </ng-container>
+          <ng-container *ngIf="!t.hidden && state.testResults[i] && (state.testResults[i].actual || state.testResults[i].error || state.testResults[i].timedOut) && resultFor(i) === false">
+            <div class="io-label">{{ 'CODING.YOUR_OUTPUT' | translate }}</div>
+            <pre class="io bad">{{ state.testResults[i].timedOut ? ('CODING.TIMEOUT' | translate) : (state.testResults[i].error || state.testResults[i].actual) }}</pre>
+          </ng-container>
+          <p class="muted small" *ngIf="t.hidden && !isStaff">{{ 'CODING.HIDDEN_HINT' | translate }}</p>
+        </div>
+        <p class="muted" *ngIf="problem.tests.length === 0">{{ 'CODING.NO_TESTS' | translate }}</p>
+      </section>
+
+    </div>
+  </ng-container>
+
+  <p class="muted" *ngIf="task.problems.length === 0 && task.phase !== 'notStarted'">{{ 'CODING.NO_PROBLEMS' | translate }}</p>
+
+  <!-- Staff: everyone's best results -->
+  <section class="panel results" *ngIf="isStaff && task.phase !== 'notStarted'">
+    <div class="panel-title">{{ 'CODING.RESULTS' | translate }} <span class="count">{{ results.length }}</span></div>
+    <p class="muted" *ngIf="results.length === 0">{{ 'CODING.NO_RESULTS' | translate }}</p>
+    <table *ngIf="results.length > 0">
+      <thead>
+        <tr>
+          <th>{{ 'EXAM.USER' | translate }}</th>
+          <th>{{ 'CODING.SCORE' | translate }}</th>
+          <th>{{ 'CODING.ATTEMPTS' | translate }}</th>
+          <th>{{ 'CODING.LAST' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let r of results">
+          <tr (click)="toggleUser(r)" [class.open]="expandedUserId === r.userId">
+            <td><span class="caret">{{ expandedUserId === r.userId ? '▾' : '▸' }}</span> {{ r.username }}</td>
+            <td><b>{{ r.totalScore }}</b> / {{ r.maxScore }}</td>
+            <td>{{ r.attempts }}</td>
+            <td>{{ r.lastSubmittedAt | date:'dd.MM.yyyy HH:mm' }}</td>
+          </tr>
+          <tr class="sub-row" *ngFor="let pr of (expandedUserId === r.userId ? r.problems : [])" (click)="openSubmission(pr)" [class.no-sub]="!pr.bestSubmissionId">
+            <td class="sub-title">{{ pr.title }}</td>
+            <td>{{ pr.bestScore }} / {{ pr.maxScore }} <span class="muted small">({{ pr.bestPassed }}/{{ pr.total }})</span></td>
+            <td>{{ pr.attempts }}</td>
+            <td><span class="muted small" *ngIf="pr.bestSubmissionId">{{ 'CODING.VIEW_CODE' | translate }}</span></td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </section>
+
+</div>
+
+<!-- Finished: summary -->
+<div class="modal-overlay" *ngIf="summaryOpen && task" (click)="closeSummary()">
+  <div class="modal summary-modal" (click)="$event.stopPropagation()">
+    <div class="summary-emoji">🏁</div>
+    <h2 class="modal-title center">{{ 'CODING.SUMMARY_TITLE' | translate }}</h2>
+    <p class="muted center">{{ task.name }}</p>
+    <div class="big-score">
+      <span class="big-score-value">{{ totalScore }}</span>
+      <span class="big-score-max">/ {{ task.maxScore }} {{ 'CODING.POINTS_SHORT' | translate }}</span>
+      <span class="big-score-pct">{{ percentage }}%</span>
+    </div>
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th>{{ 'CODING.PROBLEM' | translate }}</th>
+          <th>{{ 'CODING.TESTS_PASSED' | translate }}</th>
+          <th>{{ 'CODING.SCORE' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of task.problems; let i = index">
+          <td>{{ i + 1 }}. {{ p.title }}</td>
+          <td>{{ p.bestPassed ?? 0 }} / {{ p.tests.length }}</td>
+          <td [class.full]="p.bestScore !== null && p.bestScore >= p.points"><b>{{ p.bestScore ?? 0 }}</b> / {{ p.points }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="muted small center">{{ 'CODING.SUMMARY_NOTE' | translate }}</p>
+    <div class="modal-actions center-actions"><button class="btn-primary" (click)="closeSummary()">{{ 'CODING.SUMMARY_CLOSE' | translate }}</button></div>
+  </div>
+</div>
+
+<!-- Staff: a student's best code -->
+<div class="modal-overlay" *ngIf="viewing" (click)="closeSubmission()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h2 class="modal-title">{{ viewing.username }} — {{ viewing.problemTitle }} — {{ viewing.score }} / {{ viewing.maxScore }}</h2>
+    <p class="muted small">{{ viewing.passed }} / {{ viewing.total }} {{ 'CODING.TESTS_PASSED' | translate }} · {{ viewing.submittedAt | date:'dd.MM.yyyy HH:mm' }}</p>
+    <pre class="code-view">{{ viewing.code }}</pre>
+    <div class="modal-actions"><button class="btn-secondary" (click)="closeSubmission()">{{ 'USERS.CLOSE' | translate }}</button></div>
+  </div>
+</div>
+
+<ng-template #stateTpl>
+  <div class="page">
+    <p class="muted" *ngIf="loading">{{ 'TEST_SUMMARY.LOADING' | translate }}</p>
+    <p class="error" *ngIf="loadError">{{ 'CODING.LOAD_ERROR' | translate }}</p>
+  </div>
+</ng-template>

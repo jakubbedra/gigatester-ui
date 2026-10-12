@@ -1,0 +1,48 @@
+<div class="page">
+  <div class="page-header">
+    <h1 class="page-title">{{ 'CODING.TITLE' | translate }}</h1>
+    <button class="btn-add" *ngIf="canWrite" (click)="openAdd()">+ {{ 'CODING.NEW' | translate }}</button>
+  </div>
+
+  <div class="grid" *ngIf="tasks.length > 0; else empty">
+    <div class="card" *ngFor="let t of tasks" (click)="open(t.id)">
+      <div class="card-header">
+        <div class="card-icon">💻</div>
+        <div class="card-name">{{ t.name }}</div>
+        <div class="context-wrapper" (click)="stopPropagation($event)">
+          <button class="ctx-btn" (click)="toggleMenu($event, t.id)">···</button>
+          <div class="ctx-menu" *ngIf="openMenuId === t.id">
+            <button (click)="edit($event, t.id)">{{ 'SIDEBAR.EDIT' | translate }}</button>
+            <button class="danger" (click)="delete($event, t.id)">{{ 'SIDEBAR.DELETE' | translate }}</button>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="term-count-label" *ngIf="t.startAt">🗓 {{ t.startAt | date:'dd.MM.yyyy HH:mm' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #empty>
+    <div class="empty-state">
+      <div class="empty-icon">💻</div>
+      <p>{{ 'CODING.EMPTY' | translate }}</p>
+    </div>
+  </ng-template>
+</div>
+
+<div class="modal-overlay" *ngIf="showAddModal" (click)="cancelAdd()">
+  <div class="modal" (click)="stopPropagation($event)">
+    <h2 class="modal-title">{{ 'CODING.NEW' | translate }}</h2>
+    <div class="form-group">
+      <label>{{ 'CODING.NAME' | translate }}</label>
+      <input type="text" [(ngModel)]="newName" (keydown.enter)="saveAdd()" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="cancelAdd()">{{ 'TEST_EDIT.CANCEL' | translate }}</button>
+      <button class="btn-primary" (click)="saveAdd()" [disabled]="adding || !newName.trim()">
+        {{ adding ? ('SUBJECT_GROUPS.CREATING' | translate) : ('CROSSWORDS_LIST.CREATE_EDIT' | translate) }}
+      </button>
+    </div>
+  </div>
+</div>

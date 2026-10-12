@@ -4,6 +4,7 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { GraphService, GraphSummary } from '../../service/graph.service';
+import { CodingService, CodingTaskSummary } from '../../service/coding.service';
 import { TestService } from '../../service/test.service';
 import { CrosswordService } from '../../service/crossword.service';
 import { SubjectsService } from '../../service/subject.service';
@@ -24,6 +25,8 @@ export class TestsListComponent implements OnInit {
   crosswords: CrosswordSummaryResponse[] = [];
   graphs: GraphSummary[] = [];
   subjectGraphIds: string[] = [];
+  codingTasks: CodingTaskSummary[] = [];
+  subjectCodingIds: string[] = [];
   openMenuId: string | null = null;
 
   subjectName: string | null = null;
@@ -74,6 +77,7 @@ export class TestsListComponent implements OnInit {
     private testService: TestService,
     private crosswordService: CrosswordService,
     private graphService: GraphService,
+    private codingService: CodingService,
     private translate: TranslateService,
     private subjectsService: SubjectsService,
     private commentService: CommentService,
@@ -103,11 +107,11 @@ export class TestsListComponent implements OnInit {
   }
 
   // ── Create from the subject page: make the item, attach it to this subject, open its editor ──
-  createKind: 'crossword' | 'graph' | null = null;
+  createKind: 'crossword' | 'graph' | 'coding' | null = null;
   createName = '';
   createBusy = false;
 
-  openCreate(kind: 'crossword' | 'graph') {
+  openCreate(kind: 'crossword' | 'graph' | 'coding') {
     this.createKind = kind;
     this.createName = '';
   }
@@ -116,7 +120,7 @@ export class TestsListComponent implements OnInit {
     this.createKind = null;
   }
 
-  private attachToSubject(patch: { tests?: string[]; crosswords?: string[]; graphs?: string[] }): Observable<any> {
+  private attachToSubject(patch: { tests?: string[]; crosswords?: string[]; graphs?: string[]; codingTasks?: string[] }): Observable<any> {
     if (!this.subjectId || !this.subjectName) return of(null);
     return this.subjectsService.updateSubject(this.subjectId, {
       name: this.subjectName,
@@ -124,7 +128,8 @@ export class TestsListComponent implements OnInit {
       difficulty: this.subjectDifficulty,
       tests: patch.tests ?? this.subjectTestIds,
       crosswords: patch.crosswords ?? this.subjectCrosswordIds,
-      graphs: patch.graphs ?? this.subjectGraphIds
+      graphs: patch.graphs ?? this.subjectGraphIds,
+      codingTasks: patch.codingTasks ?? this.subjectCodingIds
     });
   }
 
@@ -145,6 +150,14 @@ export class TestsListComponent implements OnInit {
         next: id => { done(); this.router.navigate(['/admin/crosswords', id, 'edit']); },
         error: () => { this.createBusy = false; }
       });
+    } else if (this.createKind === 'coding') {
+      this.codingService.create(CodingService.blankRequest(name)).pipe(
+        switchMap(created => this.attachToSubject({ codingTasks: [...this.subjectCodingIds, this.idOf(created)] })
+          .pipe(map(() => this.idOf(created))))
+      ).subscribe({
+        next: id => { done(); this.router.navigate(['/admin/coding-tasks', id, 'edit']); },
+        error: () => { this.createBusy = false; }
+      });
     } else {
       this.graphService.addGraph({ name, graphJson: JSON.stringify({ vertices: [], edges: [], hyperedges: [] }) }).pipe(
         switchMap(created => this.attachToSubject({ graphs: [...this.subjectGraphIds, this.idOf(created)] })
@@ -154,6 +167,10 @@ export class TestsListComponent implements OnInit {
         error: () => { this.createBusy = false; }
       });
     }
+  }
+
+  get canModifyCoding(): boolean {
+    return this.permissionService.hasPermission(Permission.CODING_WRITE);
   }
 
   get canModifyGraphs(): boolean {
@@ -177,6 +194,7 @@ export class TestsListComponent implements OnInit {
           this.subjectTestIds = subject.tests ?? [];
           this.subjectCrosswordIds = subject.crosswords ?? [];
           this.subjectGraphIds = subject.graphs ?? [];
+          this.subjectCodingIds = subject.codingTasks ?? [];
           this.comments = subject.comments ?? [];
           this.subjectAuthors = subject.authors ?? [];
           const tests$ = subject.tests.length
@@ -188,9 +206,15 @@ export class TestsListComponent implements OnInit {
           const graphs$ = this.subjectGraphIds.length
             ? this.graphService.getPlayableGraphs().pipe(catchError(() => of([] as GraphSummary[])))
             : of([] as GraphSummary[]);
-          return forkJoin([tests$, crosswords$, graphs$]);
+          const coding$ = this.subjectCodingIds.length
+            ? this.codingService.listPlayable().pipe(catchError(() => of([] as CodingTaskSummary[])))
+            : of([] as CodingTaskSummary[]);
+          return forkJoin([tests$, crosswords$, graphs$, coding$]);
         })
-      ).subscribe(([tests, crosswords, playableGraphs]: any) => {
+      ).subscribe(([tests, crosswords, playableGraphs, playableCoding]: any) => {
+        this.codingTasks = (playableCoding as CodingTaskSummary[])
+          .filter(c => this.subjectCodingIds.includes(c.id))
+          .sort((a, b) => a.name.localeCompare(b.name));
         this.graphs = (playableGraphs as GraphSummary[])
           .filter(g => this.subjectGraphIds.includes(g.id))
           .sort((a, b) => a.name.localeCompare(b.name));
@@ -208,6 +232,8 @@ export class TestsListComponent implements OnInit {
       this.subjectTestIds = [];
       this.subjectCrosswordIds = [];
       this.subjectGraphIds = [];
+      this.subjectCodingIds = [];
+      this.codingTasks = [];
       this.graphs = [];
       this.comments = [];
       this.subjectAuthors = [];
@@ -417,6 +443,24 @@ export class TestsListComponent implements OnInit {
     this.openMenuId = null;
     if (confirm('Are you sure you want to delete this crossword?')) {
       this.crosswordService.deleteCrossword(id).subscribe(() => this.load());
+    }
+  }
+
+  openCoding(id: string) {
+    this.router.navigate(['/coding', id]);
+  }
+
+  editCoding(event: Event, id: string) {
+    event.stopPropagation();
+    this.openMenuId = null;
+    this.router.navigate(['/admin/coding-tasks', id, 'edit']);
+  }
+
+  deleteCoding(event: Event, id: string) {
+    event.stopPropagation();
+    this.openMenuId = null;
+    if (confirm(this.translate.instant('CODING.CONFIRM_DELETE'))) {
+      this.codingService.delete(id).subscribe(() => this.load());
     }
   }
 

@@ -63,7 +63,7 @@
                   {{ 'CALENDAR.EDIT' | translate }}
                 </button>
                 <button class="btn-primary" *ngFor="let link of e.links" (click)="goToLinkedResource(link)">
-                  {{ 'CALENDAR.GO_TO' | translate }} {{ link.linkName || (link.linkType === 'TEST' ? ('CALENDAR.LINK_TEST' | translate) : (link.linkType === 'GRAPH' ? ('CALENDAR.LINK_GRAPH' | translate) : ('CALENDAR.LINK_CROSSWORD' | translate))) }}
+                  {{ 'CALENDAR.GO_TO' | translate }} {{ link.linkName || (link.linkType === 'TEST' ? ('CALENDAR.LINK_TEST' | translate) : (link.linkType === 'GRAPH' ? ('CALENDAR.LINK_GRAPH' | translate) : (link.linkType === 'CODING_TASK' ? ('CALENDAR.LINK_CODING' | translate) : ('CALENDAR.LINK_CROSSWORD' | translate)))) }}
                 </button>
               </div>
             </div>

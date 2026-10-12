@@ -1,0 +1,113 @@
+<div class="page" *ngIf="!loading; else loadTpl">
+
+  <div class="top">
+    <button class="btn-back" (click)="back()">← {{ 'CODING.BACK_TO_TASK' | translate }}</button>
+    <h1 class="title">{{ 'CODING.EDIT_TITLE' | translate }}</h1>
+  </div>
+
+  <p class="error" *ngIf="error === 'load'">{{ 'CODING.LOAD_ERROR' | translate }}</p>
+
+  <section class="card">
+    <div class="field">
+      <label>{{ 'CODING.NAME' | translate }}</label>
+      <input class="input" type="text" [(ngModel)]="name" (ngModelChange)="touched()" />
+    </div>
+
+    <div class="field">
+      <label>{{ 'CODING.INTRO' | translate }}</label>
+      <quill-editor [(ngModel)]="description" [modules]="quillModules" [format]="'html'" (ngModelChange)="touched()" (onEditorCreated)="fillEditor($event, description)" class="quill"></quill-editor>
+    </div>
+
+    <label class="toggle">
+      <input type="checkbox" [(ngModel)]="scheduled" (ngModelChange)="touched()" />
+      <span>{{ 'CODING.SCHEDULE' | translate }}</span>
+    </label>
+    <div class="row" *ngIf="scheduled">
+      <div class="field grow">
+        <label>{{ 'TEST_EDIT.EXAM_START' | translate }}</label>
+        <input class="input dt" type="datetime-local" [(ngModel)]="startAtLocal" (ngModelChange)="touched()" />
+      </div>
+      <div class="field grow">
+        <label>{{ 'TEST_EDIT.EXAM_WINDOW_END' | translate }}</label>
+        <input class="input dt" type="datetime-local" [(ngModel)]="windowEndLocal" (ngModelChange)="touched()" />
+      </div>
+    </div>
+    <p class="hint" *ngIf="scheduled">{{ 'CODING.SCHEDULE_HINT' | translate }}</p>
+  </section>
+
+  <div class="problems-head">
+    <h2 class="section-title">{{ 'CODING.PROBLEMS' | translate }} <span class="count">{{ problems.length }} · {{ totalPoints }} {{ 'CODING.POINTS_SHORT' | translate }}</span></h2>
+    <button class="btn-add" (click)="addProblem()">+ {{ 'CODING.ADD_PROBLEM' | translate }}</button>
+  </div>
+  <p class="hint" *ngIf="problems.length === 0">{{ 'CODING.NO_PROBLEMS_EDIT' | translate }}</p>
+
+  <section class="card problem" *ngFor="let p of problems; let pi = index" [class.collapsed]="!p.open">
+
+    <div class="problem-top">
+      <button class="chev" (click)="toggle(p)">{{ p.open ? '▾' : '▸' }}</button>
+      <span class="problem-number">{{ pi + 1 }}</span>
+      <input class="input title-input" type="text" [(ngModel)]="p.title" (ngModelChange)="touched()" [placeholder]="'CODING.PROBLEM_TITLE' | translate" />
+      <div class="mini-field">
+        <label>{{ 'CODING.POINTS' | translate }}</label>
+        <input class="input mini" type="number" min="1" [(ngModel)]="p.points" (ngModelChange)="touched()" />
+      </div>
+      <div class="mini-field">
+        <label>{{ 'CODING.TIME_LIMIT_S' | translate }}</label>
+        <input class="input mini" type="number" min="1" [(ngModel)]="p.timeLimitSeconds" (ngModelChange)="touched()" />
+      </div>
+      <div class="problem-actions">
+        <button class="icon-btn" [disabled]="pi === 0" (click)="moveProblem(pi, -1)" title="↑">↑</button>
+        <button class="icon-btn" [disabled]="pi === problems.length - 1" (click)="moveProblem(pi, 1)" title="↓">↓</button>
+        <button class="icon-btn danger" (click)="removeProblem(pi)" title="✕">✕</button>
+      </div>
+    </div>
+
+    <ng-container *ngIf="p.open">
+      <div class="field">
+        <label>{{ 'CODING.DESCRIPTION' | translate }}</label>
+        <quill-editor [(ngModel)]="p.description" [modules]="quillModules" [format]="'html'" (ngModelChange)="touched()" (onEditorCreated)="fillEditor($event, p.description)" class="quill"></quill-editor>
+      </div>
+
+      <div class="field">
+        <label>{{ 'CODING.STARTER_CODE' | translate }}</label>
+        <app-python-editor [(code)]="p.starterCode" (codeChange)="touched()" [minHeight]="200"></app-python-editor>
+      </div>
+
+      <div class="tests-head">
+        <h3 class="sub-title">{{ 'CODING.TESTS' | translate }} <span class="count">{{ p.tests.length }}</span></h3>
+        <button class="btn-add small" (click)="addTest(p)">+ {{ 'CODING.ADD_TEST' | translate }}</button>
+      </div>
+      <p class="hint" *ngIf="pi === 0">{{ 'CODING.TESTS_HINT' | translate }}</p>
+
+      <div class="test" *ngFor="let t of p.tests; let i = index">
+        <div class="test-top">
+          <span class="test-name">{{ 'CODING.TEST' | translate }} {{ i + 1 }}</span>
+          <label class="toggle small-toggle">
+            <input type="checkbox" [(ngModel)]="t.hidden" (ngModelChange)="touched()" />
+            <span>{{ 'CODING.HIDDEN' | translate }}</span>
+          </label>
+          <button class="btn-remove" (click)="removeTest(p, i)">✕</button>
+        </div>
+        <div class="row">
+          <div class="field grow">
+            <label>{{ 'CODING.INPUT' | translate }}</label>
+            <textarea class="code" rows="3" spellcheck="false" [(ngModel)]="t.input" (ngModelChange)="touched()"></textarea>
+          </div>
+          <div class="field grow">
+            <label>{{ 'CODING.EXPECTED' | translate }}</label>
+            <textarea class="code" rows="3" spellcheck="false" [(ngModel)]="t.expectedOutput" (ngModelChange)="touched()"></textarea>
+          </div>
+        </div>
+      </div>
+      <p class="hint" *ngIf="p.tests.length === 0">{{ 'CODING.NO_TESTS' | translate }}</p>
+    </ng-container>
+  </section>
+
+  <div class="save-bar">
+    <span class="ok" *ngIf="saved">{{ 'EXAM.SAVED' | translate }}</span>
+    <span class="err" *ngIf="error && error !== 'load'">{{ error === 'save' ? ('EXAM.SAVE_ERROR' | translate) : error }}</span>
+    <button class="btn-save" [disabled]="!canSave" (click)="save()">{{ 'TEST_EDIT.SAVE' | translate }}</button>
+  </div>
+</div>
+
+<ng-template #loadTpl><div class="page"><p class="hint">{{ 'TEST_SUMMARY.LOADING' | translate }}</p></div></ng-template>

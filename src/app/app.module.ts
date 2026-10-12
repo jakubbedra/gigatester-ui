@@ -55,6 +55,10 @@ import { CrosswordTestRunComponent } from './crosswords/crossword-test-run/cross
 import { CalendarComponent } from './calendar/calendar.component';
 import { JoinGroupComponent } from './calendar/join-group/join-group.component';
 import { ExamAttemptComponent } from './tests/exam-attempt/exam-attempt.component';
+import { PythonEditorComponent } from './coding/python-editor/python-editor.component';
+import { CodingPlayComponent } from './coding/coding-play/coding-play.component';
+import { CodingEditComponent } from './coding/coding-edit/coding-edit.component';
+import { CodingListComponent } from './coding/coding-list/coding-list.component';
 import { GraphsListComponent } from './admin/graphs-list/graphs-list.component';
 import { GraphGameListComponent } from './graph-game/graph-game-list/graph-game-list.component';
 import { GraphGamePlayComponent } from './graph-game/graph-game-play/graph-game-play.component';
@@ -98,6 +102,10 @@ import { GraphGamePlayComponent } from './graph-game/graph-game-play/graph-game-
     GraphGameListComponent,
     GraphGamePlayComponent,
     GraphsListComponent,
+    CodingPlayComponent,
+    PythonEditorComponent,
+    CodingEditComponent,
+    CodingListComponent,
     ExamAttemptComponent,
   ],
   imports: [

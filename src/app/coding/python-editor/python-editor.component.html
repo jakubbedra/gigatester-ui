@@ -1,0 +1,6 @@
+<div class="wrap" [style.minHeight.px]="minHeight">
+  <pre #layer class="layer" aria-hidden="true" [innerHTML]="html"></pre>
+  <textarea #area class="area" spellcheck="false" wrap="off" autocapitalize="off" autocomplete="off"
+            [disabled]="disabled" [value]="code"
+            (input)="onInput(area.value)" (scroll)="syncScroll()" (keydown.tab)="onTab($event)"></textarea>
+</div>

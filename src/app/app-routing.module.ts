@@ -27,6 +27,9 @@ import { JoinGroupComponent } from './calendar/join-group/join-group.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { GraphLabComponent } from './admin/graph-lab/graph-lab.component';
 import { ExamAttemptComponent } from './tests/exam-attempt/exam-attempt.component';
+import { CodingPlayComponent } from './coding/coding-play/coding-play.component';
+import { CodingEditComponent } from './coding/coding-edit/coding-edit.component';
+import { CodingListComponent } from './coding/coding-list/coding-list.component';
 import { GraphsListComponent } from './admin/graphs-list/graphs-list.component';
 import { GraphGameListComponent } from './graph-game/graph-game-list/graph-game-list.component';
 import { GraphGamePlayComponent } from './graph-game/graph-game-play/graph-game-play.component';
@@ -54,6 +57,9 @@ const routes: Routes = [
   { path: 'admin/users', component: UsersListComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'admin/roles', component: RolesListComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'admin/graph-lab', component: GraphLabComponent, canActivate: [AuthGuard, ModeratorGuard] },
+  { path: 'coding/:id', component: CodingPlayComponent, canActivate: [AuthGuard] },
+  { path: 'admin/coding-tasks', component: CodingListComponent, canActivate: [AuthGuard, ModeratorGuard] },
+  { path: 'admin/coding-tasks/:id/edit', component: CodingEditComponent, canActivate: [AuthGuard, ModeratorGuard] },
   { path: 'admin/graphs', component: GraphsListComponent, canActivate: [AuthGuard, ModeratorGuard] },
   { path: 'graphs/play', component: GraphGameListComponent, canActivate: [AuthGuard] },
   { path: 'graphs/sessions/:id', component: GraphGamePlayComponent, canActivate: [AuthGuard] },
