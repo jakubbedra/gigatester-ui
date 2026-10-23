@@ -1,0 +1,49 @@
+<div class="page">
+  <div class="page-header">
+    <h1 class="page-title">{{ 'ARTICLES.TITLE' | translate }}</h1>
+    <button class="btn-add" *ngIf="canWrite" (click)="openAdd()">+ {{ 'ARTICLES.NEW' | translate }}</button>
+  </div>
+
+  <div class="grid" *ngIf="articles.length > 0; else empty">
+    <div class="card" *ngFor="let a of articles" (click)="open(a.id)">
+      <div class="card-header">
+        <div class="card-icon">📄</div>
+        <div class="card-name">{{ a.name }}</div>
+        <div class="context-wrapper" (click)="stopPropagation($event)">
+          <button class="ctx-btn" (click)="toggleMenu($event, a.id)">···</button>
+          <div class="ctx-menu" *ngIf="openMenuId === a.id">
+            <button (click)="edit($event, a.id)">{{ 'SIDEBAR.EDIT' | translate }}</button>
+            <button class="danger" (click)="delete($event, a.id)">{{ 'SIDEBAR.DELETE' | translate }}</button>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="term-count-label" *ngIf="!a.published">✎ {{ 'ARTICLES.DRAFT' | translate }}</span>
+        <span class="term-count-label" *ngIf="a.published">✓ {{ 'ARTICLES.PUBLISHED_SHORT' | translate }}</span>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #empty>
+    <div class="empty-state">
+      <div class="empty-icon">📄</div>
+      <p>{{ 'ARTICLES.EMPTY' | translate }}</p>
+    </div>
+  </ng-template>
+</div>
+
+<div class="modal-overlay" *ngIf="showAddModal" (click)="cancelAdd()">
+  <div class="modal" (click)="stopPropagation($event)">
+    <h2 class="modal-title">{{ 'ARTICLES.NEW' | translate }}</h2>
+    <div class="form-group">
+      <label>{{ 'ARTICLES.NAME' | translate }}</label>
+      <input type="text" [(ngModel)]="newName" (keydown.enter)="saveAdd()" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="cancelAdd()">{{ 'TEST_EDIT.CANCEL' | translate }}</button>
+      <button class="btn-primary" (click)="saveAdd()" [disabled]="adding || !newName.trim()">
+        {{ adding ? ('SUBJECT_GROUPS.CREATING' | translate) : ('CROSSWORDS_LIST.CREATE_EDIT' | translate) }}
+      </button>
+    </div>
+  </div>
+</div>

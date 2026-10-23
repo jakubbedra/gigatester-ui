@@ -1,0 +1,51 @@
+<div class="page" *ngIf="!loading; else loadTpl">
+
+  <div class="top">
+    <button class="btn-back" (click)="back()">← {{ 'ARTICLES.BACK_TO_ARTICLE' | translate }}</button>
+    <h1 class="title">{{ 'ARTICLES.EDIT_TITLE' | translate }}</h1>
+  </div>
+
+  <p class="err" *ngIf="error === 'load'">{{ 'ARTICLES.LOAD_ERROR' | translate }}</p>
+
+  <section class="card">
+    <div class="field">
+      <label>{{ 'ARTICLES.NAME' | translate }}</label>
+      <input class="input" type="text" [(ngModel)]="name" (ngModelChange)="touched()" />
+    </div>
+
+    <div class="field">
+      <label>{{ 'ARTICLES.CONTENT' | translate }}</label>
+      <quill-editor [(ngModel)]="content" [modules]="quillModules" [format]="'html'" (ngModelChange)="touched()"
+                    (onEditorCreated)="onEditorCreated($event)" class="quill"></quill-editor>
+      <p class="hint">{{ 'ARTICLES.CONTENT_HINT' | translate }}</p>
+      <p class="hint uploading" *ngIf="uploading">⏳ {{ 'ARTICLES.UPLOADING' | translate }}</p>
+      <p class="err" *ngIf="error === 'image'">{{ 'ARTICLES.IMAGE_ERROR' | translate }}</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="field">
+      <label>{{ 'ARTICLES.PRACTICE_TEST' | translate }}</label>
+      <select class="input" [(ngModel)]="relatedTestId" (ngModelChange)="touched()">
+        <option value="">{{ 'ARTICLES.NO_PRACTICE' | translate }}</option>
+        <option *ngFor="let t of tests" [value]="t.id">{{ t.name }}</option>
+      </select>
+    </div>
+
+    <label class="toggle">
+      <input type="checkbox" [(ngModel)]="published" (ngModelChange)="touched()" />
+      <span class="toggle-text">
+        <span class="toggle-title">{{ 'ARTICLES.PUBLISHED' | translate }}</span>
+        <span class="hint">{{ 'ARTICLES.PUBLISHED_HINT' | translate }}</span>
+      </span>
+    </label>
+  </section>
+
+  <div class="save-bar">
+    <span class="ok" *ngIf="saved">{{ 'EXAM.SAVED' | translate }}</span>
+    <span class="err" *ngIf="error && error !== 'load' && error !== 'image'">{{ error === 'save' ? ('EXAM.SAVE_ERROR' | translate) : error }}</span>
+    <button class="btn-save" [disabled]="!canSave" (click)="save()">{{ 'TEST_EDIT.SAVE' | translate }}</button>
+  </div>
+</div>
+
+<ng-template #loadTpl><div class="page"><p class="hint">{{ 'TEST_SUMMARY.LOADING' | translate }}</p></div></ng-template>

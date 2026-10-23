@@ -1,0 +1,29 @@
+<div class="page">
+
+  <p class="muted" *ngIf="loading">{{ 'TEST_SUMMARY.LOADING' | translate }}</p>
+  <p class="error" *ngIf="error">{{ 'ARTICLES.LOAD_ERROR' | translate }}</p>
+
+  <article class="article" *ngIf="article">
+    <div class="meta-row">
+      <span class="draft-badge" *ngIf="!article.published">{{ 'ARTICLES.DRAFT' | translate }}</span>
+      <span class="muted small" *ngIf="article.authorName">{{ article.authorName }}</span>
+      <span class="muted small" *ngIf="article.updatedAt">· {{ article.updatedAt | date:'dd.MM.yyyy' }}</span>
+      <span class="muted small">· {{ readingMinutes }} {{ 'ARTICLES.MINUTES_READ' | translate }}</span>
+      <span class="spacer"></span>
+      <button class="btn-ghost" *ngIf="article.canEdit" (click)="edit()">✎ {{ 'SIDEBAR.EDIT' | translate }}</button>
+    </div>
+
+    <h1 class="title">{{ article.name }}</h1>
+
+    <div class="content" [innerHTML]="article.content | articleHtml"></div>
+    <p class="muted" *ngIf="!article.content">{{ 'ARTICLES.EMPTY_CONTENT' | translate }}</p>
+
+    <div class="practice" *ngIf="article.relatedTestId">
+      <div>
+        <div class="practice-label">{{ 'ARTICLES.PRACTICE' | translate }}</div>
+        <div class="practice-name">📝 {{ article.relatedTestName }}</div>
+      </div>
+      <button class="btn-primary" (click)="practice()">{{ 'ARTICLES.PRACTICE_GO' | translate }}</button>
+    </div>
+  </article>
+</div>

@@ -1,0 +1,25 @@
+.page { max-width: 880px; margin: 0 auto; padding: 24px 24px 80px; color: var(--c-e0e0e0); display: flex; flex-direction: column; gap: 16px; }
+.top { display: flex; flex-direction: column; gap: 6px; }
+.btn-back { align-self: flex-start; background: transparent; border: none; color: var(--c-999999); font-size: 13px; cursor: pointer; padding: 0; }
+.btn-back:hover { color: var(--c-e0e0e0); }
+.title { margin: 0; font-size: 22px; font-weight: 700; }
+.card { background: var(--c-1e1e1e); border: 1px solid var(--c-2f2f2f); border-radius: 16px; padding: 22px 24px; display: flex; flex-direction: column; gap: 18px; }
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--c-777777); }
+.input { padding: 12px 14px; background: var(--c-2a2a2a); color: var(--c-e6e6e6); border: 1px solid var(--c-3d3d3d); border-radius: 10px; font-size: 14px; outline: none; font-family: inherit; box-sizing: border-box; width: 100%; transition: 0.25s; }
+.input:focus { border-color: var(--c-7b6df5); box-shadow: 0 0 0 3px var(--a-2); }
+.quill { display: block; }
+.quill ::ng-deep .ql-editor { min-height: 360px; font-size: 15px; line-height: 1.65; }
+.quill ::ng-deep .ql-editor img { max-width: 100%; height: auto; border-radius: 8px; }
+.hint { margin: 0; font-size: 12.5px; color: var(--c-777777); line-height: 1.5; }
+.hint.uploading { color: #e0a83d; }
+.toggle { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; }
+.toggle input { accent-color: var(--c-7b6df5); width: 17px; height: 17px; margin-top: 3px; }
+.toggle-text { display: flex; flex-direction: column; gap: 3px; }
+.toggle-title { font-size: 14px; font-weight: 600; }
+.save-bar { position: sticky; bottom: 0; display: flex; justify-content: flex-end; align-items: center; gap: 14px; padding: 14px 0; background: linear-gradient(transparent, var(--c-141414) 40%); }
+.ok { color: #4ade80; font-size: 13px; }
+.err { color: #f05050; font-size: 13px; margin: 0; }
+.btn-save { padding: 12px 28px; background: var(--c-7b6df5); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.btn-save:hover:not(:disabled) { background: var(--c-6a5add); }
+.btn-save:disabled { background: var(--c-444444); color: var(--c-777777); cursor: not-allowed; }

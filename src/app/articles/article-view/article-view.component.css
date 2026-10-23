@@ -1,0 +1,38 @@
+.page { width: min(92vw, 1400px); margin: 0 auto; padding: 32px 24px 80px; color: var(--c-e0e0e0); }
+.article { display: flex; flex-direction: column; gap: 18px; }
+.meta-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.spacer { flex: 1; }
+.muted { color: var(--c-777777); margin: 0; font-size: 14px; }
+.muted.small { font-size: 12.5px; }
+.error { color: #f05050; }
+.draft-badge { padding: 3px 10px; border-radius: 8px; background: rgba(224,168,61,0.15); color: #e0a83d; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+.title { margin: 0; font-size: clamp(30px, 1.6vw + 14px, 46px); line-height: 1.2; font-weight: 800; color: var(--c-f0f0f0, #f0f0f0); }
+.btn-ghost { padding: 6px 14px; border-radius: 9px; border: 1px solid var(--a-3); background: transparent; color: var(--c-9b8ff5); font-size: 12px; font-weight: 600; cursor: pointer; }
+.btn-ghost:hover { background: var(--a-1); }
+
+.content { font-size: clamp(16px, 0.9vw + 8px, 21px); line-height: 1.75; color: var(--c-d6d6d6, #d6d6d6); overflow-wrap: anywhere; }
+.content ::ng-deep h1, .content ::ng-deep h2, .content ::ng-deep h3 { color: var(--c-f0f0f0, #f0f0f0); margin: 1.6em 0 0.5em; line-height: 1.3; }
+.content ::ng-deep h1 { font-size: 28px; }
+.content ::ng-deep h2 { font-size: 23px; border-bottom: 1px solid var(--c-2a2a2a); padding-bottom: 6px; }
+.content ::ng-deep h3 { font-size: 19px; }
+.content ::ng-deep p { margin: 0 0 1em; }
+.content ::ng-deep img { max-width: 100%; height: auto; border-radius: 12px; margin: 10px 0; display: block; }
+.content ::ng-deep a { color: var(--c-9b8ff5); }
+.content ::ng-deep ul, .content ::ng-deep ol { padding-left: 1.4em; margin: 0 0 1em; }
+.content ::ng-deep li { margin: 0.25em 0; }
+.content ::ng-deep blockquote { margin: 1em 0; padding: 4px 16px; border-left: 3px solid var(--c-7b6df5); color: var(--c-aaaaaa); background: var(--a-08); border-radius: 0 10px 10px 0; }
+.content ::ng-deep pre, .content ::ng-deep code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; }
+.content ::ng-deep pre { background: var(--c-141414); border: 1px solid var(--c-2a2a2a); border-radius: 10px; padding: 14px 16px; overflow-x: auto; }
+.content ::ng-deep table { border-collapse: collapse; margin: 1em 0; max-width: 100%; display: block; overflow-x: auto; }
+.content ::ng-deep td, .content ::ng-deep th { border: 1px solid var(--c-333333); padding: 8px 12px; }
+.content ::ng-deep .ql-align-center { text-align: center; }
+.content ::ng-deep .ql-align-right { text-align: right; }
+.content ::ng-deep .ql-align-justify { text-align: justify; }
+.content ::ng-deep .katex-display { overflow-x: auto; overflow-y: hidden; padding: 4px 0; }
+
+.practice { margin-top: 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 22px; border-radius: 16px; background: var(--a-08); border: 1px solid var(--a-2); }
+.practice-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--c-888888); }
+.practice-name { margin-top: 4px; font-size: 16px; font-weight: 700; }
+.btn-primary { padding: 10px 20px; border-radius: 10px; border: none; background: var(--c-7b6df5); color: #fff; font-weight: 700; font-size: 13px; cursor: pointer; }
+.btn-primary:hover { background: var(--c-6a5add); }
+.content ::ng-deep .section-hit { background: rgba(123,109,245,0.22); border-radius: 6px; padding: 2px 8px; }

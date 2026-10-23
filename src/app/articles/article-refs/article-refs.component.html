@@ -1,0 +1,23 @@
+<div class="refs" *ngIf="refs && refs.length > 0">
+  <span class="refs-label">📖 {{ 'ARTICLES.LEARN_MORE' | translate }}</span>
+  <button type="button" class="ref-chip" *ngFor="let r of refs" (click)="show(r)">
+    {{ nameOf(r) }}<span *ngIf="r.section"> › {{ r.section }}</span>
+  </button>
+</div>
+
+<div class="ref-overlay" *ngIf="open" (click)="close()">
+  <div class="ref-modal" (click)="$event.stopPropagation()">
+    <div class="ref-head">
+      <h3>{{ article?.name ?? nameOf(open) }}</h3>
+      <a class="ref-newtab" *ngIf="article"
+         [routerLink]="['/articles', open.articleId]" [queryParams]="open.section ? { section: open.section } : {}"
+         target="_blank">↗ {{ 'ARTICLES.OPEN_NEW_TAB' | translate }}</a>
+      <button type="button" class="ref-close" (click)="close()">✕</button>
+    </div>
+    <div class="ref-body" #body>
+      <p class="muted" *ngIf="loading">…</p>
+      <p class="err" *ngIf="error">{{ 'ARTICLES.LOAD_ERROR' | translate }}</p>
+      <div class="content" *ngIf="article" [innerHTML]="article.content | articleHtml"></div>
+    </div>
+  </div>
+</div>
