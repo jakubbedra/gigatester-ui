@@ -41,6 +41,8 @@ export class PermissionService {
         return granted.includes(Permission.GRAPHS_WRITE);
       case Permission.CODING_READ:
         return granted.includes(Permission.CODING_WRITE);
+      case Permission.ARTICLES_READ:
+        return granted.includes(Permission.ARTICLES_WRITE);
       default:
         return false;
     }

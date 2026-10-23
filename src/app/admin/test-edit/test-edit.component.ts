@@ -7,6 +7,7 @@ import { TestService } from '../../service/test.service';
 import { QuestionsService } from '../../service/question.service';
 import { ImageService } from '../../service/image.service';
 import { TagService } from '../../service/tag.service';
+import { ArticleService, ArticleSummary } from '../../service/article.service';
 import { AuthService } from '../../service/auth.service';
 import { PermissionService } from '../../service/permission.service';
 import {
@@ -112,6 +113,7 @@ export class TestEditComponent implements OnInit {
     private questionsService: QuestionsService,
     private imageService: ImageService,
     private tagService: TagService,
+    private articleService: ArticleService,
     private sanitizer: DomSanitizer,
     private authService: AuthService,
     private permissionService: PermissionService
@@ -311,6 +313,43 @@ export class TestEditComponent implements OnInit {
     this.tagSearch = '';
     this.tagDropdownOpen = false;
     this.tagService.getTags().subscribe(tags => this.allTags = tags);
+    this.refArticleId = '';
+    this.refSection = '';
+    this.refHeadings = [];
+    this.articleService.list().subscribe({ next: l => this.allArticles = l, error: () => {} });
+  }
+
+  // ── Article references ────────────────────────────────────────────────────
+  allArticles: ArticleSummary[] = [];
+  refArticleId = '';
+  refSection = '';
+  refHeadings: string[] = [];
+
+  articleName(id: string): string {
+    return this.allArticles.find(x => x.id === id)?.name ?? '…';
+  }
+
+  onRefArticleChange() {
+    this.refSection = '';
+    this.refHeadings = [];
+    if (!this.refArticleId) return;
+    this.articleService.get(this.refArticleId).subscribe(art => this.refHeadings = ArticleService.headingsOf(art.content));
+  }
+
+  addArticleRef() {
+    if (!this.refArticleId) return;
+    const refs = this.editDraft.articleRefs ?? [];
+    const section = this.refSection || null;
+    if (!refs.some((r: any) => r.articleId === this.refArticleId && (r.section ?? null) === section)) {
+      this.editDraft.articleRefs = [...refs, { articleId: this.refArticleId, section }];
+    }
+    this.refArticleId = '';
+    this.refSection = '';
+    this.refHeadings = [];
+  }
+
+  removeArticleRef(index: number) {
+    this.editDraft.articleRefs = (this.editDraft.articleRefs ?? []).filter((_: any, i: number) => i !== index);
   }
 
   closeEdit() {

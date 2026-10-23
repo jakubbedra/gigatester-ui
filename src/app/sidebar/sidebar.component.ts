@@ -7,6 +7,7 @@ import { forkJoin, of, Subscription, timer } from 'rxjs';
 import { switchMap, map, filter, catchError } from 'rxjs/operators';
 import { GraphService, GraphSummary } from '../service/graph.service';
 import { CodingService, CodingTaskSummary } from '../service/coding.service';
+import { ArticleService, ArticleSummary } from '../service/article.service';
 import { PermissionService } from '../service/permission.service';
 import { SidebarRefreshService } from '../service/sidebar-refresh.service';
 import { TestService } from '../service/test.service';
@@ -35,7 +36,16 @@ interface Subject {
   crosswords: Item[];
   graphs: Item[];
   codingTasks: { name: string; id: string }[];
+  articles: { name: string; id: string }[];
   expanded?: boolean;
+}
+
+interface SearchResult {
+  icon: string;
+  name: string;
+  context: string;
+  link: any[];
+  queryParams?: Record<string, string>;
 }
 
 interface UniversityYear {
@@ -80,6 +90,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private crosswordService: CrosswordService,
     private graphService: GraphService,
     private codingService: CodingService,
+    private articleService: ArticleService,
     private accessService: SubjectGroupAccessService,
     private router: Router,
     private authService: AuthService,
@@ -92,6 +103,64 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private calendarService: CalendarService,
     public lang: LanguageService
   ) {}
+
+  // ── Search ─────────────────────────────────────────────────────────────
+
+  searchQuery = '';
+
+  get searchActive(): boolean {
+    return this.searchQuery.trim().length > 0;
+  }
+
+  /** Lower-cases and strips diacritics, so "krzyzowki" finds "Krzyżówki". */
+  private fold(s: string): string {
+    return (s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ł/gi, 'l').toLowerCase();
+  }
+
+  /** Every subject, test, crossword, graph and coding task the user can see whose name matches the query. */
+  get searchResults(): SearchResult[] {
+    const q = this.fold(this.searchQuery.trim());
+    if (!q) return [];
+    const out: SearchResult[] = [];
+    for (const year of this.universityYears) {
+      for (const subject of year.subjects) {
+        const where = `${year.name} › ${subject.name}`;
+        if (this.fold(subject.name).includes(q)) {
+          out.push({ icon: '📚', name: subject.name, context: year.name, link: ['/subjects', subject.id] });
+        }
+        for (const t of subject.tests) {
+          if (this.fold(t.name).includes(q)) out.push({ icon: '📝', name: t.name, context: where, link: ['/tests', t.id] });
+        }
+        for (const c of subject.crosswords) {
+          if (this.fold(c.name).includes(q)) out.push({ icon: '🔠', name: c.name, context: where, link: ['/crosswords', c.id] });
+        }
+        for (const g of subject.graphs) {
+          if (this.fold(g.name).includes(q)) out.push({ icon: '🕸️', name: g.name, context: where, link: ['/graphs/play'], queryParams: { graphId: g.id } });
+        }
+        for (const ar of subject.articles) {
+          if (this.fold(ar.name).includes(q)) out.push({ icon: '📄', name: ar.name, context: where, link: ['/articles', ar.id] });
+        }
+        for (const c of subject.codingTasks) {
+          if (this.fold(c.name).includes(q)) out.push({ icon: '💻', name: c.name, context: where, link: ['/coding', c.id] });
+        }
+      }
+    }
+    return out.slice(0, 40);
+  }
+
+  openResult(r: SearchResult) {
+    this.router.navigate(r.link, r.queryParams ? { queryParams: r.queryParams } : undefined);
+    this.searchQuery = '';
+  }
+
+  openFirstResult() {
+    const first = this.searchResults[0];
+    if (first) this.openResult(first);
+  }
+
+  clearSearch() {
+    this.searchQuery = '';
+  }
 
   get isModerator(): boolean {
     return this.permissionService.isStaff();
@@ -221,24 +290,25 @@ export class SidebarComponent implements OnInit, OnDestroy {
           this.crosswordService.getCrosswords(),
           canSeeAll ? of([] as any[]) : this.accessService.getMyAccess(),
           this.graphService.getPlayableGraphs().pipe(catchError(() => of([] as GraphSummary[]))),
-          this.codingService.listPlayable().pipe(catchError(() => of([] as CodingTaskSummary[])))
+          this.codingService.listPlayable().pipe(catchError(() => of([] as CodingTaskSummary[]))),
+          this.articleService.listReadable().pipe(catchError(() => of([] as ArticleSummary[])))
         ]).pipe(
-          switchMap(([groupDetails, testsRes, crosswordsRes, accessStatuses, allGraphs, allCoding]: [any[], any, any, any[], GraphSummary[], CodingTaskSummary[]]) => {
+          switchMap(([groupDetails, testsRes, crosswordsRes, accessStatuses, allGraphs, allCoding, allArticles]: [any[], any, any, any[], GraphSummary[], CodingTaskSummary[], ArticleSummary[]]) => {
             const visibleGroups = canSeeAll
               ? groupDetails
               : groupDetails.filter((g: any) => accessStatuses.some((a: any) => a.groupId === g.id && a.status === 'APPROVED'));
             const subjectIds = [...new Set(visibleGroups.flatMap((g: any) => g.subjects as string[]))];
             if (subjectIds.length === 0) {
-              return of({ groups: visibleGroups, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], allGraphs, allCoding, subjectDetails: [] as any[] });
+              return of({ groups: visibleGroups, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], allGraphs, allCoding, allArticles, subjectDetails: [] as any[] });
             }
             return forkJoin(subjectIds.map(id => this.subjectsService.getSubject(id))).pipe(
-              switchMap(subjectDetails => of({ groups: visibleGroups, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], allGraphs, allCoding, subjectDetails }))
+              switchMap(subjectDetails => of({ groups: visibleGroups, allTests: testsRes.tests as TestSummaryResponse[], allCrosswords: crosswordsRes.crosswords as CrosswordSummaryResponse[], allGraphs, allCoding, allArticles, subjectDetails }))
             );
           })
         );
       })
     ).subscribe((result: any) => {
-      const { groups, allTests, allCrosswords, allGraphs = [], allCoding = [], subjectDetails = [] } = result;
+      const { groups, allTests, allCrosswords, allGraphs = [], allCoding = [], allArticles = [], subjectDetails = [] } = result;
       const subjectMap = new Map(subjectDetails.map((s: any) => [s.id, s]));
       const prevYearExpanded = new Map(this.universityYears.map(y => [y.id, y.expanded]));
       const prevSubjectExpanded = new Map(
@@ -266,6 +336,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
               .filter((c: CrosswordSummaryResponse) => (subject.crosswords ?? []).includes(c.id))
               .map((c: CrosswordSummaryResponse) => ({ name: c.name, id: c.id, type: 'CROSSWORD' as PinnedEntityType, pinned: isPinned('CROSSWORD', c.id) }))
               .sort((a: Item, b: Item) => a.name.localeCompare(b.name)),
+            articles: allArticles
+              .filter((x: ArticleSummary) => (subject.articles ?? []).includes(x.id))
+              .map((x: ArticleSummary) => ({ name: x.name, id: x.id }))
+              .sort((x: any, y: any) => x.name.localeCompare(y.name)),
             codingTasks: allCoding
               .filter((c: CodingTaskSummary) => (subject.codingTasks ?? []).includes(c.id))
               .map((c: CodingTaskSummary) => ({ name: c.name, id: c.id }))
@@ -387,6 +461,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     this.openMenuId = null;
     this.router.navigate(['/admin/graph-lab'], { queryParams: { graphId } });
+  }
+
+  navigateToArticles() {
+    this.router.navigate(['/admin/articles']);
   }
 
   navigateToCodingTasks() {

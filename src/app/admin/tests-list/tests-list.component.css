@@ -1048,3 +1048,15 @@
 .card-add:hover { background: var(--a-08); border-color: var(--c-7b6df5); }
 .card-add .card-name { color: var(--c-9b8ff5); font-weight: 600; font-size: 14px; }
 .add-plus { font-size: 44px; line-height: 1; font-weight: 300; color: var(--c-7b6df5); }
+
+.char-counter { align-self: flex-end; font-size: 11px; font-variant-numeric: tabular-nums; color: var(--c-666666); transition: color 0.2s; }
+.char-counter.near { color: #e0a83d; }
+.char-counter.full { color: #f05050; font-weight: 700; }
+
+.draft-chip { margin-top: 2px; padding: 2px 9px; border-radius: 8px; background: rgba(224,168,61,0.15); color: #e0a83d; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* Subject view: keep the content in a centered column */
+.page.centered {
+  max-width: 1100px;
+  margin: 0 auto;
+}

@@ -10,7 +10,25 @@
     </div>
   </div>
 
-  <nav class="menu">
+  <div class="sidebar-search">
+    <span class="search-icon">🔍</span>
+    <input type="text" class="search-input" [(ngModel)]="searchQuery" [placeholder]="'SIDEBAR.SEARCH_PLACEHOLDER' | translate"
+           (keydown.enter)="openFirstResult()" (keydown.escape)="clearSearch()" autocomplete="off" spellcheck="false" />
+    <button type="button" class="search-clear" *ngIf="searchActive" (click)="clearSearch()" aria-label="clear">✕</button>
+  </div>
+
+  <nav class="menu search-results" *ngIf="searchActive">
+    <button type="button" class="search-result" *ngFor="let r of searchResults" (click)="openResult(r)">
+      <span class="result-icon">{{ r.icon }}</span>
+      <span class="result-text">
+        <span class="result-name">{{ r.name }}</span>
+        <span class="result-context">{{ r.context }}</span>
+      </span>
+    </button>
+    <div class="search-empty" *ngIf="searchResults.length === 0">{{ 'SIDEBAR.NO_RESULTS' | translate }}</div>
+  </nav>
+
+  <nav class="menu" *ngIf="!searchActive">
     <ul>
       <li class="home-link-item">
         <a routerLink="/admin/inbox" class="home-link">
@@ -36,6 +54,7 @@
         <span class="admin-link" *ngIf="isAdmin" (click)="navigateToRoles()">{{ 'SIDEBAR.ROLES' | translate }}</span>
         <span class="admin-link" (click)="navigateToGraphs()">{{ 'SIDEBAR.GRAPHS' | translate }}</span>
         <span class="admin-link" (click)="navigateToCodingTasks()">{{ 'SIDEBAR.CODING' | translate }}</span>
+        <span class="admin-link" (click)="navigateToArticles()">{{ 'SIDEBAR.ARTICLES' | translate }}</span>
         <span class="admin-link" routerLink="/admin/ai-generator">✨ {{ 'SIDEBAR.AI_GENERATOR' | translate }}</span>
       </li>
 
@@ -104,6 +123,11 @@
                       <button (click)="editCrossword($event, cw.id)">{{ 'SIDEBAR.EDIT' | translate }}</button>
                     </div>
                   </div>
+                </div>
+              </li>
+              <li *ngFor="let ar of subject.articles">
+                <div class="menu-row test-row">
+                  <a [routerLink]="['/articles', ar.id]" class="tests crossword-link">📄 {{ ar.name }}</a>
                 </div>
               </li>
               <li *ngFor="let c of subject.codingTasks">

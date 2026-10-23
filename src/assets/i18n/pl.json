@@ -23,7 +23,10 @@
     "INBOX_EMPTY": "Brak oczekujących próśb.",
     "FAVOURITES": "Ulubione",
     "GRAPHS": "Grafy",
-    "CODING": "Zadania programistyczne"
+    "CODING": "Zadania programistyczne",
+    "SEARCH_PLACEHOLDER": "Szukaj…",
+    "NO_RESULTS": "Brak wyników.",
+    "ARTICLES": "Artykuły"
   },
   "LOGIN": {
     "SIGN_IN": "Zaloguj się",
@@ -337,7 +340,11 @@
     "CODING": "Zadania programistyczne",
     "ASSIGNED_CODING": "Przypisane zadania programistyczne",
     "SEARCH_CODING": "Szukaj zadań programistycznych…",
-    "NO_CODING_AVAILABLE": "Brak zadań programistycznych. Najpierw utwórz jakieś."
+    "NO_CODING_AVAILABLE": "Brak zadań programistycznych. Najpierw utwórz jakieś.",
+    "ARTICLES": "Artykuły",
+    "ASSIGNED_ARTICLES": "Przypisane artykuły",
+    "SEARCH_ARTICLES": "Szukaj artykułów…",
+    "NO_ARTICLES_AVAILABLE": "Brak artykułów. Najpierw utwórz jakieś."
   },
   "TESTS_LIST": {
     "TITLE": "Testy",
@@ -372,7 +379,10 @@
     "NEW_GRAPH": "Nowy graf",
     "CODING": "Zadania programistyczne",
     "NEW_CODING": "Nowe zadanie programistyczne",
-    "NO_CODING_SUBJECT": "Brak zadań programistycznych przypisanych do tego przedmiotu."
+    "NO_CODING_SUBJECT": "Brak zadań programistycznych przypisanych do tego przedmiotu.",
+    "ARTICLES": "Artykuły",
+    "NEW_ARTICLE": "Nowy artykuł",
+    "NO_ARTICLES_SUBJECT": "Brak artykułów przypisanych do tego przedmiotu."
   },
   "TEST_EDIT": {
     "BACK": "Testy",
@@ -445,7 +455,11 @@
     "EXAM_START": "Początek egzaminu",
     "EXAM_WINDOW_END": "Koniec okna",
     "EXAM_TIME_LIMIT": "Limit czasu (min)",
-    "EXAM_HINT": "Studenci mają jedno podejście, które mogą rozpocząć między startem a końcem okna. Liczba pytań zamkniętych/otwartych i próg zaliczenia powyżej obowiązują w każdym podejściu. Wyniki odblokowują się dla studentów po zamknięciu okna."
+    "EXAM_HINT": "Studenci mają jedno podejście, które mogą rozpocząć między startem a końcem okna. Liczba pytań zamkniętych/otwartych i próg zaliczenia powyżej obowiązują w każdym podejściu. Wyniki odblokowują się dla studentów po zamknięciu okna.",
+    "ARTICLE_LINKS": "Linki do artykułów",
+    "PICK_ARTICLE": "Wybierz artykuł…",
+    "WHOLE_ARTICLE": "Cały artykuł",
+    "ADD_LINK": "Dodaj link"
   },
   "CROSSWORDS_LIST": {
     "TITLE": "Krzyżówki",
@@ -815,7 +829,8 @@
     "BANK_TITLE": "Etykiety",
     "BANK_EMPTY": "Wszystkie etykiety umieszczone!",
     "DRAG_HINT": "Przeciągnij etykietę na pusty wierzchołek (lub dotknij etykiety, a potem wierzchołka).",
-    "WRONG_DROP": "Ta etykieta tu nie pasuje."
+    "WRONG_DROP": "Ta etykieta tu nie pasuje.",
+    "SOUND": "Efekty dźwiękowe wł./wył."
   },
   "GRAPHS_LIST": {
     "TITLE": "Grafy",
@@ -930,6 +945,35 @@
     "SUMMARY_CLOSE": "Zamknij",
     "FINISHED_BANNER": "Ukończyłeś ten test — nie można go już edytować.",
     "OPENS_IN": "Otwarcie za",
-    "TO_CLOSE": "do zamknięcia"
+    "TO_CLOSE": "do zamknięcia",
+    "NEEDS_INPUT_TITLE": "Twój program czeka na dane wejściowe",
+    "NEEDS_INPUT_TEXT": "Wywołał input(), ale nie było czego wczytać. Wpisz wartości (po jednej w wierszu) w polu stdin poniżej i uruchom ponownie.",
+    "RUN_ERROR_TITLE": "Program zakończył się błędem"
+  },
+  "ARTICLES": {
+    "TITLE": "Artykuły",
+    "NEW": "Nowy artykuł",
+    "EMPTY": "Brak artykułów. Utwórz pierwszy, aby zacząć.",
+    "NAME": "Tytuł",
+    "EDIT_TITLE": "Edytuj artykuł",
+    "BACK_TO_ARTICLE": "Wróć do artykułu",
+    "CONFIRM_DELETE": "Usunąć ten artykuł?",
+    "LOAD_ERROR": "Nie udało się wczytać tego artykułu.",
+    "DRAFT": "Wersja robocza",
+    "PUBLISHED_SHORT": "Opublikowany",
+    "PUBLISHED": "Opublikowany",
+    "PUBLISHED_HINT": "Wersje robocze widzą tylko moderatorzy i admini. Zaznacz, gdy artykuł jest gotowy dla studentów.",
+    "CONTENT": "Treść",
+    "CONTENT_HINT": "Przycisk obrazka dodaje zdjęcia. Wzory zapisuj jako $x^2$ (w linii) lub $$\\int_0^1 x\\,dx$$ (osobny blok).",
+    "UPLOADING": "Wysyłanie obrazka…",
+    "IMAGE_ERROR": "Nie udało się wysłać obrazka (tylko obrazy, do 8 MB).",
+    "PRACTICE_TEST": "Test do ćwiczeń (opcjonalnie)",
+    "NO_PRACTICE": "Brak",
+    "PRACTICE": "Poćwicz to",
+    "PRACTICE_GO": "Otwórz test",
+    "MINUTES_READ": "min czytania",
+    "EMPTY_CONTENT": "Ten artykuł nie ma jeszcze treści.",
+    "LEARN_MORE": "Dowiedz się więcej",
+    "OPEN_NEW_TAB": "Otwórz w nowej karcie"
   }
 }

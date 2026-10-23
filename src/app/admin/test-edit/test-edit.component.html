@@ -421,6 +421,28 @@
       </div>
     </div>
 
+    <!-- ── Article links ── -->
+    <div class="form-group">
+      <div class="label-row"><label>📖 {{ 'TEST_EDIT.ARTICLE_LINKS' | translate }}</label></div>
+      <div class="assigned-tags" *ngIf="(editDraft.articleRefs || []).length > 0">
+        <span class="tag tag-assigned" *ngFor="let r of editDraft.articleRefs; let ri = index">
+          {{ articleName(r.articleId) }}<span *ngIf="r.section"> › {{ r.section }}</span>
+          <button class="tag-remove" (click)="removeArticleRef(ri)">×</button>
+        </span>
+      </div>
+      <div class="article-ref-row">
+        <select class="tag-search-input" [(ngModel)]="refArticleId" (ngModelChange)="onRefArticleChange()">
+          <option value="">{{ 'TEST_EDIT.PICK_ARTICLE' | translate }}</option>
+          <option *ngFor="let x of allArticles" [value]="x.id">{{ x.name }}</option>
+        </select>
+        <select class="tag-search-input" [(ngModel)]="refSection" *ngIf="refArticleId">
+          <option value="">{{ 'TEST_EDIT.WHOLE_ARTICLE' | translate }}</option>
+          <option *ngFor="let h of refHeadings" [value]="h">{{ h }}</option>
+        </select>
+        <button type="button" class="btn-secondary" [disabled]="!refArticleId" (click)="addArticleRef()">+ {{ 'TEST_EDIT.ADD_LINK' | translate }}</button>
+      </div>
+    </div>
+
     <!-- ── Test preview ── -->
     <div class="preview-section">
       <button class="btn-preview-section" (click)="showPreview = !showPreview">

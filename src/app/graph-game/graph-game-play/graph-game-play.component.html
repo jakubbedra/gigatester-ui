@@ -1,7 +1,10 @@
 <div class="play-page">
   <div class="play-header">
     <h1 class="play-title">🕸️ {{ 'GRAPH_GAME.TITLE' | translate }} <span class="play-badge" *ngIf="session">{{ session.graphName }}</span></h1>
-    <a class="back-link" routerLink="/graphs/play">{{ 'GRAPH_GAME.CHOOSE_ANOTHER' | translate }}</a>
+    <div class="header-actions">
+      <button type="button" class="sound-btn" (click)="sound.toggleMute()" [title]="'GRAPH_GAME.SOUND' | translate">{{ sound.muted ? '🔇' : '🔊' }}</button>
+      <a class="back-link" routerLink="/graphs/play">{{ 'GRAPH_GAME.CHOOSE_ANOTHER' | translate }}</a>
+    </div>
   </div>
 
   <p class="loading" *ngIf="loading">{{ 'GRAPH_GAME.LOADING' | translate }}</p>

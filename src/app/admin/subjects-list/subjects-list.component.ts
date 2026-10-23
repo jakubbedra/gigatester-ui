@@ -7,6 +7,7 @@ import { TestService } from '../../service/test.service';
 import { CrosswordService } from '../../service/crossword.service';
 import { GraphService, GraphSummary } from '../../service/graph.service';
 import { CodingService, CodingTaskSummary } from '../../service/coding.service';
+import { ArticleService, ArticleSummary } from '../../service/article.service';
 import { SubjectResponse, TestSummaryResponse, CrosswordSummaryResponse } from '../../models/models.d';
 import { SidebarRefreshService } from '../../service/sidebar-refresh.service';
 
@@ -17,6 +18,7 @@ interface SubjectCard {
   crosswords: CrosswordSummaryResponse[];
   graphs: GraphSummary[];
   codingTasks: CodingTaskSummary[];
+  articles: ArticleSummary[];
 }
 
 @Component({
@@ -30,6 +32,7 @@ export class SubjectsListComponent implements OnInit {
   allCrosswords: CrosswordSummaryResponse[] = [];
   allGraphs: GraphSummary[] = [];
   allCoding: CodingTaskSummary[] = [];
+  allArticles: ArticleSummary[] = [];
   openMenuId: string | null = null;
 
   // Edit modal
@@ -43,6 +46,8 @@ export class SubjectsListComponent implements OnInit {
   editGraphIds: string[] = [];
   editCodingIds: string[] = [];
   codingSearch = '';
+  editArticleIds: string[] = [];
+  articleSearch = '';
   saving = false;
   testSearch = '';
   crosswordSearch = '';
@@ -75,6 +80,7 @@ export class SubjectsListComponent implements OnInit {
     private crosswordService: CrosswordService,
     private graphService: GraphService,
     private codingService: CodingService,
+    private articleService: ArticleService,
     private router: Router,
     private sidebarRefreshService: SidebarRefreshService
   ) {}
@@ -88,13 +94,15 @@ export class SubjectsListComponent implements OnInit {
       this.testService.getTests(),
       this.crosswordService.getCrosswords(),
       this.graphService.getGraphs().pipe(catchError(() => of([] as GraphSummary[]))),
-      this.codingService.list().pipe(catchError(() => of([] as CodingTaskSummary[])))
+      this.codingService.list().pipe(catchError(() => of([] as CodingTaskSummary[]))),
+      this.articleService.list().pipe(catchError(() => of([] as ArticleSummary[])))
     ]).pipe(
-      switchMap(([testsRes, crosswordsRes, graphsRes, codingRes]) => {
+      switchMap(([testsRes, crosswordsRes, graphsRes, codingRes, articlesRes]) => {
         this.allTests = testsRes.tests;
         this.allCrosswords = crosswordsRes.crosswords;
         this.allGraphs = graphsRes;
         this.allCoding = codingRes;
+        this.allArticles = articlesRes;
         return this.subjectsService.getSubjects();
       }),
       switchMap(subjectsRes => {
@@ -108,7 +116,8 @@ export class SubjectsListComponent implements OnInit {
         tests: this.allTests.filter(t => d.tests.includes(t.id)),
         crosswords: this.allCrosswords.filter(c => (d.crosswords ?? []).includes(c.id)),
         graphs: this.allGraphs.filter(g => (d.graphs ?? []).includes(g.id)),
-        codingTasks: this.allCoding.filter(c => (d.codingTasks ?? []).includes(c.id))
+        codingTasks: this.allCoding.filter(c => (d.codingTasks ?? []).includes(c.id)),
+        articles: this.allArticles.filter(x => (d.articles ?? []).includes(x.id))
       }));
     });
   }
@@ -135,6 +144,8 @@ export class SubjectsListComponent implements OnInit {
       this.editCrosswordIds = [...(detail.crosswords ?? [])];
       this.editGraphIds = [...(detail.graphs ?? [])];
       this.editCodingIds = [...(detail.codingTasks ?? [])];
+      this.editArticleIds = [...(detail.articles ?? [])];
+      this.articleSearch = '';
       this.codingSearch = '';
       this.testSearch = '';
       this.crosswordSearch = '';
@@ -161,6 +172,16 @@ export class SubjectsListComponent implements OnInit {
     const idx = this.editCrosswordIds.indexOf(crosswordId);
     if (idx === -1) this.editCrosswordIds.push(crosswordId);
     else this.editCrosswordIds.splice(idx, 1);
+  }
+
+  isArticleAssigned(id: string): boolean {
+    return this.editArticleIds.includes(id);
+  }
+
+  toggleArticle(id: string) {
+    const idx = this.editArticleIds.indexOf(id);
+    if (idx === -1) this.editArticleIds.push(id);
+    else this.editArticleIds.splice(idx, 1);
   }
 
   isCodingAssigned(id: string): boolean {
@@ -193,7 +214,8 @@ export class SubjectsListComponent implements OnInit {
       tests: this.editTestIds,
       crosswords: this.editCrosswordIds,
       graphs: this.editGraphIds,
-      codingTasks: this.editCodingIds
+      codingTasks: this.editCodingIds,
+      articles: this.editArticleIds
     }).subscribe({
       next: () => {
         this.saving = false;

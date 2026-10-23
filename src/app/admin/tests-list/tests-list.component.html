@@ -1,4 +1,4 @@
-<div class="page">
+<div class="page" [class.centered]="!!subjectId">
   <div class="page-header">
     <div class="title-area">
       <button class="back-btn" *ngIf="subjectId" (click)="goBack()">← {{ 'TESTS_LIST.BACK' | translate }}</button>
@@ -194,6 +194,36 @@
     </ng-template>
   </ng-container>
 
+  <!-- Articles (subject view only) -->
+  <ng-container *ngIf="subjectId && (articles.length > 0 || isStaff)">
+    <div class="section-head">
+      <div class="section-label">{{ 'TESTS_LIST.ARTICLES' | translate }}</div>
+    </div>
+    <div class="empty-inline" *ngIf="isStaff && articles.length === 0">{{ 'TESTS_LIST.NO_ARTICLES_SUBJECT' | translate }}</div>
+    <div class="grid" *ngIf="articles.length > 0 || canModifyArticles">
+      <div class="card" *ngFor="let x of articles" (click)="openArticle(x.id)">
+        <div class="card-body">
+          <div class="card-icon">📄</div>
+          <div class="card-name">{{ x.name }}</div>
+          <div class="draft-chip" *ngIf="!x.published">{{ 'ARTICLES.DRAFT' | translate }}</div>
+        </div>
+        <div class="context-wrapper" *ngIf="canModifyArticles" (click)="stopPropagation($event)">
+          <button class="ctx-btn" (click)="toggleMenu($event, 'ar-' + x.id)">···</button>
+          <div class="ctx-menu" *ngIf="openMenuId === 'ar-' + x.id">
+            <button (click)="editArticle($event, x.id)">{{ 'SIDEBAR.EDIT' | translate }}</button>
+            <button class="danger" (click)="deleteArticle($event, x.id)">{{ 'SIDEBAR.DELETE' | translate }}</button>
+          </div>
+        </div>
+      </div>
+      <div class="card card-add" *ngIf="canModifyArticles" (click)="openCreate('article')">
+        <div class="card-body">
+          <div class="card-icon add-plus">+</div>
+          <div class="card-name">{{ 'TESTS_LIST.NEW_ARTICLE' | translate }}</div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
   <!-- Coding tasks (subject view only) -->
   <ng-container *ngIf="subjectId && (codingTasks.length > 0 || isStaff)">
     <div class="section-head">
@@ -230,7 +260,10 @@
     <div class="comments-wrap">
       <!-- New comment -->
       <div class="comment-compose">
-        <textarea class="comment-input" [(ngModel)]="newCommentText" placeholder="{{ 'TESTS_LIST.COMMENT_PLACEHOLDER' | translate }}" rows="3"></textarea>
+        <textarea class="comment-input" [(ngModel)]="newCommentText" placeholder="{{ 'TESTS_LIST.COMMENT_PLACEHOLDER' | translate }}" rows="3" [maxlength]="commentMaxLength"></textarea>
+        <div class="char-counter" [class.near]="newCommentText.length >= commentMaxLength * 0.9" [class.full]="newCommentText.length >= commentMaxLength">
+          {{ newCommentText.length }} / {{ commentMaxLength }}
+        </div>
         <button class="btn-comment-submit" (click)="submitComment()" [disabled]="submittingComment || !newCommentText.trim()">
           {{ 'TESTS_LIST.POST_COMMENT' | translate }}
         </button>
@@ -264,7 +297,10 @@
 
             <!-- Reply compose -->
             <div class="reply-compose" *ngIf="replyingTo === comment.id">
-              <textarea class="comment-input reply-input" [(ngModel)]="replyText" placeholder="{{ 'TESTS_LIST.REPLY_PLACEHOLDER' | translate }}" rows="2"></textarea>
+              <textarea class="comment-input reply-input" [(ngModel)]="replyText" placeholder="{{ 'TESTS_LIST.REPLY_PLACEHOLDER' | translate }}" rows="2" [maxlength]="commentMaxLength"></textarea>
+              <div class="char-counter" [class.near]="replyText.length >= commentMaxLength * 0.9" [class.full]="replyText.length >= commentMaxLength">
+                {{ replyText.length }} / {{ commentMaxLength }}
+              </div>
               <div class="reply-actions">
                 <button class="btn-secondary-sm" (click)="cancelReply()">{{ 'TESTS_LIST.CANCEL' | translate }}</button>
                 <button class="btn-comment-submit sm" (click)="submitReply(comment)" [disabled]="submittingReply || !replyText.trim()">
@@ -316,7 +352,7 @@
 <!-- Create crossword / graph (named, attached to this subject) -->
 <div class="modal-overlay" *ngIf="createKind" (click)="cancelCreate()">
   <div class="modal" (click)="stopPropagation($event)">
-    <h2 class="modal-title">{{ (createKind === 'crossword' ? 'TESTS_LIST.NEW_CROSSWORD' : (createKind === 'coding' ? 'TESTS_LIST.NEW_CODING' : 'TESTS_LIST.NEW_GRAPH')) | translate }}</h2>
+    <h2 class="modal-title">{{ (createKind === 'crossword' ? 'TESTS_LIST.NEW_CROSSWORD' : (createKind === 'coding' ? 'TESTS_LIST.NEW_CODING' : (createKind === 'article' ? 'TESTS_LIST.NEW_ARTICLE' : 'TESTS_LIST.NEW_GRAPH'))) | translate }}</h2>
     <div class="form-group">
       <label>{{ 'TESTS_LIST.TEST_NAME' | translate }}</label>
       <input type="text" [(ngModel)]="createName" (keydown.enter)="saveCreate()" [placeholder]="'TESTS_LIST.NEW_TITLE' | translate" />

@@ -90,6 +90,24 @@
 
         <div class="field">
           <label>{{ 'CODING.OUTPUT' | translate }}</label>
+          <ng-container *ngIf="!running && state.output?.stderr as err">
+            <div class="run-warning" *ngIf="needsInput(err); else genericError">
+              <span class="rw-icon">⚠️</span>
+              <div>
+                <strong>{{ 'CODING.NEEDS_INPUT_TITLE' | translate }}</strong>
+                <div>{{ 'CODING.NEEDS_INPUT_TEXT' | translate }}</div>
+              </div>
+            </div>
+            <ng-template #genericError>
+              <div class="run-warning">
+                <span class="rw-icon">⚠️</span>
+                <div>
+                  <strong>{{ 'CODING.RUN_ERROR_TITLE' | translate }}</strong>
+                  <div class="rw-line">{{ lastErrorLine(err) }}</div>
+                </div>
+              </div>
+            </ng-template>
+          </ng-container>
           <pre class="output" [class.has-error]="state.output && (state.output.stderr || state.output.timedOut)">
 <ng-container *ngIf="running">…</ng-container><ng-container *ngIf="!running && state.output"><ng-container *ngIf="state.output.timedOut">{{ 'CODING.TIMEOUT' | translate }}</ng-container>{{ state.output.stdout }}{{ state.output.stderr }}</ng-container><ng-container *ngIf="!running && !state.output"><span class="muted">{{ 'CODING.OUTPUT_HINT' | translate }}</span></ng-container></pre>
         </div>

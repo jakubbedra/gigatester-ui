@@ -5,6 +5,7 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { GraphService, GraphSummary } from '../../service/graph.service';
 import { CodingService, CodingTaskSummary } from '../../service/coding.service';
+import { ArticleService, ArticleSummary } from '../../service/article.service';
 import { TestService } from '../../service/test.service';
 import { CrosswordService } from '../../service/crossword.service';
 import { SubjectsService } from '../../service/subject.service';
@@ -27,6 +28,8 @@ export class TestsListComponent implements OnInit {
   subjectGraphIds: string[] = [];
   codingTasks: CodingTaskSummary[] = [];
   subjectCodingIds: string[] = [];
+  articles: ArticleSummary[] = [];
+  subjectArticleIds: string[] = [];
   openMenuId: string | null = null;
 
   subjectName: string | null = null;
@@ -78,6 +81,7 @@ export class TestsListComponent implements OnInit {
     private crosswordService: CrosswordService,
     private graphService: GraphService,
     private codingService: CodingService,
+    private articleService: ArticleService,
     private translate: TranslateService,
     private subjectsService: SubjectsService,
     private commentService: CommentService,
@@ -107,11 +111,11 @@ export class TestsListComponent implements OnInit {
   }
 
   // ── Create from the subject page: make the item, attach it to this subject, open its editor ──
-  createKind: 'crossword' | 'graph' | 'coding' | null = null;
+  createKind: 'crossword' | 'graph' | 'coding' | 'article' | null = null;
   createName = '';
   createBusy = false;
 
-  openCreate(kind: 'crossword' | 'graph' | 'coding') {
+  openCreate(kind: 'crossword' | 'graph' | 'coding' | 'article') {
     this.createKind = kind;
     this.createName = '';
   }
@@ -120,7 +124,7 @@ export class TestsListComponent implements OnInit {
     this.createKind = null;
   }
 
-  private attachToSubject(patch: { tests?: string[]; crosswords?: string[]; graphs?: string[]; codingTasks?: string[] }): Observable<any> {
+  private attachToSubject(patch: { tests?: string[]; crosswords?: string[]; graphs?: string[]; codingTasks?: string[]; articles?: string[] }): Observable<any> {
     if (!this.subjectId || !this.subjectName) return of(null);
     return this.subjectsService.updateSubject(this.subjectId, {
       name: this.subjectName,
@@ -129,7 +133,8 @@ export class TestsListComponent implements OnInit {
       tests: patch.tests ?? this.subjectTestIds,
       crosswords: patch.crosswords ?? this.subjectCrosswordIds,
       graphs: patch.graphs ?? this.subjectGraphIds,
-      codingTasks: patch.codingTasks ?? this.subjectCodingIds
+      codingTasks: patch.codingTasks ?? this.subjectCodingIds,
+      articles: patch.articles ?? this.subjectArticleIds
     });
   }
 
@@ -150,6 +155,14 @@ export class TestsListComponent implements OnInit {
         next: id => { done(); this.router.navigate(['/admin/crosswords', id, 'edit']); },
         error: () => { this.createBusy = false; }
       });
+    } else if (this.createKind === 'article') {
+      this.articleService.create({ name, content: '', published: false, relatedTestId: null }).pipe(
+        switchMap(created => this.attachToSubject({ articles: [...this.subjectArticleIds, this.idOf(created)] })
+          .pipe(map(() => this.idOf(created))))
+      ).subscribe({
+        next: id => { done(); this.router.navigate(['/admin/articles', id, 'edit']); },
+        error: () => { this.createBusy = false; }
+      });
     } else if (this.createKind === 'coding') {
       this.codingService.create(CodingService.blankRequest(name)).pipe(
         switchMap(created => this.attachToSubject({ codingTasks: [...this.subjectCodingIds, this.idOf(created)] })
@@ -167,6 +180,10 @@ export class TestsListComponent implements OnInit {
         error: () => { this.createBusy = false; }
       });
     }
+  }
+
+  get canModifyArticles(): boolean {
+    return this.permissionService.hasPermission(Permission.ARTICLES_WRITE);
   }
 
   get canModifyCoding(): boolean {
@@ -195,6 +212,7 @@ export class TestsListComponent implements OnInit {
           this.subjectCrosswordIds = subject.crosswords ?? [];
           this.subjectGraphIds = subject.graphs ?? [];
           this.subjectCodingIds = subject.codingTasks ?? [];
+          this.subjectArticleIds = subject.articles ?? [];
           this.comments = subject.comments ?? [];
           this.subjectAuthors = subject.authors ?? [];
           const tests$ = subject.tests.length
@@ -209,9 +227,15 @@ export class TestsListComponent implements OnInit {
           const coding$ = this.subjectCodingIds.length
             ? this.codingService.listPlayable().pipe(catchError(() => of([] as CodingTaskSummary[])))
             : of([] as CodingTaskSummary[]);
-          return forkJoin([tests$, crosswords$, graphs$, coding$]);
+          const articles$ = this.subjectArticleIds.length
+            ? this.articleService.listReadable().pipe(catchError(() => of([] as ArticleSummary[])))
+            : of([] as ArticleSummary[]);
+          return forkJoin([tests$, crosswords$, graphs$, coding$, articles$]);
         })
-      ).subscribe(([tests, crosswords, playableGraphs, playableCoding]: any) => {
+      ).subscribe(([tests, crosswords, playableGraphs, playableCoding, readableArticles]: any) => {
+        this.articles = (readableArticles as ArticleSummary[])
+          .filter(x => this.subjectArticleIds.includes(x.id))
+          .sort((p, q) => p.name.localeCompare(q.name));
         this.codingTasks = (playableCoding as CodingTaskSummary[])
           .filter(c => this.subjectCodingIds.includes(c.id))
           .sort((a, b) => a.name.localeCompare(b.name));
@@ -233,6 +257,8 @@ export class TestsListComponent implements OnInit {
       this.subjectCrosswordIds = [];
       this.subjectGraphIds = [];
       this.subjectCodingIds = [];
+      this.subjectArticleIds = [];
+      this.articles = [];
       this.codingTasks = [];
       this.graphs = [];
       this.comments = [];
@@ -276,6 +302,8 @@ export class TestsListComponent implements OnInit {
     if (value <= 8) return 'SUBJECTS.DIFFICULTY_VERY_HARD';
     return 'SUBJECTS.DIFFICULTY_EXPERT';
   }
+
+  readonly commentMaxLength = 250;
 
   submitComment() {
     if (!this.subjectId || !this.newCommentText.trim()) return;
@@ -443,6 +471,24 @@ export class TestsListComponent implements OnInit {
     this.openMenuId = null;
     if (confirm('Are you sure you want to delete this crossword?')) {
       this.crosswordService.deleteCrossword(id).subscribe(() => this.load());
+    }
+  }
+
+  openArticle(id: string) {
+    this.router.navigate(['/articles', id]);
+  }
+
+  editArticle(event: Event, id: string) {
+    event.stopPropagation();
+    this.openMenuId = null;
+    this.router.navigate(['/admin/articles', id, 'edit']);
+  }
+
+  deleteArticle(event: Event, id: string) {
+    event.stopPropagation();
+    this.openMenuId = null;
+    if (confirm(this.translate.instant('ARTICLES.CONFIRM_DELETE'))) {
+      this.articleService.delete(id).subscribe(() => this.load());
     }
   }
 

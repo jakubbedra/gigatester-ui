@@ -43,6 +43,16 @@
         </div>
       </div>
 
+      <div class="tests-section" *ngIf="subject.articles.length > 0">
+        <div class="tests-label">{{ 'SUBJECTS.ARTICLES' | translate }} <span class="test-count">{{ subject.articles.length }}</span></div>
+        <div class="tests-list">
+          <div class="test-row crossword-row" *ngFor="let x of subject.articles">
+            <span class="test-icon">📄</span>
+            <span class="test-name">{{ x.name }}</span>
+          </div>
+        </div>
+      </div>
+
       <div class="tests-section" *ngIf="subject.codingTasks.length > 0">
         <div class="tests-label">{{ 'SUBJECTS.CODING' | translate }} <span class="test-count">{{ subject.codingTasks.length }}</span></div>
         <div class="tests-list">
@@ -179,6 +189,25 @@
       </ng-container>
       <ng-template #noCodingAvailable>
         <div class="no-tests-hint">{{ 'SUBJECTS.NO_CODING_AVAILABLE' | translate }}</div>
+      </ng-template>
+    </div>
+
+    <div class="form-group">
+      <label>{{ 'SUBJECTS.ASSIGNED_ARTICLES' | translate }}</label>
+      <ng-container *ngIf="allArticles.length > 0; else noArticlesAvailable">
+        <input class="search-input" type="text" [(ngModel)]="articleSearch" [placeholder]="'SUBJECTS.SEARCH_ARTICLES' | translate" />
+        <div class="test-picker">
+          <ng-container *ngFor="let x of allArticles">
+            <label class="test-check" *ngIf="!articleSearch || x.name.toLowerCase().includes(articleSearch.toLowerCase())"
+                   [class.selected]="isArticleAssigned(x.id)" (click)="toggleArticle(x.id)">
+              <span class="check-box"><span class="check-mark" *ngIf="isArticleAssigned(x.id)">✓</span></span>
+              <span class="check-label">📄 {{ x.name }}<span class="draft-mark" *ngIf="!x.published"> · {{ 'ARTICLES.DRAFT' | translate }}</span></span>
+            </label>
+          </ng-container>
+        </div>
+      </ng-container>
+      <ng-template #noArticlesAvailable>
+        <div class="no-tests-hint">{{ 'SUBJECTS.NO_ARTICLES_AVAILABLE' | translate }}</div>
       </ng-template>
     </div>
 

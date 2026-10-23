@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Environment } from '../../../environment';
+import { TranslateService } from '@ngx-translate/core';
+import { ToastService } from './toast.service';
+import { SidebarRefreshService } from './sidebar-refresh.service';
 
 export interface StreakResponse {
   currentStreak: number;
@@ -14,7 +17,23 @@ export class StreakService {
   private readonly base = Environment.LOCALHOST_BASE_URL + 'api/v1/streak';
   private readonly LAST_TOAST_KEY = 'gt_streak_last_toast_date';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private translate: TranslateService,
+    private toastService: ToastService,
+    private sidebarRefreshService: SidebarRefreshService
+  ) {}
+
+  /** After finishing something that counts as daily activity: refresh the sidebar and toast the streak once a day. */
+  announceActivity(): void {
+    this.getStreak().subscribe(s => {
+      this.sidebarRefreshService.notify();
+      if (this.wasJustBumpedToday(s)) {
+        const label = this.translate.instant('SIDEBAR.STREAK');
+        this.toastService.show({ icon: '🔥', message: `${s.currentStreak} ${label}` });
+      }
+    });
+  }
 
   getStreak(): Observable<StreakResponse> {
     return this.http.get<StreakResponse>(this.base);

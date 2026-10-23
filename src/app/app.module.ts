@@ -55,6 +55,11 @@ import { CrosswordTestRunComponent } from './crosswords/crossword-test-run/cross
 import { CalendarComponent } from './calendar/calendar.component';
 import { JoinGroupComponent } from './calendar/join-group/join-group.component';
 import { ExamAttemptComponent } from './tests/exam-attempt/exam-attempt.component';
+import { ArticleViewComponent } from './articles/article-view/article-view.component';
+import { ArticleRefsComponent } from './articles/article-refs/article-refs.component';
+import { ArticleEditComponent } from './articles/article-edit/article-edit.component';
+import { ArticleListComponent } from './articles/article-list/article-list.component';
+import { ArticleHtmlPipe } from './pipes/article-html.pipe';
 import { PythonEditorComponent } from './coding/python-editor/python-editor.component';
 import { CodingPlayComponent } from './coding/coding-play/coding-play.component';
 import { CodingEditComponent } from './coding/coding-edit/coding-edit.component';
@@ -104,6 +109,11 @@ import { GraphGamePlayComponent } from './graph-game/graph-game-play/graph-game-
     GraphsListComponent,
     CodingPlayComponent,
     PythonEditorComponent,
+    ArticleViewComponent,
+    ArticleRefsComponent,
+    ArticleEditComponent,
+    ArticleListComponent,
+    ArticleHtmlPipe,
     CodingEditComponent,
     CodingListComponent,
     ExamAttemptComponent,

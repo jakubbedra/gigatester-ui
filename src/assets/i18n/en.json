@@ -23,7 +23,10 @@
     "INBOX_EMPTY": "No pending requests.",
     "FAVOURITES": "Favourites",
     "GRAPHS": "Graphs",
-    "CODING": "Coding tasks"
+    "CODING": "Coding tasks",
+    "SEARCH_PLACEHOLDER": "Search…",
+    "NO_RESULTS": "No results.",
+    "ARTICLES": "Articles"
   },
   "LOGIN": {
     "SIGN_IN": "Sign in",
@@ -337,7 +340,11 @@
     "CODING": "Coding tasks",
     "ASSIGNED_CODING": "Assigned Coding tasks",
     "SEARCH_CODING": "Search coding tasks…",
-    "NO_CODING_AVAILABLE": "No coding tasks available. Create some first."
+    "NO_CODING_AVAILABLE": "No coding tasks available. Create some first.",
+    "ARTICLES": "Articles",
+    "ASSIGNED_ARTICLES": "Assigned Articles",
+    "SEARCH_ARTICLES": "Search articles…",
+    "NO_ARTICLES_AVAILABLE": "No articles available. Create some first."
   },
   "TESTS_LIST": {
     "TITLE": "Tests",
@@ -372,7 +379,10 @@
     "NEW_GRAPH": "New graph",
     "CODING": "Coding tasks",
     "NEW_CODING": "New coding task",
-    "NO_CODING_SUBJECT": "No coding tasks assigned to this subject."
+    "NO_CODING_SUBJECT": "No coding tasks assigned to this subject.",
+    "ARTICLES": "Articles",
+    "NEW_ARTICLE": "New article",
+    "NO_ARTICLES_SUBJECT": "No articles assigned to this subject."
   },
   "TEST_EDIT": {
     "BACK": "Tests",
@@ -445,7 +455,11 @@
     "EXAM_START": "Exam starts",
     "EXAM_WINDOW_END": "Window ends",
     "EXAM_TIME_LIMIT": "Time limit (min)",
-    "EXAM_HINT": "Students get one attempt, startable between the start and the window end. The number of closed/open questions and the passing percentage above apply to every attempt. Results unlock for students when the window closes."
+    "EXAM_HINT": "Students get one attempt, startable between the start and the window end. The number of closed/open questions and the passing percentage above apply to every attempt. Results unlock for students when the window closes.",
+    "ARTICLE_LINKS": "Article links",
+    "PICK_ARTICLE": "Choose an article…",
+    "WHOLE_ARTICLE": "Whole article",
+    "ADD_LINK": "Add link"
   },
   "CROSSWORDS_LIST": {
     "TITLE": "Crosswords",
@@ -815,7 +829,8 @@
     "BANK_TITLE": "Labels",
     "BANK_EMPTY": "All labels placed!",
     "DRAG_HINT": "Drag a label onto a blank vertex (or tap a label, then tap a vertex).",
-    "WRONG_DROP": "That label doesn’t belong there."
+    "WRONG_DROP": "That label doesn’t belong there.",
+    "SOUND": "Sound effects on/off"
   },
   "GRAPHS_LIST": {
     "TITLE": "Graphs",
@@ -930,6 +945,35 @@
     "SUMMARY_CLOSE": "Close",
     "FINISHED_BANNER": "You have finished this test — it can no longer be edited.",
     "OPENS_IN": "Opens in",
-    "TO_CLOSE": "to close"
+    "TO_CLOSE": "to close",
+    "NEEDS_INPUT_TITLE": "Your program is waiting for input",
+    "NEEDS_INPUT_TEXT": "It called input() but there was nothing to read. Type the values (one per line) into the stdin box below and run again.",
+    "RUN_ERROR_TITLE": "Your program stopped with an error"
+  },
+  "ARTICLES": {
+    "TITLE": "Articles",
+    "NEW": "New article",
+    "EMPTY": "No articles yet. Create one to get started.",
+    "NAME": "Title",
+    "EDIT_TITLE": "Edit article",
+    "BACK_TO_ARTICLE": "Back to article",
+    "CONFIRM_DELETE": "Delete this article?",
+    "LOAD_ERROR": "Could not load this article.",
+    "DRAFT": "Draft",
+    "PUBLISHED_SHORT": "Published",
+    "PUBLISHED": "Published",
+    "PUBLISHED_HINT": "Drafts are visible to staff only. Tick this when the article is ready for students.",
+    "CONTENT": "Content",
+    "CONTENT_HINT": "Use the image button to upload pictures. Write formulas as $x^2$ (inline) or $$\\int_0^1 x\\,dx$$ (block).",
+    "UPLOADING": "Uploading image…",
+    "IMAGE_ERROR": "Could not upload the image (images only, up to 8 MB).",
+    "PRACTICE_TEST": "Practice test (optional)",
+    "NO_PRACTICE": "None",
+    "PRACTICE": "Practice this",
+    "PRACTICE_GO": "Open test",
+    "MINUTES_READ": "min read",
+    "EMPTY_CONTENT": "This article has no content yet.",
+    "LEARN_MORE": "Learn more",
+    "OPEN_NEW_TAB": "Open in new tab"
   }
 }

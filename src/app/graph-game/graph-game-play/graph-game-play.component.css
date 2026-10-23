@@ -235,3 +235,7 @@
 .bank-chip:hover { border-color: var(--c-7b6df5); }
 .bank-chip.chosen { background: var(--a-15); border-color: var(--c-7b6df5); color: var(--c-c0b0ff); }
 .bank-chip.dragging { opacity: 0.4; }
+
+.header-actions { display: flex; align-items: center; gap: 14px; }
+.sound-btn { background: transparent; border: 1px solid var(--a-3); border-radius: 9px; padding: 4px 10px; font-size: 15px; cursor: pointer; transition: 0.15s; }
+.sound-btn:hover { background: var(--a-1); border-color: var(--c-7b6df5); }

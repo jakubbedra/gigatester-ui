@@ -7,6 +7,7 @@ import {
 import { PythonRunnerService, PythonRunResult } from '../../service/python-runner.service';
 import { PermissionService } from '../../service/permission.service';
 import { SoundService } from '../../service/sound.service';
+import { StreakService } from '../../service/streak.service';
 import { Permission } from '../../models/models.d';
 
 interface LocalTestResult {
@@ -105,7 +106,8 @@ export class CodingPlayComponent implements OnInit, OnDestroy {
     private codingService: CodingService,
     private runner: PythonRunnerService,
     private permissionService: PermissionService,
-    public sound: SoundService
+    public sound: SoundService,
+    private streakService: StreakService
   ) {}
 
   get isStaff(): boolean {
@@ -233,6 +235,17 @@ export class CodingPlayComponent implements OnInit, OnDestroy {
     if (this.state) this.state.code = code;
   }
 
+  /** Python's complaint when input() has nothing to read. */
+  needsInput(stderr: string): boolean {
+    return stderr.includes('EOFError');
+  }
+
+  /** The final line of a traceback, e.g. "NameError: name 'x' is not defined". */
+  lastErrorLine(stderr: string): string {
+    const lines = stderr.trim().split('\n').map(l => l.trim()).filter(Boolean);
+    return lines[lines.length - 1] ?? '';
+  }
+
   async run() {
     const p = this.problem, s = this.state;
     if (!p || !s || this.busy || this.readOnly) return;
@@ -280,6 +293,7 @@ export class CodingPlayComponent implements OnInit, OnDestroy {
       next: res => {
         s.submission = res;
         this.submitting = false;
+        setTimeout(() => this.streakService.announceActivity(), 900);
         if (res.passed === res.total) this.sound.success();
         else if (res.passed > 0) this.sound.partial();
         else this.sound.fail();

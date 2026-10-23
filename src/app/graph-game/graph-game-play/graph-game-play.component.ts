@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { SoundService } from '../../service/sound.service';
+import { StreakService } from '../../service/streak.service';
 import {
   GraphEdgeView,
   GraphHyperedgeView,
@@ -33,7 +35,22 @@ export class GraphGamePlayComponent implements OnInit {
   checking = false;
   feedback: { vertexId: string; correct: boolean } | null = null;
 
-  constructor(private route: ActivatedRoute, private graphSessionService: GraphSessionService, private translate: TranslateService) {}
+  constructor(private route: ActivatedRoute, private graphSessionService: GraphSessionService, private translate: TranslateService,
+    public sound: SoundService,
+    private streakService: StreakService
+  ) {}
+
+  /** Sound and streak for the result of one guess or drop. */
+  private onAnswered(correct: boolean, completed: boolean) {
+    if (correct && completed) {
+      this.sound.success();
+      setTimeout(() => this.streakService.announceActivity(), 1200);
+    } else if (correct) {
+      this.sound.pass();
+    } else {
+      this.sound.fail();
+    }
+  }
 
   ngOnInit() {
     this.sessionId = this.route.snapshot.paramMap.get('id')!;
@@ -64,6 +81,7 @@ export class GraphGamePlayComponent implements OnInit {
   }
 
   onBankDragStart(event: DragEvent, index: number) {
+    this.sound.click();
     this.draggedIndex = index;
     this.chosenIndex = null;
     event.dataTransfer?.setData('text/plain', String(index));
@@ -95,6 +113,7 @@ export class GraphGamePlayComponent implements OnInit {
   }
 
   chooseBankItem(index: number) {
+    this.sound.click();
     this.chosenIndex = this.chosenIndex === index ? null : index;
     this.feedback = null;
   }
@@ -107,6 +126,7 @@ export class GraphGamePlayComponent implements OnInit {
       next: res => {
         this.checking = false;
         this.feedback = { vertexId: v.id, correct: res.correct };
+        this.onAnswered(res.correct, res.completed);
         if (res.correct && this.session) {
           v.label = res.label;
           v.revealed = true;
@@ -126,6 +146,7 @@ export class GraphGamePlayComponent implements OnInit {
       if (this.chosenIndex !== null) this.placeLabel(v, this.chosenIndex);
       return;
     }
+    this.sound.click();
     this.selectedBlankId = v.id;
     this.guessText = '';
     this.feedback = null;
@@ -144,6 +165,7 @@ export class GraphGamePlayComponent implements OnInit {
       next: res => {
         this.checking = false;
         this.feedback = { vertexId, correct: res.correct };
+        this.onAnswered(res.correct, res.completed);
         if (res.correct && this.session) {
           const v = this.vertexById(vertexId);
           if (v) { v.label = res.label; v.revealed = true; }

@@ -40,6 +40,7 @@
 
       <!-- RIGHT: controls / info -->
 
+
       <aside class="side-pane">
         <h2 class="exam-title">{{ testState!.testName }}</h2>
         <div class="countdown-card" *ngIf="testState!.timeLimitEnabled && !isInReview()"
@@ -66,6 +67,8 @@
             {{ isReported() ? ('QUESTION_CARD.REPORTED' | translate) : ('QUESTION_CARD.REPORT_QUESTION' | translate) }}
           </button>
         </div>
+
+        <app-article-refs class="side-refs" *ngIf="showArticleRefs()" [refs]="question!.articleRefs"></app-article-refs>
 
         <div class="side-card" *ngIf="isLearningMode()">
           <div class="side-title">{{ 'QUESTION_CARD.ACTIONS' | translate }}</div>

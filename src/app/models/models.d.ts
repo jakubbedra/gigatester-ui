@@ -36,6 +36,7 @@ export interface QuestionDto {
     id: string;
     content: QuestionContentDto;
     explanation: QuestionContent;
+    articleRefs?: ArticleReferenceDto[];
     contentProportions: number;
     answerProportions: number;
     tags: TagResponse[];
@@ -248,6 +249,7 @@ export interface SubjectRequest {
     crosswords: string[];
     graphs: string[];
     codingTasks?: string[];
+    articles?: string[];
 }
 
 export interface CommentResponse {
@@ -283,6 +285,7 @@ export interface SubjectResponse {
     crosswords: string[];
     graphs: string[];
     codingTasks?: string[];
+    articles?: string[];
     comments: CommentResponse[];
     authors: SubjectAuthor[];
 }
@@ -458,6 +461,8 @@ export const enum Permission {
     GRAPHS_WRITE = "GRAPHS_WRITE",
     CODING_READ = "CODING_READ",
     CODING_WRITE = "CODING_WRITE",
+    ARTICLES_READ = "ARTICLES_READ",
+    ARTICLES_WRITE = "ARTICLES_WRITE",
 }
 
 export interface RoleRequest {
@@ -551,4 +556,9 @@ export interface MultiplayerSessionSummaryResponse {
     myScore: number;
     opponentScore: number;
     createdAt: string;
+}
+
+export interface ArticleReferenceDto {
+  articleId: string;
+  section: string | null;
 }

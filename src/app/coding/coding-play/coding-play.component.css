@@ -127,3 +127,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .close-chip.urgent { background: rgba(240,80,80,0.12); border-color: rgba(240,80,80,0.6); animation: pulse-urgent 1s ease-in-out infinite; }
 .close-chip.urgent .close-chip-time { color: #f05050; }
 @keyframes pulse-urgent { 50% { box-shadow: 0 0 14px rgba(240,80,80,0.45); } }
+
+.run-warning { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 8px; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(224,168,61,0.45); background: rgba(224,168,61,0.1); color: #f0c46a; font-size: 13.5px; line-height: 1.5; }
+.run-warning .rw-icon { font-size: 18px; }
+.run-warning .rw-line { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; opacity: 0.9; }

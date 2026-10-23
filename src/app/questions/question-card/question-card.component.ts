@@ -311,6 +311,14 @@ export class QuestionCardComponent implements OnInit, OnDestroy {
     return this.testState!.mode === TestModeDto.EXAM;
   }
 
+  /** Article links are a reward for answering: shown after submitting a question (learning) or the exam (review). */
+  showArticleRefs(): boolean {
+    if (!this.question?.articleRefs?.length) return false;
+    if (this.isExamMode()) return this.isInReview();
+    if (this.isLearningMode()) return this.questionSubmitted();
+    return false;
+  }
+
   canReport(): boolean {
     if (this.isExamMode()) return this.isInReview();
     if (this.isLearningMode()) return this.questionSubmitted();

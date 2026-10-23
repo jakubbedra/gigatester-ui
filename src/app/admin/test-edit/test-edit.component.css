@@ -1579,3 +1579,6 @@
 .exam-callout-icon { flex-shrink: 0; }
 .exam-error { margin: 0 0 12px; font-size: 13px; color: #f05050; }
 @media (max-width: 760px) { .exam-panel-grid { grid-template-columns: 1fr; } }
+
+.article-ref-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.article-ref-row select { flex: 1; min-width: 160px; }
