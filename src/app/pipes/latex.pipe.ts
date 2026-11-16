@@ -1,6 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import * as katex from 'katex';
+import { highlightCode } from './code-highlight';
 
 @Pipe({ name: 'latex' })
 export class LatexPipe implements PipeTransform {
@@ -10,8 +11,16 @@ export class LatexPipe implements PipeTransform {
   transform(value: string | null | undefined): SafeHtml {
     if (!value) return '';
 
-    // Render display math ($$...$$) then inline math ($...$)
-    const html = this.renderMath(value);
+    // Fenced code blocks (three backticks, optional language: java / python) are pulled out first so
+    // that $ signs and markup inside the code are never treated as math or HTML.
+    const blocks: string[] = [];
+    const withoutCode = value.replace(/```([A-Za-z]*)[ \t]*\r?\n?([\s\S]*?)```/g, (_m, lang: string, code: string) => {
+      blocks.push(this.renderCode(lang, code));
+      return `\u0000CODE${blocks.length - 1}\u0000`;
+    });
+
+    // Render display math ($...$) then inline math ($...$)
+    const html = this.renderMath(withoutCode).replace(/\u0000CODE(\d+)\u0000/g, (_m, i: string) => blocks[+i]);
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
@@ -51,6 +60,12 @@ export class LatexPipe implements PipeTransform {
     if (tail) parts.push(tail);
 
     return parts.join('');
+  }
+
+  private renderCode(lang: string, code: string): string {
+    const clean = code.replace(/\n$/, '');
+    const label = lang ? `<span class="code-lang">${this.escapeHtml(lang.toLowerCase())}</span>` : '';
+    return `<pre class="code-snippet">${label}<code>${highlightCode(clean, lang)}</code></pre>`;
   }
 
   private escapeHtml(text: string): string {

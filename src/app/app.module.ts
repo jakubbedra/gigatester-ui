@@ -57,6 +57,8 @@ import { JoinGroupComponent } from './calendar/join-group/join-group.component';
 import { ExamAttemptComponent } from './tests/exam-attempt/exam-attempt.component';
 import { ArticleViewComponent } from './articles/article-view/article-view.component';
 import { ArticleRefsComponent } from './articles/article-refs/article-refs.component';
+import { TodoListComponent } from './todos/todo-list/todo-list.component';
+import { FeatureFlagsComponent } from './admin/feature-flags/feature-flags.component';
 import { ArticleEditComponent } from './articles/article-edit/article-edit.component';
 import { ArticleListComponent } from './articles/article-list/article-list.component';
 import { ArticleHtmlPipe } from './pipes/article-html.pipe';
@@ -111,6 +113,8 @@ import { GraphGamePlayComponent } from './graph-game/graph-game-play/graph-game-
     PythonEditorComponent,
     ArticleViewComponent,
     ArticleRefsComponent,
+    TodoListComponent,
+    FeatureFlagsComponent,
     ArticleEditComponent,
     ArticleListComponent,
     ArticleHtmlPipe,

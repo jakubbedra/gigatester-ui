@@ -45,6 +45,9 @@
       <li class="home-link-item">
         <a routerLink="/calendar" class="home-link">📅 {{ 'SIDEBAR.CALENDAR' | translate }}</a>
       </li>
+      <li class="home-link-item" *ngIf="todoEnabled">
+        <a routerLink="/todos" class="home-link">✅ {{ 'SIDEBAR.TODOS' | translate }}</a>
+      </li>
       <li class="admin-links" *ngIf="isModerator">
         <span class="admin-link" (click)="navigateToSubjectGroups($event)">{{ 'SIDEBAR.GROUPS' | translate }}</span>
         <span class="admin-link" (click)="navigateToAdminSubjects()">{{ 'SIDEBAR.SUBJECTS' | translate }}</span>
@@ -52,6 +55,7 @@
         <span class="admin-link" (click)="navigateToCrosswords()">{{ 'SIDEBAR.CROSSWORDS' | translate }}</span>
         <span class="admin-link" *ngIf="isAdmin" (click)="navigateToUsers()">{{ 'SIDEBAR.USERS' | translate }}</span>
         <span class="admin-link" *ngIf="isAdmin" (click)="navigateToRoles()">{{ 'SIDEBAR.ROLES' | translate }}</span>
+        <span class="admin-link" *ngIf="isAdmin" routerLink="/admin/feature-flags">🚩 {{ 'SIDEBAR.FEATURE_FLAGS' | translate }}</span>
         <span class="admin-link" (click)="navigateToGraphs()">{{ 'SIDEBAR.GRAPHS' | translate }}</span>
         <span class="admin-link" (click)="navigateToCodingTasks()">{{ 'SIDEBAR.CODING' | translate }}</span>
         <span class="admin-link" (click)="navigateToArticles()">{{ 'SIDEBAR.ARTICLES' | translate }}</span>

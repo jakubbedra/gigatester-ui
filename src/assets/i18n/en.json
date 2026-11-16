@@ -26,7 +26,9 @@
     "CODING": "Coding tasks",
     "SEARCH_PLACEHOLDER": "Search…",
     "NO_RESULTS": "No results.",
-    "ARTICLES": "Articles"
+    "ARTICLES": "Articles",
+    "TODOS": "To-do",
+    "FEATURE_FLAGS": "Feature flags"
   },
   "LOGIN": {
     "SIGN_IN": "Sign in",
@@ -459,7 +461,8 @@
     "ARTICLE_LINKS": "Article links",
     "PICK_ARTICLE": "Choose an article…",
     "WHOLE_ARTICLE": "Whole article",
-    "ADD_LINK": "Add link"
+    "ADD_LINK": "Add link",
+    "FORMAT_CODE": "Code"
   },
   "CROSSWORDS_LIST": {
     "TITLE": "Crosswords",
@@ -975,5 +978,42 @@
     "EMPTY_CONTENT": "This article has no content yet.",
     "LEARN_MORE": "Learn more",
     "OPEN_NEW_TAB": "Open in new tab"
+  },
+  "TODOS": {
+    "TITLE": "My to-do list",
+    "OPEN": "open",
+    "PLACEHOLDER": "What do you need to do?",
+    "DUE": "Due date",
+    "LINK": "Link to",
+    "NO_LINK": "Nothing",
+    "PICK": "Choose…",
+    "ADD": "Add",
+    "SHOW_DONE": "Show completed",
+    "CLEAR_DONE": "Clear completed",
+    "EMPTY": "Nothing to do yet. Add your first task above.",
+    "LINK_GONE": "Linked item is no longer available",
+    "DELETE": "Delete",
+    "TYPE_TEST": "Test",
+    "TYPE_CROSSWORD": "Crossword",
+    "TYPE_GRAPH": "Graph",
+    "TYPE_CODING_TASK": "Programming task",
+    "TYPE_ARTICLE": "Article",
+    "NEW": "New task",
+    "CANCEL": "Cancel",
+    "COL_TODO": "To do",
+    "COL_IN_PROGRESS": "In progress",
+    "COL_DONE": "Done",
+    "DROP_HERE": "Drop tasks here",
+    "MOVE_LEFT": "Move left",
+    "MOVE_RIGHT": "Move right"
+  },
+  "FEATURE_FLAGS": {
+    "TITLE": "Feature flags",
+    "HINT": "Switch features that are still in development on or off. Values are kept in server memory only: a server restart puts every flag back to its default.",
+    "DEFAULT": "Default",
+    "ON": "on",
+    "OFF": "off",
+    "EMPTY": "There are no feature flags.",
+    "ERROR": "Could not change the flag."
   }
 }

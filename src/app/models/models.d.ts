@@ -479,6 +479,7 @@ export interface RoleResponse {
 export const enum QuestionContentType {
     TEXT = "TEXT",
     HTML = "HTML",
+    CODE_SNIPPET = "CODE_SNIPPET",
 }
 
 export const enum QuestionType {

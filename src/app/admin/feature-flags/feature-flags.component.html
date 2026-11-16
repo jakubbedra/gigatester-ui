@@ -1,0 +1,22 @@
+<div class="page">
+  <h1>🚩 {{ 'FEATURE_FLAGS.TITLE' | translate }}</h1>
+  <p class="hint">{{ 'FEATURE_FLAGS.HINT' | translate }}</p>
+
+  <p class="muted" *ngIf="loading">…</p>
+  <p class="error" *ngIf="error">{{ 'FEATURE_FLAGS.ERROR' | translate }}</p>
+  <p class="muted" *ngIf="!loading && flags.length === 0">{{ 'FEATURE_FLAGS.EMPTY' | translate }}</p>
+
+  <ul class="flag-list">
+    <li class="flag" *ngFor="let f of flags">
+      <div class="info">
+        <div class="name">{{ f.label }} <code>{{ f.key }}</code></div>
+        <div class="desc">{{ f.description }}</div>
+        <div class="default">{{ 'FEATURE_FLAGS.DEFAULT' | translate }}: {{ (f.defaultValue ? 'FEATURE_FLAGS.ON' : 'FEATURE_FLAGS.OFF') | translate }}</div>
+      </div>
+      <button type="button" class="switch" [class.on]="f.enabled" [disabled]="busyKey === f.key"
+              role="switch" [attr.aria-checked]="f.enabled" (click)="toggle(f)">
+        <span class="knob"></span>
+      </button>
+    </li>
+  </ul>
+</div>

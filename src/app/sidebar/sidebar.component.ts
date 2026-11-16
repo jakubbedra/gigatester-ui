@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { AuthService } from '../service/auth.service';
+import { FeatureFlagService } from '../service/feature-flag.service';
 import { LanguageService } from '../service/language.service';
 import { StreakService } from '../service/streak.service';
 import { forkJoin, of, Subscription, timer } from 'rxjs';
@@ -78,6 +79,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private refreshSub?: Subscription;
   private navSub?: Subscription;
   private eventSub?: Subscription;
+  private flagSub?: Subscription;
+  todoEnabled = false;
 
   get pendingCount(): number {
     return this.inboxRequests.length + this.questionReportCount + this.notificationCount + this.inviteCount;
@@ -94,6 +97,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private accessService: SubjectGroupAccessService,
     private router: Router,
     private authService: AuthService,
+    private featureFlagService: FeatureFlagService,
     private streakService: StreakService,
     private permissionService: PermissionService,
     private sidebarRefreshService: SidebarRefreshService,
@@ -194,6 +198,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.flagSub = this.featureFlagService.isEnabled$('TODO_LIST').subscribe(on => this.todoEnabled = on);
+    this.featureFlagService.load().subscribe();
     this.refreshAll();
 
     // Periodic background refresh so assigned tests/crosswords/streak stay current
@@ -217,6 +223,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.refreshSub?.unsubscribe();
     this.navSub?.unsubscribe();
     this.eventSub?.unsubscribe();
+    this.flagSub?.unsubscribe();
   }
 
   private refreshAll() {

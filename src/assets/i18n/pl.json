@@ -26,7 +26,9 @@
     "CODING": "Zadania programistyczne",
     "SEARCH_PLACEHOLDER": "Szukaj…",
     "NO_RESULTS": "Brak wyników.",
-    "ARTICLES": "Artykuły"
+    "ARTICLES": "Artykuły",
+    "TODOS": "Do zrobienia",
+    "FEATURE_FLAGS": "Feature flagi"
   },
   "LOGIN": {
     "SIGN_IN": "Zaloguj się",
@@ -459,7 +461,8 @@
     "ARTICLE_LINKS": "Linki do artykułów",
     "PICK_ARTICLE": "Wybierz artykuł…",
     "WHOLE_ARTICLE": "Cały artykuł",
-    "ADD_LINK": "Dodaj link"
+    "ADD_LINK": "Dodaj link",
+    "FORMAT_CODE": "Kod"
   },
   "CROSSWORDS_LIST": {
     "TITLE": "Krzyżówki",
@@ -975,5 +978,42 @@
     "EMPTY_CONTENT": "Ten artykuł nie ma jeszcze treści.",
     "LEARN_MORE": "Dowiedz się więcej",
     "OPEN_NEW_TAB": "Otwórz w nowej karcie"
+  },
+  "TODOS": {
+    "TITLE": "Moja lista zadań",
+    "OPEN": "otwartych",
+    "PLACEHOLDER": "Co masz do zrobienia?",
+    "DUE": "Termin",
+    "LINK": "Powiąż z",
+    "NO_LINK": "Niczym",
+    "PICK": "Wybierz…",
+    "ADD": "Dodaj",
+    "SHOW_DONE": "Pokaż ukończone",
+    "CLEAR_DONE": "Usuń ukończone",
+    "EMPTY": "Nic jeszcze do zrobienia. Dodaj pierwsze zadanie powyżej.",
+    "LINK_GONE": "Powiązany element jest niedostępny",
+    "DELETE": "Usuń",
+    "TYPE_TEST": "Test",
+    "TYPE_CROSSWORD": "Krzyżówka",
+    "TYPE_GRAPH": "Graf",
+    "TYPE_CODING_TASK": "Zadanie programistyczne",
+    "TYPE_ARTICLE": "Artykuł",
+    "NEW": "Nowe zadanie",
+    "CANCEL": "Anuluj",
+    "COL_TODO": "Do zrobienia",
+    "COL_IN_PROGRESS": "W trakcie",
+    "COL_DONE": "Zrobione",
+    "DROP_HERE": "Upuść zadania tutaj",
+    "MOVE_LEFT": "Przenieś w lewo",
+    "MOVE_RIGHT": "Przenieś w prawo"
+  },
+  "FEATURE_FLAGS": {
+    "TITLE": "Feature flagi",
+    "HINT": "Włączaj i wyłączaj funkcje, które są jeszcze w trakcie tworzenia. Wartości są trzymane tylko w pamięci serwera: po restarcie każda flaga wraca do wartości domyślnej.",
+    "DEFAULT": "Domyślnie",
+    "ON": "włączona",
+    "OFF": "wyłączona",
+    "EMPTY": "Brak flag funkcji.",
+    "ERROR": "Nie udało się zmienić flagi."
   }
 }

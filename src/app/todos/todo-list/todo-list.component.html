@@ -1,0 +1,74 @@
+<div class="page">
+  <div class="header">
+    <h1>{{ 'TODOS.TITLE' | translate }}</h1>
+    <span class="spacer"></span>
+    <button type="button" class="btn-primary" (click)="showForm = !showForm">{{ showForm ? ('TODOS.CANCEL' | translate) : ('+ ' + ('TODOS.NEW' | translate)) }}</button>
+  </div>
+
+  <!-- Add form -->
+  <form class="add-card" *ngIf="showForm" (ngSubmit)="add()">
+    <input class="text-input" name="text" [(ngModel)]="newText" [maxlength]="maxLength"
+           [placeholder]="'TODOS.PLACEHOLDER' | translate" autocomplete="off" />
+    <div class="add-row">
+      <label class="field">
+        <span>{{ 'TODOS.DUE' | translate }}</span>
+        <input type="date" name="due" [(ngModel)]="newDue" />
+      </label>
+      <label class="field">
+        <span>{{ 'TODOS.LINK' | translate }}</span>
+        <select name="linkType" [(ngModel)]="newLinkType" (ngModelChange)="onLinkTypeChange()">
+          <option value="">{{ 'TODOS.NO_LINK' | translate }}</option>
+          <option *ngFor="let lt of linkTypes" [value]="lt">{{ 'TODOS.TYPE_' + lt | translate }}</option>
+        </select>
+      </label>
+      <label class="field grow" *ngIf="newLinkType">
+        <span>&nbsp;</span>
+        <select name="linkId" [(ngModel)]="newLinkId">
+          <option value="">{{ 'TODOS.PICK' | translate }}</option>
+          <option *ngFor="let o of options" [value]="o.id">{{ o.name }}</option>
+        </select>
+      </label>
+      <button type="submit" class="btn-primary" [disabled]="!newText.trim() || adding">{{ 'TODOS.ADD' | translate }}</button>
+    </div>
+  </form>
+
+  <p class="muted" *ngIf="loading">…</p>
+
+  <!-- Board -->
+  <div class="board" *ngIf="!loading">
+    <section class="column" *ngFor="let col of columns"
+             [class.drag-over]="dragOver === col.status"
+             (dragover)="onDragOver($event, col.status)"
+             (dragleave)="dragOver = null"
+             (drop)="onDrop($event, col.status)">
+      <header class="col-head" [attr.data-status]="col.status">
+        <span class="col-title">{{ col.icon }} {{ 'TODOS.COL_' + col.status | translate }}</span>
+        <span class="col-count">{{ inColumn(col.status).length }}</span>
+        <button type="button" class="link-btn" *ngIf="col.status === 'DONE' && doneCount > 0" (click)="clearDone()">{{ 'TODOS.CLEAR_DONE' | translate }}</button>
+      </header>
+
+      <div class="cards">
+        <article class="card" *ngFor="let t of inColumn(col.status)"
+                 [class.dragging]="draggingId === t.id" [class.done]="t.status === 'DONE'"
+                 draggable="true" (dragstart)="onDragStart($event, t)" (dragend)="onDragEnd()">
+          <div class="card-text">{{ t.text }}</div>
+          <div class="card-meta" *ngIf="t.dueDate || t.linkType">
+            <span class="due" *ngIf="t.dueDate" [ngClass]="dueState(t)">📅 {{ t.dueDate | date:'dd.MM.yyyy' }}</span>
+            <button type="button" class="link-chip" *ngIf="t.linkType && t.linkName" (click)="openLink(t)">
+              {{ linkIcon(t.linkType) }} {{ t.linkName }}
+            </button>
+            <span class="link-gone" *ngIf="t.linkType && !t.linkName">🚫 {{ 'TODOS.LINK_GONE' | translate }}</span>
+          </div>
+          <div class="card-actions">
+            <button type="button" class="mv" [disabled]="!canStep(t, -1)" (click)="step(t, -1)" [title]="'TODOS.MOVE_LEFT' | translate">◀</button>
+            <button type="button" class="mv" [disabled]="!canStep(t, 1)" (click)="step(t, 1)" [title]="'TODOS.MOVE_RIGHT' | translate">▶</button>
+            <span class="spacer"></span>
+            <button type="button" class="remove" (click)="remove(t)" [title]="'TODOS.DELETE' | translate">✕</button>
+          </div>
+        </article>
+
+        <p class="col-empty" *ngIf="inColumn(col.status).length === 0">{{ 'TODOS.DROP_HERE' | translate }}</p>
+      </div>
+    </section>
+  </div>
+</div>

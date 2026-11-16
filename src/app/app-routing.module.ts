@@ -23,6 +23,9 @@ import { AiGeneratorComponent } from './admin/ai-generator/ai-generator.componen
 import { InboxComponent } from './admin/inbox/inbox.component';
 import { MetricsComponent } from './metrics/metrics.component';
 import { CalendarComponent } from './calendar/calendar.component';
+import { TodoListComponent } from './todos/todo-list/todo-list.component';
+import { FeatureFlagsComponent } from './admin/feature-flags/feature-flags.component';
+import { FeatureFlagGuard } from './guard/feature-flag.guard';
 import { JoinGroupComponent } from './calendar/join-group/join-group.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { GraphLabComponent } from './admin/graph-lab/graph-lab.component';
@@ -47,6 +50,8 @@ const routes: Routes = [
   { path: 'account', component: AccountComponent, canActivate: [AuthGuard] },
   { path: 'metrics', component: MetricsComponent, canActivate: [AuthGuard] },
   { path: 'calendar', component: CalendarComponent, canActivate: [AuthGuard] },
+  { path: 'todos', component: TodoListComponent, canActivate: [AuthGuard, FeatureFlagGuard], data: { feature: 'TODO_LIST' } },
+  { path: 'admin/feature-flags', component: FeatureFlagsComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'calendar/join/:token', component: JoinGroupComponent, canActivate: [AuthGuard] },
   { path: 'tests/:id', component: TestViewComponent, canActivate: [AuthGuard] },
   { path: 'tests/:testId/attempts/:stateId', component: ExamAttemptComponent, canActivate: [AuthGuard] },

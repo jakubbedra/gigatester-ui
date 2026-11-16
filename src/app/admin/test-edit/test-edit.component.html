@@ -154,7 +154,8 @@
             <button class="btn-load-img" (click)="loadImages(q.id)">Load image</button>
           </div>
         </ng-container>
-        <div class="question-text" *ngIf="!isHtml(q.content?.type)">{{ q.content?.text }}</div>
+        <div class="question-text code-content" *ngIf="isCode(q.content?.type)" [innerHTML]="q.content?.text | latex"></div>
+        <div class="question-text" *ngIf="!isHtml(q.content?.type) && !isCode(q.content?.type)">{{ q.content?.text }}</div>
 
         <!-- CLOSED details -->
         <ng-container *ngIf="q.type === 'CLOSED'">
@@ -283,6 +284,7 @@
       <textarea *ngIf="!isHtml(editDraft.content?.type)" rows="4"
                 [(ngModel)]="editDraft.content.text"
                 [placeholder]="'TEST_EDIT.QUESTION_TEXT' | translate"></textarea>
+      <div class="code-preview" *ngIf="isCode(editDraft.content?.type)" [innerHTML]="editDraft.content.text | latex"></div>
     </div>
 
     <!-- ── Points + proportions ── -->
@@ -456,7 +458,8 @@
             <div class="tp-content-area html-content"
                  [style.flex]="editDraft.contentProportions || 1">
               <div *ngIf="isHtml(editDraft.content?.type)" [innerHTML]="safe(editDraft.content?.text)"></div>
-              <div *ngIf="!isHtml(editDraft.content?.type)">{{ editDraft.content?.text }}</div>
+              <div class="code-content" *ngIf="isCode(editDraft.content?.type)" [innerHTML]="editDraft.content?.text | latex"></div>
+              <div *ngIf="!isHtml(editDraft.content?.type) && !isCode(editDraft.content?.type)">{{ editDraft.content?.text }}</div>
             </div>
 
             <div class="tp-answer-area" [style.flex]="editDraft.answerProportions || 2">
@@ -570,6 +573,8 @@
                     (click)="addDraft.content.type = 'TEXT'">{{ 'TEST_EDIT.FORMAT_TEXT' | translate }}</button>
             <button class="mini-tab" [class.active]="addDraft.content.type === 'HTML'"
                     (click)="addDraft.content.type = 'HTML'; addDraft.content.text = addDraft.content.text || htmlTemplate">{{ 'TEST_EDIT.FORMAT_HTML' | translate }}</button>
+            <button class="mini-tab" [class.active]="addDraft.content.type === 'CODE_SNIPPET'"
+                    (click)="addDraft.content.type = 'CODE_SNIPPET'; addDraft.content.text = addDraft.content.text || codeTemplate">{{ 'TEST_EDIT.FORMAT_CODE' | translate }}</button>
           </div>
         </div>
         <!-- Split editor+preview for HTML -->
@@ -581,6 +586,7 @@
         </div>
         <textarea *ngIf="!isHtml(addDraft.content.type)" rows="4"
                   [(ngModel)]="addDraft.content.text" [placeholder]="'TEST_EDIT.QUESTION_TEXT' | translate"></textarea>
+        <div class="code-preview" *ngIf="isCode(addDraft.content.type)" [innerHTML]="addDraft.content.text | latex"></div>
         <div class="upload-note" *ngIf="isHtml(addDraft.content.type)">
           💡 {{ 'TEST_EDIT.IMAGE_HINT' | translate }}
         </div>

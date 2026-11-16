@@ -296,6 +296,10 @@ export class TestEditComponent implements OnInit {
 
   // ── HTML helpers ──────────────────────────────────────────────────────────
 
+  isCode(type: string | undefined): boolean {
+    return type === 'CODE_SNIPPET';
+  }
+
   isHtml(type: string | undefined): boolean {
     return type === 'HTML';
   }
@@ -432,6 +436,8 @@ export class TestEditComponent implements OnInit {
     this.addType = type;
     this.addDraft = this.buildAddDraft(type);
   }
+
+  readonly codeTemplate = 'Explain what this code prints:\n```java\nSystem.out.println(1 + 2);\n```';
 
   readonly htmlTemplate = '<img src="" width="40%" height="40%"></img>\n<p>  </p>';
 
